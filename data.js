@@ -1,0 +1,994 @@
+/* Nomad AI — content tables.
+   Extracted verbatim from the "Nomad AI App v2" design so copy, prices,
+   ratings and Kyrgyz text stay identical to the approved prototype. */
+(function () {
+const places = [
+    { id: 1, name: 'Navat', cat: 'Kyrgyz cuisine', rating: 4.7, reviews: 312, dist: '0.8 km', price: '900 som · $10', hours: 'till 00:00', travel: '10 min walk', slot: 'v2-navat', ph: 'Navat chaikhana — beshbarmak on the table', addr: 'Ibraimova 42/1, Bishkek', desc: 'The teahouse locals bring visitors to. Hand-cut beshbarmak noodles, lamb broth, warm boorsok bread and a pot of green tea that never seems to empty.', dishes: ['Beshbarmak', 'Manti', 'Lagman', 'Boorsok'], listTitle: 'What to order', review: 'Ordered the beshbarmak and had no idea it would arrive on a platter for four. Ask for kymyz — the waiter explains how to drink it.' },
+    { id: 2, name: 'Supara Ethno Complex', cat: 'Kyrgyz cuisine', rating: 4.8, reviews: 488, dist: '9.2 km', price: '2 600 som · $30', hours: 'till 23:00', travel: '25 min taxi', slot: 'v2-supara', ph: 'Supara — yurts and gardens at dusk', addr: 'Karagul Akmat 1a, Kok-Jar', desc: 'A recreated Kyrgyz settlement of felt yurts and gardens outside the city. Live komuz music, a long multi-course menu, and the closest thing to a village feast you can book a table at.', dishes: ['Beshbarmak', 'Kuurdak', 'Kymyz', 'Lagman'], listTitle: 'What to order', review: 'Came for the yurts, stayed three hours. Worth the taxi — go for sunset and sit in the garden.' },
+    { id: 3, name: 'Ala-Archa National Park', cat: 'Nature', rating: 4.9, reviews: 1240, dist: '40 km', price: 'Free · 80 som car', hours: '08:00–20:00', travel: '45 min drive', slot: 'v2-alaarcha', ph: 'Ala-Archa gorge — pine forest and glacier river', addr: 'Ala-Archa gorge, 40 km south of Bishkek', desc: 'Bishkek\u2019s mountain backyard: pine forest, a glacier-fed river and trails from an easy hour to a two-day climb. The Ak-Sai waterfall route takes about four hours return.', dishes: ['Ak-Sai waterfall trail', 'Alpine camp', 'River picnic spots'], listTitle: 'What to do', review: 'Left Bishkek at eight, walked to the waterfall, back in the city for dinner. Bring layers — it is much colder up there.' },
+    { id: 4, name: 'Osh Bazaar', cat: 'Market', rating: 4.7, reviews: 902, dist: '2.9 km', price: 'Bring cash', hours: '08:00–18:00', travel: '12 min taxi', slot: 'v2-osh', ph: 'Osh Bazaar — spice rows and dried fruit', addr: 'Kievskaya, Bishkek', desc: 'The real bazaar. Spice rows, mountains of dried apricots, kalpak hats, horse-meat counters and ladles of kymyz poured straight from the barrel.', dishes: ['Spices', 'Kalpak hats', 'Dried fruit', 'Samsa stalls'], listTitle: 'What to look for', review: 'Go hungry and bring small notes. The samsa stall near the north gate is the one to find.' },
+    { id: 5, name: "Ant's Coffee", cat: 'Coffee', rating: 4.7, reviews: 421, dist: '0.6 km', price: '1 500 som · $17', hours: 'till 00:00', travel: '7 min walk', slot: 'v2-ants', ph: 'Ant\u2019s Coffee — espresso bar in warm light', addr: 'Erkindik Blvd 35, Bishkek', desc: 'Bishkek\u2019s best-loved coffee room. Proper espresso, a serious cake counter and enough space to sit with a laptop for two hours without anyone minding.', dishes: ['Flat white', 'Cheesecake', 'Filter coffee'], listTitle: 'What to order', review: 'Best flat white I found in the city, and the cheesecake is worth the detour.' },
+    { id: 6, name: 'Ala-Too Square', cat: 'Landmark', rating: 4.7, reviews: 760, dist: '0.3 km', price: 'Free', hours: 'Open 24 h', travel: '4 min walk', slot: 'v2-alatoo', ph: 'Ala-Too Square — Manas statue and flagpole', addr: 'Chuy Avenue, Bishkek', desc: 'The centre of the country: Manas on horseback, a vast flagpole and a guard change on the hour that takes two minutes and is worth catching.', dishes: ['Manas statue', 'Flag ceremony', 'History Museum next door'], listTitle: 'What to see', review: 'Time it for the hourly guard change. The museum behind the square is genuinely good.' },
+    { id: 7, name: 'State History Museum', cat: 'Museum', rating: 4.8, reviews: 388, dist: '0.3 km', price: '250 som · $3', hours: '10:00–18:00', travel: '4 min walk', slot: 'v2-museum', ph: 'History Museum — nomad artefacts and Soviet murals', addr: 'Ala-Too Square, Bishkek', desc: 'Reopened and much better than it used to be. Petroglyphs, yurt interiors and a floor of striking Soviet ceiling murals upstairs that most visitors miss.', dishes: ['Nomad artefacts', 'Soviet murals', 'Yurt interiors'], listTitle: 'Highlights', review: 'Ninety minutes well spent. Go upstairs for the murals — nobody tells you they are there.' },
+    { id: 8, name: 'Issyk-Kul Lake', cat: 'Nature', rating: 4.9, reviews: 2100, dist: '250 km', price: 'From 1 800 som', hours: 'Best May–Sep', travel: '4 h drive', slot: 'v2-issykkul', ph: 'Issyk-Kul — blue lake with snow peaks behind', addr: 'Issyk-Kul Region', desc: 'The second-largest alpine lake in the world, warm enough to swim in summer with snow peaks on the far shore. Base yourself in Cholpon-Ata or head south for the quiet side.', dishes: ['South-shore beaches', 'Skazka Canyon', 'Cholpon-Ata petroglyphs'], listTitle: 'What to do', review: 'Skip the north-shore resorts and drive to the south side. Emptier, wilder, better.' },
+    { id: 9, name: 'Ala-Kul Lake', cat: 'Trek', rating: 4.9, reviews: 640, dist: '400 km', price: '250 som entry', hours: 'Jul–Sep', travel: '6 h + 2 day trek', slot: 'v2-alakul', ph: 'Ala-Kul — turquoise lake under a high pass', addr: 'Karakol gorge, Issyk-Kul Region', desc: 'The trek everyone comes for: two to four days from Karakol to a turquoise lake at 3 532 m, over a pass at 3 860 m, with hot springs at Altyn-Arashan on the way out.', dishes: ['3 860 m pass', 'Altyn-Arashan springs', 'Sirota camp'], listTitle: 'On the route', review: 'The pass day is hard — scree and snow even in August. Absolutely worth it.' },
+    { id: 10, name: 'Burana Tower', cat: 'Landmark', rating: 4.6, reviews: 512, dist: '80 km', price: '65 som · $1', hours: '09:00–18:00', travel: '1 h drive', slot: 'v2-burana', ph: 'Burana Tower — 11th-century minaret on the steppe', addr: 'Burana village, Chuy Region', desc: 'An eleventh-century minaret standing alone on the steppe, with a field of stone balbals beside it. Climb the dark spiral stairs for the view over the Chuy valley.', dishes: ['Minaret climb', 'Stone balbals', 'Small museum'], listTitle: 'What to see', review: 'Half a day from Bishkek, and you will have the place almost to yourself on a weekday.' },
+    { id: 11, name: 'Faiza', cat: 'Kyrgyz cuisine', rating: 4.5, reviews: 274, dist: '1.4 km', price: '450 som · $5', hours: 'till 21:00', travel: '5 min taxi', slot: 'v2-faiza', ph: 'Faiza — lagman bowls on a busy table', addr: 'Medorova 159, Bishkek', desc: 'Where locals take visiting relatives. Home-style lagman and manti, very low prices, always full, no English menu and none needed.', dishes: ['Lagman', 'Manti', 'Shorpo', 'Pelmeni'], listTitle: 'What to order', review: 'Two of us ate for under a thousand som. Point at what the next table has.' },
+    { id: 13, name: 'Interhouse Hostel', cat: 'Stay', rating: 4.6, reviews: 214, dist: '1.1 km', price: '700 som · $8', hours: '24 h reception', travel: '13 min walk', slot: 'v2-interhouse', ph: 'Hostel common room with travellers', addr: 'Kurmanjan Datka 90, Bishkek', desc: 'The backpacker default in Bishkek. Clean dorms, a tour desk that books Ala-Kul transport, and a kitchen table where half the room is planning the same trek.', dishes: ['Dorm bed', 'Breakfast included', 'Shared kitchen'], listTitle: 'What you get', review: 'Booked my Karakol transfer at the desk in five minutes. Ask for the quiet room at the back.' },
+    { id: 14, name: 'Apple Hostel', cat: 'Stay', rating: 4.5, reviews: 168, dist: '1.6 km', price: '900 som · $10', hours: '24 h reception', travel: '6 min taxi', slot: 'v2-apple', ph: 'Quiet hostel courtyard', addr: 'Bokonbaeva 122, Bishkek', desc: 'Courtyard hostel with private rooms as well as dorms, for when you want a door that locks and a night without bunk ladders.', dishes: ['Private rooms', 'Dorms', 'Laundry'], listTitle: 'What you get', review: 'Paid a little more for a private and slept properly for the first time in a week.' },
+    { id: 15, name: 'Bishkek Boutique Hotel', cat: 'Stay', rating: 4.7, reviews: 302, dist: '0.9 km', price: '4 500 som · $52', hours: '24 h reception', travel: '11 min walk', slot: 'v2-boutique', ph: 'Boutique hotel room, warm lamps', addr: 'Frunze 344, Bishkek', desc: 'Small hotel five minutes from Ala-Too Square. The sensible mid-range choice: real breakfast, quiet rooms, walkable to everything in the centre.', dishes: ['Double room', 'Breakfast included', 'Airport transfer'], listTitle: 'What you get', review: 'Spotless and central. Breakfast is proper, not a sad buffet.' },
+    { id: 16, name: 'Orion Hotel Bishkek', cat: 'Stay', rating: 4.8, reviews: 540, dist: '0.5 km', price: '9 000 som · $103', hours: '24 h reception', travel: '6 min walk', slot: 'v2-orion', ph: 'Hotel room with mountain view', addr: 'Erkindik Blvd 21, Bishkek', desc: 'The top-floor views over the Ala-Too range are the reason to book here, and the breakfast is the best in the city. Pool and rooftop bar included.', dishes: ['Suite', 'Pool', 'Rooftop views'], listTitle: 'What you get', review: 'Woke up to snow peaks from the bed. Worth one splurge night at the end of a trek.' },
+    { id: 17, name: 'Supara Chunkurchak Yurts', cat: 'Stay', rating: 4.9, reviews: 188, dist: '32 km', price: '3 200 som · $37', hours: 'Check-in 14:00', travel: '50 min drive', slot: 'v2-yurts', ph: 'Felt yurts in a mountain valley at night', addr: 'Chunkurchak valley', desc: 'Sleep in a felt yurt an hour from the city. Cold nights, thick blankets, half board, and a sky with no light pollution anywhere near it.', dishes: ['Felt yurt', 'Half board', 'Stargazing'], listTitle: 'What you get', review: 'Freezing at 3 a.m. and completely worth it. Bring a hat for sleeping.' },
+    { id: 18, name: 'Oak Park (Dubovy)', cat: 'Park', rating: 4.6, reviews: 430, dist: '0.4 km', price: 'Free', hours: 'Open 24 h', travel: '5 min walk', slot: 'v2-oak', ph: 'Oak Park — sculpture garden in dappled shade', addr: 'Between Erkindik and Chuy', desc: 'The oldest park in the city: an open-air sculpture garden, chess tables where the games get serious, and deep shade on a hot afternoon.', dishes: ['Sculpture garden', 'Chess tables', 'Shaded benches'], listTitle: 'What to do', review: 'Sat and watched a chess game for an hour. Nobody minds if you stay all afternoon.' },
+    { id: 19, name: 'Victory Park', cat: 'Park', rating: 4.9, reviews: 356, dist: '0.9 km', price: 'Free', hours: 'Open 24 h', travel: '11 min walk', slot: 'v2-victory', ph: 'Yurt-shaped WWII memorial', addr: 'Victory Square, Bishkek', desc: 'A monumental yurt-shaped memorial to the Second World War, quiet alleys around it, and locals on benches for most of the evening.', dishes: ['WWII memorial', 'Shaded alleys', 'Evening crowds'], listTitle: 'What to see', review: 'Go at dusk. The memorial is genuinely moving and almost nobody is there.' },
+    { id: 20, name: 'Panfilov Park', cat: 'Park', rating: 4.4, reviews: 288, dist: '0.6 km', price: 'Free', hours: 'Open 24 h', travel: '7 min walk', slot: 'v2-panfilov', ph: 'Soviet funfair rides under old trees', addr: 'City centre, Bishkek', desc: 'Creaking Soviet funfair rides under very old trees. Odd, a little melancholy, and lovely around sunset when the lights come on.', dishes: ['Ferris wheel', 'Old carousels', 'Ice cream stalls'], listTitle: 'What to do', review: 'The Ferris wheel costs almost nothing and the view over the centre is great.' },
+    { id: 21, name: 'Ynytymak Park', cat: 'Park', rating: 4.9, reviews: 210, dist: '3.4 km', price: 'Free', hours: 'Open 24 h', travel: '12 min taxi', slot: 'v2-ynytymak', ph: 'New park promenade with fountains', addr: 'Bishkek', desc: 'The newest big park in town — wide promenades, fountains that run all evening, and the best place in the city for a run without traffic.', dishes: ['Promenade', 'Fountains', 'Running loop'], listTitle: 'What to do', review: 'Ran a loop here every morning. Smooth paths and lots of shade.' },
+    { id: 22, name: 'Botanical Garden', cat: 'Park', rating: 4.4, reviews: 142, dist: '2.1 km', price: '50 som · under $1', hours: '09:00–18:00', travel: '8 min taxi', slot: 'v2-botanical', ph: 'Overgrown botanical garden path', addr: 'Akhunbaeva 1a, Bishkek', desc: 'Half-wild and almost empty on weekdays. An overgrown arboretum, a rose collection nobody prunes much, and total quiet. Bring a book.', dishes: ['Arboretum', 'Rose collection', 'Quiet benches'], listTitle: 'What to do', review: 'Had the whole place to myself on a Tuesday. Bring water, there are no kiosks.' },
+    { id: 24, name: 'Frunze House Museum', cat: 'Museum', rating: 4.8, reviews: 156, dist: '0.7 km', price: '100 som · under $2', hours: '10:00–17:00', travel: '9 min walk', slot: 'v2-frunze', ph: 'A cottage preserved inside a museum hall', addr: 'Frunze 364, Bishkek', desc: 'They built the museum around the original cottage, so you walk through a hall and find a whole wooden house standing inside it. Strange, small, memorable.', dishes: ['The cottage', 'Soviet-era rooms', 'Period photographs'], listTitle: 'Highlights', review: 'Twenty minutes, and the oddest museum concept I have seen. Worth it.' },
+    { id: 25, name: 'Opera & Ballet Theatre', cat: 'Culture', rating: 4.9, reviews: 398, dist: '0.8 km', price: 'from 300 som · $3.50', hours: 'Box office till 19:00', travel: '10 min walk', slot: 'v2-opera', ph: 'Opera house auditorium before a show', addr: 'Sovetskaya 167, Bishkek', desc: 'A night at the opera for the price of a coffee. Dress up a little, buy the cheap seats, and the acoustics still work perfectly.', dishes: ['Opera', 'Ballet', 'Classical concerts'], listTitle: 'What is on', review: 'Paid 400 som for a ballet and it was a full orchestra. Unbelievable value.' },
+    { id: 26, name: 'Russian Drama Theatre', cat: 'Culture', rating: 4.9, reviews: 212, dist: '0.6 km', price: 'from 250 som · $3', hours: 'Box office till 18:00', travel: '8 min walk', slot: 'v2-drama', ph: 'Theatre foyer before curtain', addr: 'Tynystanova 122, Bishkek', desc: 'Full house most nights and a ticket costs less than a coffee. Russian repertoire, so bring a plot summary if you do not speak it.', dishes: ['Drama', 'Comedy', 'Russian repertoire'], listTitle: 'What is on', review: 'Understood maybe half of it and enjoyed all of it. The crowd makes the night.' },
+    { id: 27, name: 'Kyrgyz National Philharmonic', cat: 'Culture', rating: 4.9, reviews: 246, dist: '0.9 km', price: 'from 400 som · $4.50', hours: 'Box office till 18:00', travel: '11 min walk', slot: 'v2-philharmonic', ph: 'Concert hall with komuz players', addr: 'Chuy Ave 253, Bishkek', desc: 'Hear the komuz played properly, in the hall built for it. Manas epic recitals some evenings — ask at the box office which nights.', dishes: ['Komuz recitals', 'Orchestra', 'Manas epic'], listTitle: 'What is on', review: 'The komuz solo was the single most memorable hour of my trip.' },
+    { id: 28, name: 'TSUM Aychurek', cat: 'Market', rating: 4.8, reviews: 512, dist: '0.5 km', price: 'Varies', hours: '10:00–21:00', travel: '6 min walk', slot: 'v2-tsum', ph: 'Souvenir floor with felt and silver', addr: 'Shopokova 91, Bishkek', desc: 'A Soviet department store turned souvenir hunting ground. Skip the ground floor and go to the fourth for felt, silver and shyrdak rugs.', dishes: ['Felt shyrdaks', 'Silver jewellery', 'Kalpak hats'], listTitle: 'What to buy', review: 'Fourth floor is where the real crafts are. Bargaining is expected but gentle.' },
+    { id: 29, name: 'Dordoi Bazaar', cat: 'Market', rating: 4.4, reviews: 690, dist: '7.4 km', price: 'Bring cash', hours: '08:00–17:00', travel: '22 min taxi', slot: 'v2-dordoi', ph: 'Shipping-container bazaar corridors', addr: 'North Bishkek', desc: 'Kilometres of stacked shipping containers, one of the largest bazaars in Asia. Overwhelming, cheap, and a genuine sight in its own right.', dishes: ['Container city', 'Trader canteens', 'Everything wholesale'], listTitle: 'What to know', review: 'Go with a plan or you will get lost. The canteens inside feed you for 200 som.' },
+    { id: 30, name: 'Adriano Coffee', cat: 'Coffee', rating: 4.8, reviews: 356, dist: '0.9 km', price: '750 som · $8.50', hours: 'till 22:00', travel: '11 min walk', slot: 'v2-adriano', ph: 'Coffee counter with pastries', addr: 'Chuy Ave 127, Bishkek', desc: 'A growing local chain with dependable coffee and pastries that are usually gone by noon. Good for a quick stop rather than a long sit.', dishes: ['Cappuccino', 'Croissants', 'Brunch plates'], listTitle: 'What to order', review: 'Best croissant I found in Bishkek. Get there before eleven.' },
+    { id: 31, name: 'Kölökö', cat: 'Coffee', rating: 4.7, reviews: 178, dist: '1.7 km', price: '800 som · $9', hours: 'till 22:00', travel: '6 min taxi', slot: 'v2-koloko', ph: 'Small roastery with hand-brew bar', addr: 'Bishkek centre', desc: 'A small local roaster with a quiet back room — the kind of place the regulars would rather you did not find. Filter coffee is the thing here.', dishes: ['Filter coffee', 'Local roast beans', 'Quiet corner'], listTitle: 'What to order', review: 'Ask what they roasted this week. They will talk you through it happily.' },
+    { id: 32, name: 'Osh Bazaar Food Stalls', cat: 'Street food', rating: 4.4, reviews: 402, dist: '2.9 km', price: '200 som · $2', hours: 'till 18:00', travel: '12 min taxi', slot: 'v2-oshfood', ph: 'Samsa and lagman stalls in a bazaar', addr: 'Osh Bazaar, Kievskaya', desc: 'The best cheap lunch in the city if you can handle the crowd. Point at what looks good — samsa from the tandyr, lagman pulled to order.', dishes: ['Samsa', 'Lagman', 'Shawarma'], listTitle: 'What to order', review: 'Two samsa and a tea for 150 som, eaten standing up. Perfect.' },
+    { id: 33, name: 'Chunkurchak Gorge', cat: 'Nature', rating: 4.6, reviews: 288, dist: '32 km', price: 'Free', hours: 'Daylight', travel: '50 min drive', slot: 'v2-chunkurchak', ph: 'Green meadows in a mountain valley', addr: 'Chunkurchak valley', desc: 'Green summer meadows an hour from the city, ski slopes and yurt stays in winter. The easiest way to stand in real mountains before lunch.', dishes: ['Summer meadows', 'Yurt camps', 'Winter skiing'], listTitle: 'What to do', review: 'Drove out for sunset with a picnic. Better than any restaurant in town.' },
+    { id: 34, name: 'Skazka Canyon', cat: 'Nature', rating: 4.8, reviews: 466, dist: '300 km', price: 'Small entry fee', hours: 'Daylight', travel: '5 h drive', slot: 'v2-skazka', ph: 'Red and yellow rock formations', addr: 'South shore of Issyk-Kul, near Tosor', desc: 'Red and yellow rock formations on the south shore of Issyk-Kul, walkable in two hours with the lake behind you. No shade at all — bring water.', dishes: ['Rock formations', 'Lake views', 'Two-hour loop'], listTitle: 'What to do', review: 'Went at 5 p.m. when the light turns the rock orange. Do that.' },
+    { id: 35, name: 'Jeti-Oguz Gorge', cat: 'Nature', rating: 4.6, reviews: 322, dist: '380 km', price: 'Free', hours: 'Daylight', travel: '6 h drive', slot: 'v2-jetioguz', ph: 'Red Seven Bulls cliffs above a green valley', addr: 'Near Karakol, Issyk-Kul Region', desc: 'The red Seven Bulls cliffs and the Broken Heart rock, in a green valley an hour from Karakol. An easy half-day with no trekking required.', dishes: ['Seven Bulls cliffs', 'Broken Heart rock', 'Valley walk'], listTitle: 'What to see', review: 'Easiest big landscape in the country to reach. The minibus from Karakol is cheap.' },
+    { id: 36, name: 'Altyn-Arashan', cat: 'Trek', rating: 4.8, reviews: 412, dist: '400 km', price: 'from 1 200 som', hours: 'Late May–Oct', travel: '6 h + 4×4', slot: 'v2-altyn', ph: 'Hot spring pool with mountain view', addr: 'Arashan valley, near Karakol', desc: 'Hot springs at 2 600 m with a mountain wall behind them, reached by 4×4 or fifteen kilometres on foot. Guesthouses and yurts at the top.', dishes: ['Hot springs', 'Guesthouse stay', 'Link to Ala-Kul'], listTitle: 'On the route', review: 'Sat in a hot spring in the snow. The road up is genuinely terrifying — take the walk.' },
+    { id: 37, name: 'Song-Kul Lake', cat: 'Trek', rating: 4.9, reviews: 588, dist: '300 km', price: 'from 1 500 som', hours: 'Jun–Sep', travel: '5 h drive', slot: 'v2-songkul', ph: 'Yurt camp beside a high alpine lake', addr: 'Naryn Region, 3 016 m', desc: 'A high alpine lake ringed by summer pasture and nomad yurt camps at 3 016 m. Horses, silence, and the clearest night sky in the country.', dishes: ['Yurt stay', 'Horse riding', 'Night sky'], listTitle: 'What to do', review: 'No signal, no roads, no noise. Two nights here reset something in my head.' },
+    { id: 12, name: 'Ashlyanfu №1', cat: 'Street food', rating: 4.5, reviews: 198, dist: '3.1 km', price: '300 som · $3', hours: 'till 20:00', travel: '11 min taxi', slot: 'v2-ashlyanfu', ph: 'Ashlyanfu — cold spicy noodles with samsa', addr: 'Baytik Baatyra 3a, Bishkek', desc: 'One dish, done properly: cold Dungan noodles in a vinegar-chilli broth with starch jelly and egg. Served cold on purpose. Order a hot samsa alongside.', dishes: ['Ashlyanfu', 'Samsa', 'Cold noodles'], listTitle: 'What to order', review: 'Strange and wonderful. Ask for it mild the first time.' }
+  ];
+
+const badgeSkins = {
+    gourmet: { frame: ['#B8485A', '#7E2C3B'], rim: '#E8C07A', ink: '#FFF6EC', shape: 'hex' },
+    coffee: { frame: ['#C4884A', '#8E4A2E'], rim: '#F2DDB4', ink: '#FFF8EE', shape: 'scallop' },
+    history: { frame: ['#8A3040', '#511A24'], rim: '#DFC49B', ink: '#FBF3E8', shape: 'arch' },
+    nature: { frame: ['#4E8A67', '#2C5340'], rim: '#B4D3B6', ink: '#F6FBF6', shape: 'diamond' },
+    photo: { frame: ['#9A7C58', '#57402C'], rim: '#E6BE86', ink: '#FFF8EE', shape: 'oct' },
+    smart: { frame: ['#E4B972', '#B07F35'], rim: '#FFF0D2', ink: '#3E2A0F', shape: 'coin' }
+  };
+
+
+const RATE = 500;
+
+const proofKinds = {
+    qr: { label: 'Scan QR at the till', short: 'QR scan', note: 'Partner venue — staff show you the code' },
+    receipt: { label: 'Photo of the receipt', short: 'Receipt', note: 'We read the venue, item and date' },
+    gps: { label: 'Check in on location', short: 'Check-in', note: 'You must be within 150 m, during opening hours' },
+    photo: { label: 'Geotagged photo', short: 'Photo', note: 'Location and time are read from the image' },
+    trace: { label: 'Record a walk inside', short: 'Walk trace', note: 'For big open places: keep the app open and walk for 5 minutes anywhere inside the grounds. We match the shape of your path to the site boundary, not to one pin.' }
+  };
+
+const badgeList = [
+    { kind: 'gourmet', name: 'Gourmet Nomad', xp: 30000, sub: 'Six Kyrgyz classics, all verified', tasks: [
+      { n: 'Try beshbarmak', at: 'Navat · 900 som', proof: 'qr' },
+      { n: 'Try manti', at: 'Faiza · 450 som', proof: 'receipt' },
+      { n: 'Try kuurdak', at: 'Kuurdak №1 · 900 som', proof: 'receipt' },
+      { n: 'Try lagman', at: 'Faiza · 450 som', proof: 'receipt' },
+      { n: 'Try boorsok', at: 'Any chaikhana', proof: 'photo' },
+      { n: 'Taste kymyz', at: 'Osh Bazaar · by the ladle', proof: 'photo' }
+    ] },
+    { kind: 'coffee', name: 'Coffee Lover', xp: 22500, sub: 'Five roasters, all verified', tasks: [
+      { n: "Visit Ant's Coffee", at: 'Erkindik Blvd 35', proof: 'qr' },
+      { n: 'Visit Adriano Coffee', at: 'Chuy Ave 127', proof: 'qr' },
+      { n: 'Visit Kölökö', at: 'Bishkek centre', proof: 'gps' },
+      { n: 'Order a specialty latte', at: 'Any partner cafe', proof: 'receipt' },
+      { n: 'Try a local dessert', at: 'Skyberry · 900 som', proof: 'receipt' }
+    ] },
+    { kind: 'nature', name: 'Nature Lover', xp: 40000, sub: 'Four days in the mountains', tasks: [
+      { n: 'Hike Ala-Archa gorge', at: '40 km · full day', proof: 'trace' },
+      { n: 'Visit the Botanical Garden', at: '50 som entry · 40 hectares', proof: 'trace' },
+      { n: 'Relax in Victory Park', at: 'Free · open grounds', proof: 'trace' },
+      { n: 'Watch a mountain sunset', at: 'Chunkurchak · 20:41', proof: 'photo' }
+    ] },
+    { kind: 'history', name: 'History Explorer', xp: 30000, sub: 'Monuments and museums', tasks: [
+      { n: 'Visit Ala-Too Square', at: 'Free · guard change hourly', proof: 'trace' },
+      { n: 'Visit the History Museum', at: '250 som · $3', proof: 'qr' },
+      { n: 'Walk through Oak Park', at: 'Free · open grounds', proof: 'trace' },
+      { n: 'See the Opera Theatre', at: 'from 300 som', proof: 'receipt' }
+    ] },
+    { kind: 'photo', name: 'Photo Hunter', xp: 25000, sub: 'Five photo missions', tasks: [
+      { n: 'Photo at Ala-Too Square', at: 'Flag ceremony', proof: 'photo' },
+      { n: 'Photo of a Kyrgyz dish', at: 'Beshbarmak plate', proof: 'photo' },
+      { n: 'Photo in a city park', at: 'Oak Park', proof: 'photo' },
+      { n: 'Photo of the mountains', at: 'Ala-Archa', proof: 'photo' },
+      { n: 'Photo of a sunset', at: 'Any viewpoint', proof: 'photo' }
+    ] },
+    { kind: 'smart', name: 'Smart Traveler', xp: 22500, sub: 'A week on a local budget', tasks: [
+      { n: 'Eat at Osh Bazaar', at: '200 som · $2', proof: 'receipt' },
+      { n: 'Try street samsa', at: '40 som', proof: 'photo' },
+      { n: 'Ride a city bus', at: '17 som by card', proof: 'gps' },
+      { n: 'Visit a free park', at: 'Any city park', proof: 'trace' }
+    ] }
+  ];
+
+const phrases = [
+    { key: 'hello', name: 'Greetings', items: [
+      { id: 'hello-hi', ky: 'Салам', tr: 'sa-LAM', en: 'Hi' },
+      { id: 'hello-formal', ky: 'Саламатсызбы', tr: 'sa-la-mat-SYZ-by', en: 'Hello (formal)' },
+      { id: 'hello-howareyou', ky: 'Кандайсыз?', tr: 'kan-DAY-syz', en: 'How are you?' },
+      { id: 'hello-good', ky: 'Жакшы, рахмат', tr: 'JAK-shy, rah-MAT', en: 'Good, thanks' },
+      { id: 'hello-thanks', ky: 'Рахмат', tr: 'rah-MAT', en: 'Thank you' },
+      { id: 'hello-sorry', ky: 'Кечиресиз', tr: 'ke-chi-re-SIZ', en: 'Excuse me / sorry' },
+      { id: 'hello-yesno', ky: 'Ооба / Жок', tr: 'OO-ba / JOK', en: 'Yes / No' }
+    ] },
+    { key: 'cafe', name: 'At a cafe', items: [
+      { id: 'cafe-menu', ky: 'Меню бериңизчи', tr: 'me-NYU be-rin-giz-CHI', en: 'Menu, please' },
+      { id: 'cafe-whatisthis', ky: 'Бул эмне?', tr: 'BUL em-NE', en: 'What is this?' },
+      { id: 'cafe-howmuch', ky: 'Канча турат?', tr: 'kan-CHA tu-RAT', en: 'How much is it?' },
+      { id: 'cafe-delicious', ky: 'Даамдуу экен!', tr: 'daam-DUU e-KEN', en: 'It is delicious!' },
+      { id: 'cafe-bill', ky: 'Эсеп бериңизчи', tr: 'e-SEP be-rin-giz-CHI', en: 'The bill, please' },
+      { id: 'cafe-nomeat', ky: 'Этсиз', tr: 'et-SIZ', en: 'No meat / vegetarian' }
+    ] },
+    { key: 'road', name: 'Getting around', items: [
+      { id: 'road-whereis', ky: 'Бул кайда?', tr: 'BUL kay-DA', en: 'Where is this?' },
+      { id: 'road-taxi', ky: 'Такси чакырыңыз', tr: 'tak-SI cha-ky-ryn-GYZ', en: 'Call a taxi' },
+      { id: 'road-howfar', ky: 'Канча алыс?', tr: 'kan-CHA a-LYS', en: 'How far?' },
+      { id: 'road-stop', ky: 'Токтоңуз', tr: 'tok-TON-guz', en: 'Stop here' },
+      { id: 'road-leftright', ky: 'Оңго / Солго', tr: 'ON-go / SOL-go', en: 'Right / left' }
+    ] },
+    { key: 'help', name: 'Help', items: [
+      { id: 'help-help', ky: 'Жардам бериңиз!', tr: 'jar-DAM be-rin-GIZ', en: 'Help!' },
+      { id: 'help-lost', ky: 'Мен адашып калдым', tr: 'MEN a-da-SHYP kal-DYM', en: 'I am lost' },
+      { id: 'help-doctor', ky: 'Дарыгер керек', tr: 'da-ry-GER ke-REK', en: 'I need a doctor' },
+      { id: 'help-english', ky: 'Англисче билесизби?', tr: 'an-glis-CHE bi-le-siz-BI', en: 'Do you speak English?' }
+    ] },
+    { key: 'num', name: 'Numbers', items: [
+      { id: 'num-123', ky: 'Бир, эки, үч', tr: 'BIR, e-KI, UCH', en: '1, 2, 3' },
+      { id: 'num-1020', ky: 'Он, жыйырма', tr: 'ON, jy-YYR-ma', en: '10, 20' },
+      { id: 'num-1001000', ky: 'Жүз, миң', tr: 'JUZ, MING', en: '100, 1000' },
+      { id: 'num-cheap', ky: 'Кымбат / Арзан', tr: 'kym-BAT / ar-ZAN', en: 'Expensive / cheap' }
+    ] }
+  ];
+
+  // ── Recorded pronunciations ──────────────────────────────────────────────
+  // Filled in by phrase-audio.js, which index.html loads next: 2.2 MB of
+  // base64 clips that would bury this file if they were pasted in here.
+  // Keys are the phrase ids above. Any phrase without a clip falls back to the
+  // device speech synthesiser, so a partial set is fine.
+const phraseAudio = {};
+
+const currencies = [
+    ['USD', 'US dollar', '$', 87.42], ['EUR', 'Euro', '€', 94.8], ['GBP', 'British pound', '£', 111.5],
+    ['PLN', 'Polish zloty', '', 22.1], ['KZT', 'Kazakh tenge', '', 0.18], ['RUB', 'Russian ruble', '', 1.1],
+    ['CNY', 'Chinese yuan', '', 12], ['TRY', 'Turkish lira', '', 2.6], ['JPY', 'Japanese yen', '', 0.56],
+    ['INR', 'Indian rupee', '', 1.04], ['AED', 'UAE dirham', '', 23.8], ['KRW', 'South Korean won', '', 0.063]
+  ];
+
+const savedTrips = [
+    { name: '3 days in Kyrgyzstan', when: '2–4 August', stops: 12, cost: '10 250 som · $117', time: '6 h 20 travel', active: true, tags: ['Bishkek', 'Ala-Archa', 'Burana'] },
+    { name: 'Issyk-Kul south shore', when: '7–10 August', stops: 9, cost: '18 400 som · $210', time: '11 h travel', active: false, tags: ['Skazka', 'Tosor', 'Jeti-Oguz'] },
+    { name: 'Ala-Kul trek', when: 'Draft · no dates', stops: 6, cost: '9 800 som · $112', time: '4 days', active: false, tags: ['Karakol', 'Altyn-Arashan'] }
+  ];
+
+const itinerary = {
+    1: { theme: 'Bishkek on foot', cost: '1 750 som · $20', walk: '4.2 km walking', stops: [
+      { t: '09:30', n: 'Ala-Too Square', cat: 'Landmark', cost: 'Free', travel: '4 min walk from hotel', slot: 'v2-it-1', ph: 'Ala-Too Square in morning light' },
+      { t: '10:30', n: 'State History Museum', cat: 'Museum', cost: '250 som · $3', travel: '2 min walk', slot: 'v2-it-2', ph: 'Museum interior, nomad artefacts' },
+      { t: '13:00', n: 'Lunch at Faiza', cat: 'Kyrgyz cuisine', cost: '450 som · $5', travel: '9 min taxi', slot: 'v2-it-3', ph: 'Lagman and manti on a table' },
+      { t: '19:00', n: 'Dinner at Navat', cat: 'Kyrgyz cuisine', cost: '900 som · $10', travel: '12 min walk', slot: 'v2-it-4', ph: 'Beshbarmak platter at Navat' }
+    ] },
+    2: { theme: 'Mountains', cost: '3 900 som · $45', walk: '11 km hiking', stops: [
+      { t: '08:00', n: 'Drive to Ala-Archa', cat: 'Transfer', cost: '1 400 som · $16 return', travel: '45 min taxi', slot: 'v2-it-5', ph: 'Road into the Ala-Archa gorge' },
+      { t: '09:30', n: 'Ak-Sai waterfall trail', cat: 'Hike', cost: 'Free', travel: '4 h return · moderate', slot: 'v2-it-6', ph: 'Alpine trail beside a glacier river' },
+      { t: '18:00', n: "Coffee at Ant's", cat: 'Coffee', cost: '1 500 som · $17', travel: '40 min drive back', slot: 'v2-it-7', ph: 'Espresso and cheesecake' }
+    ] },
+    3: { theme: 'Bazaar & Burana', cost: '4 600 som · $53', walk: '3.6 km walking', stops: [
+      { t: '09:00', n: 'Osh Bazaar', cat: 'Market', cost: 'Bring cash', travel: '12 min taxi', slot: 'v2-it-8', ph: 'Spice rows at Osh Bazaar' },
+      { t: '12:00', n: 'Ashlyanfu №1', cat: 'Street food', cost: '300 som · $3', travel: '8 min taxi', slot: 'v2-it-9', ph: 'Bowl of cold spicy noodles' },
+      { t: '14:00', n: 'Burana Tower', cat: 'Landmark', cost: '65 som · $1', travel: '1 h drive', slot: 'v2-it-10', ph: 'Burana minaret on the steppe' },
+      { t: '20:00', n: 'Supara Ethno Complex', cat: 'Kyrgyz cuisine', cost: '2 600 som · $30', travel: '50 min drive', slot: 'v2-it-11', ph: 'Yurts lit up in the evening' }
+    ] }
+  };
+
+const prompts = [
+    { q: 'Plan me 3 days in Kyrgyzstan', s: 'Bishkek, mountains and a day trip' },
+    { q: 'What should I eat tonight?', s: 'Local dishes near me' },
+    { q: 'Do I need a visa?', s: 'Entry rules and how long you can stay' },
+    { q: 'When is the best time to visit?', s: 'Season by season, pass by pass' },
+    { q: 'Which trek should I do?', s: 'Ala-Kul, Song-Kul or a day walk' },
+    { q: 'What are the local customs?', s: 'Bread, shoes and where to sit' }
+  ];
+
+const answers = {
+    'Plan me 3 days in Kyrgyzstan': { text: "Here is a three-day route that keeps travel short and mixes the city with the mountains.\n\nDay 1 — Bishkek on foot: Ala-Too Square, the History Museum, lunch at Faiza, dinner at Navat.\nDay 2 — Ala-Archa: leave by 08:00, walk the Ak-Sai waterfall trail, coffee back in town.\nDay 3 — Osh Bazaar in the morning, then Burana Tower, dinner in the yurts at Supara.\n\nTotal cost is about 10 250 som ($117) including taxis and entries.", itin: true },
+    'What should I eat tonight?': { text: "Beshbarmak — the national dish: hand-cut noodles, boiled lamb and onion broth.\n\nTwo ways to do it. Navat is 900 som ($10) and eight minutes' walk from you. Supara is 2 600 som ($30) and worth the taxi if you want yurts and live music.\n\nIf you would rather eat cheap, Faiza does home-style lagman for 450 som ($5).", chips: ['Navat', 'Supara Ethno Complex', 'Faiza'] },
+    'Best way to reach Issyk-Kul': { text: "It is about 250 km east — four hours by road.\n\nShared taxi from the Western bus station is 800–1 000 som ($9–11) per seat and leaves when full. A private car is 4 500–6 000 som and lets you stop at Burana on the way.\n\nGo to the south shore rather than the north if you want it quiet — Tosor and Skazka Canyon are the highlights.", chips: ['Issyk-Kul Lake'] },
+    'Is Bishkek safe for solo travel?': { text: "Yes, and it is one of the easier Central Asian capitals to walk around alone, including in the evening in the centre.\n\nUse the ride apps rather than street taxis, carry small notes for bazaars, and keep 112 saved — the tourist police answer in English on +996 705 00 91 02.\n\nThe usual caution applies at Osh and Dordoi bazaars, where pickpocketing happens in the crowds.", chips: [] },
+    'What does a day here cost?': { text: "On a backpacker budget, about 2 000–2 500 som a day ($23–29).\n\nHostel dorm 700 som, bazaar lunch 200 som, dinner at Faiza 450 som, city transport 17 som a ride by card. Museums are 100–250 som.\n\nDouble it if you want private rooms and taxis everywhere, and add 1 400 som for a return car to Ala-Archa.", chips: ['Faiza', 'Interhouse Hostel', 'Osh Bazaar Food Stalls'] },
+    'Which trek should I do?': { text: "Ala-Kul if you have three days and some hill fitness — Karakol up to a turquoise lake at 3 532 m, over a 3 860 m pass, out through the hot springs at Altyn-Arashan.\n\nIf you have one day, Ala-Archa's Ak-Sai waterfall trail is four hours return and starts 45 minutes from Bishkek.\n\nFor no walking at all, Song-Kul: five hours by road to a yurt camp at 3 016 m.", chips: ['Ala-Kul Lake', 'Ala-Archa National Park', 'Song-Kul Lake'] },
+    'Do I need a visa?': { text: "Most likely not. Kyrgyzstan is visa-free for 60 days for the EU, UK, US, Canada, Australia, Japan, South Korea and about 60 countries in total. Russia, Kazakhstan and the other EAEU states can stay indefinitely.\n\nYou need a passport valid six months beyond arrival. There is no entry fee and no onward-ticket check in practice.\n\nStaying past 60 days means registration with the State Registration Service — do it before day 60, not after.", chips: [] },
+    'How do I get a SIM card?': { text: "Buy one at the airport or any Beeline, O! or MegaCom shop in town. You need your passport. It takes about ten minutes.\n\nExpect 200–400 som ($2.50–4.50) for a SIM with 20–30 GB. Coverage is good across Bishkek, Issyk-Kul and Karakol, patchy on the high passes and absent at Song-Kul.\n\nO! generally has the best data speed in Bishkek; MegaCom reaches furthest into the mountains.", chips: [] },
+    'When is the best time to visit?': { text: "June to September for the mountains. The high passes — Ala-Kul, Song-Kul, Altyn-Arashan — are only reliably open July to September.\n\nMay and October are beautiful and much emptier, but yurt camps close and snow can shut the passes.\n\nWinter is for skiing at Chunkurchak and Karakol, and Bishkek sits under smog from November to February.", chips: ['Ala-Kul Lake', 'Song-Kul Lake'] },
+    'How do I get around Bishkek?': { text: "Ride apps. Yandex Go and Namba Taxi both work, and a trip across the centre is 150–250 som ($2–3). Never take an unmarked street taxi without agreeing the price first.\n\nMarshrutkas (minibuses) cost 17 som by card and go everywhere, but they are crowded and route numbers are in Cyrillic.\n\nThe centre is small and flat — most of the sights are within a twenty-minute walk of Ala-Too Square.", chips: ['Ala-Too Square'] },
+    'Can I drink the tap water?': { text: "In Bishkek it is chlorinated and locals drink it, but it upsets a lot of visitors. Bottled water is 30–50 som for 1.5 litres and everywhere.\n\nIn the mountains, stream water above the treeline is usually fine, but filter or treat anything below grazing pasture — there are a lot of horses and sheep up there.\n\nAt yurt camps, ask before drinking from the barrel.", chips: [] },
+    'What should I pack?': { text: "Layers. Bishkek can be 35 °C in July while Ala-Archa is 10 °C and Song-Kul drops below freezing at night — on the same day.\n\nBring proper walking boots, a warm hat and gloves for any yurt night, sunscreen (you will be at altitude), and a power bank.\n\nBring cash in USD or EUR to change — new, unmarked notes get the best rate.", chips: [] },
+    'Is it good for vegetarians?': { text: "Honestly, it is hard work. The national cuisine is built on lamb, beef and horse.\n\nYour reliable words are этсиз (etsiz — no meat). Ashlyanfu, most lagman if you ask without meat, samsa with pumpkin, and the Dungan salads are all doable.\n\nBishkek has real vegetarian cafes and every specialty coffee place does proper food. Outside the city, expect to eat a lot of bread, tomatoes and dairy.", chips: ['Ashlyanfu №1', "Ant's Coffee"] },
+    'How much should I tip?': { text: "Not a strong tipping culture. Smarter restaurants add 10–15 % service to the bill — check before adding more.\n\nWhere there is no service charge, rounding up or leaving 10 % is generous and appreciated. Taxis: round up to the nearest 50 som.\n\nGuides and drivers on multi-day trips are the exception — 500–1 000 som a day is normal there.", chips: [] },
+    'Where do I get cash?': { text: "ATMs are everywhere in Bishkek and take Visa and Mastercard. Demir Bank and Optima have the most reliable machines for foreign cards.\n\nRussian cards do not work. Bring a backup card — cards get blocked here more often than you would expect.\n\nExchange booths beat banks for changing cash, and the rate for USD is best in the row of booths on Chuy Avenue.", chips: [] },
+    'Tell me about altitude': { text: "Bishkek is only 800 m, so the city itself is no problem. The trouble starts higher.\n\nSong-Kul is 3 016 m and Ala-Kul's pass is 3 860 m. Expect a headache and broken sleep on the first night that high. Go up slowly, drink more than you feel like, and skip alcohol the first night.\n\nIf a headache comes with vomiting or unsteadiness, go down — that is not something to sleep off.", chips: ['Song-Kul Lake', 'Ala-Kul Lake'] },
+    'What can I do with kids?': { text: "More than you would think. Panfilov Park has the old Soviet funfair and a Ferris wheel that costs almost nothing. Oak Park is shady and full of sculptures.\n\nAla-Archa has flat riverside walks that work for small legs, and the entrance meadow is a good picnic spot.\n\nIssyk-Kul in summer is a proper beach holiday — warm, shallow in places, and the north shore has the resorts geared for families.", chips: ['Panfilov Park', 'Ala-Archa National Park', 'Issyk-Kul Lake'] },
+    'What souvenirs should I buy?': { text: "Felt. Shyrdak rugs, slippers and wall hangings are the real craft here, and a good shyrdak is a serious object.\n\nGo to the fourth floor of TSUM for felt, silver and kalpak hats at fixed prices, or Osh Bazaar if you want to bargain.\n\nAlso worth it: a real ak-kalpak, komuz strings, mountain honey and dried apricots by the kilo.", chips: ['TSUM Aychurek', 'Osh Bazaar'] },
+    'Tell me about Osh and the south': { text: "Osh is the second city and feels older than Bishkek — it has been there three thousand years.\n\nClimb Sulaiman-Too, the sacred mountain in the middle of town, and walk Jayma Bazaar, which is the best market in the country.\n\nIt is a one-hour flight from Bishkek for about 3 000 som, or twelve hours by road over the Too-Ashuu pass — spectacular, and not to be done in winter.", chips: [] },
+    'What about Karakol?': { text: "Karakol is the trekking base at the east end of Issyk-Kul, six hours from Bishkek.\n\nGo for the wooden Dungan mosque built without nails, the Orthodox cathedral, and the Sunday animal market — which starts at dawn and is the real thing, not a show.\n\nIt is also the trailhead for Ala-Kul and Altyn-Arashan, and the ski base in winter.", chips: ['Ala-Kul Lake', 'Altyn-Arashan'] },
+    'Can I ride horses?': { text: "Yes, and you should — this is a horse culture, not a tourist add-on.\n\nSong-Kul is the classic: day rides across the summer pasture from your yurt camp, about 1 500–2 500 som for half a day with a guide.\n\nJeti-Oguz and Altyn-Arashan also arrange horses. Say so honestly if you have never ridden; they will pick a calm one.", chips: ['Song-Kul Lake', 'Altyn-Arashan'] },
+    'Is there skiing?': { text: "Yes. Karakol is the main resort — 20 km of piste up to 3 040 m, and the snow is genuinely good from December to March.\n\nChunkurchak and ZiL are 40 minutes from Bishkek and fine for a day out.\n\nA lift pass at Karakol is around 2 000 som a day, and rental is cheap. Off-piste and ski touring here are the real draw.", chips: ['Chunkurchak Gorge'] },
+    'What are the local customs?': { text: "Take your shoes off indoors, always. Accept tea with your right hand, or both.\n\nBread is close to sacred — do not put a loaf face down or throw any away. At a table, the guest is served first and refusing food outright is awkward; take a little.\n\nAt a yurt, wait to be shown where to sit. The far side from the door is for elders and honoured guests.", chips: [] },
+    'Tell me about the food': { text: "Beshbarmak is the national dish — hand-cut noodles under boiled lamb, eaten at celebrations. Lagman is the everyday favourite: hand-pulled noodles, meat and peppers.\n\nAlso: manti (steamed dumplings), samsa from a tandyr oven, kuurdak (fried meat and potato), shorpo (broth), and boorsok — fried bread that arrives with everything.\n\nTo drink: kymyz (fermented mare's milk, an acquired taste), maksym and chalap from the Shoro carts, and green tea with everything.", chips: ['Navat', 'Faiza', 'Osh Bazaar Food Stalls'] },
+    'How many days do I need?': { text: "Three days gets you Bishkek plus one mountain day. It is enough to see the city and stand in real mountains, and it is what most people on a stopover do.\n\nA week lets you add Issyk-Kul's south shore and either Karakol or Song-Kul.\n\nTen days to two weeks is where the country opens up: Ala-Kul, Song-Kul, Osh and the southern road all fit without rushing.", itin: true },
+    'Do people speak English?': { text: "In Bishkek, some — in hostels, specialty cafes and tour agencies, yes. Elsewhere, rarely.\n\nRussian is the working language of the city and gets you further than English. Kyrgyz is the state language and warms people up instantly if you try even a little.\n\nYour phrasebook works offline and has the twenty-six phrases that actually come up.", chips: [] },
+    'Is it safe for women travelling alone?': { text: "Broadly yes, and plenty of women travel here solo. Bishkek is walkable alone in the evening in the centre.\n\nExpect some staring and occasional persistent attention, particularly at bazaars and on marshrutkas. A firm no works.\n\nUse ride apps rather than street taxis at night, and be aware that alcohol at yurt camps and in villages can change the atmosphere. Tourist police answer in English on +996 705 00 91 02.", chips: [] },
+    'What is there at night?': { text: "Bishkek has a real night out. The bar strip is around Chuy and Erkindik, and it goes late.\n\nFor something quieter: the Opera and Ballet does a full production for the price of a coffee, and the Philharmonic does komuz recitals that are worth planning around.\n\nIn summer the parks and the fountains at Ala-Too Square fill up until well after dark, and that is where the city actually is.", chips: ['Opera & Ballet Theatre', 'Kyrgyz National Philharmonic', 'Ala-Too Square'] },
+    'How do I get from the airport?': { text: "Manas airport is 25 km north of the city. Yandex Go to the centre is 400–600 som ($5–7) and takes about 35 minutes.\n\nThe 380 bus runs to the centre for 50 som and takes an hour — fine in daylight with light luggage.\n\nAirport taxi touts inside the terminal will ask 1 500 som or more. Walk out, order the app.", chips: [] },
+    'What is the weather like?': { text: "Continental and extreme. Bishkek hits 35 °C in July and drops to −10 °C in January.\n\nThe mountains run 15–20 degrees colder than the city and change fast — a bright morning at Ala-Archa can be sleet by afternoon.\n\nSpring and autumn are the pleasant ones in the city, roughly 15–25 °C, and the light in late September is the best of the year.", chips: [] }
+  };
+
+const intents = [
+    { q: 'Plan me 3 days in Kyrgyzstan', k: ['plan', 'itinerary', 'days', 'route', 'schedule', 'trip'] },
+    { q: 'What should I eat tonight?', k: ['eat', 'food', 'dish', 'dinner', 'lunch', 'restaurant', 'beshbarmak', 'hungry'] },
+    { q: 'Best way to reach Issyk-Kul', k: ['issyk', 'lake', 'karakol', 'cholpon', 'bus', 'taxi', 'drive', 'reach'] },
+    { q: 'Is Bishkek safe for solo travel?', k: ['safe', 'safety', 'solo', 'alone', 'danger', 'scam', 'woman'] },
+    { q: 'What does a day here cost?', k: ['cost', 'costs', 'budget', 'cheap', 'money', 'som', 'price', 'expensive'] },
+    { q: 'Which trek should I do?', k: ['trek', 'hike', 'hiking', 'mountain', 'mountains', 'walk', 'ala-kul', 'song-kul'] },
+    { q: 'Do I need a visa?', k: ['visa', 'passport', 'entry', 'border', 'stay', 'registration', 'immigration'] },
+    { q: 'How do I get a SIM card?', k: ['sim card', 'sim', 'internet', 'data plan', 'phone', 'wifi', 'mobile', 'esim', 'beeline', 'megacom', 'buy a sim'] },
+    { q: 'When is the best time to visit?', k: ['when', 'season', 'month', 'summer', 'winter', 'spring', 'autumn', 'best time', 'july', 'august'] },
+    { q: 'How do I get around Bishkek?', k: ['around', 'transport', 'marshrutka', 'bus', 'yandex', 'uber', 'metro', 'getting around'] },
+    { q: 'Can I drink the tap water?', k: ['water', 'tap', 'drink', 'bottled', 'sick', 'stomach'] },
+    { q: 'What should I pack?', k: ['what do i wear', 'what should i wear', 'pack', 'packing', 'bring', 'clothes', 'wear', 'gear', 'luggage', 'boots'] },
+    { q: 'Is it good for vegetarians?', k: ['vegetarian', 'vegan', 'meat', 'halal', 'allergy', 'gluten'] },
+    { q: 'How much should I tip?', k: ['should i tip', 'tipping', 'tip', 'service charge', 'gratuity', 'how much to tip'] },
+    { q: 'Where do I get cash?', k: ['atm', 'cash', 'card', 'bank', 'exchange', 'withdraw', 'visa card', 'mastercard'] },
+    { q: 'Tell me about altitude', k: ['altitude', 'sick', 'acclimatise', 'acclimatize', 'height', 'oxygen', 'headache'] },
+    { q: 'What can I do with kids?', k: ['kid', 'kids', 'child', 'children', 'family', 'baby', 'toddler', 'year old', 'with a 4', 'with a 5', 'with a 6'] },
+    { q: 'What souvenirs should I buy?', k: ['souvenir', 'buy', 'gift', 'shopping', 'felt', 'shyrdak', 'kalpak', 'craft'] },
+    { q: 'Tell me about Osh and the south', k: ['osh', 'south', 'sulaiman', 'jalal', 'arslanbob', 'batken'] },
+    { q: 'What about Karakol?', k: ['karakol', 'dungan', 'mosque', 'animal market', 'przhevalsk'] },
+    { q: 'Can I ride horses?', k: ['horse', 'horses', 'riding', 'ride', 'eagle', 'hunting'] },
+    { q: 'Is there skiing?', k: ['ski', 'skiing', 'snowboard', 'winter sport', 'piste', 'powder'] },
+    { q: 'What are the local customs?', k: ['custom', 'customs', 'etiquette', 'culture', 'tradition', 'polite', 'rude', 'shoes'] },
+    { q: 'Tell me about the food', k: ['cuisine', 'dishes', 'kymyz', 'lagman', 'manti', 'samsa', 'kuurdak', 'national dish', 'try'] },
+    { q: 'How many days do I need?', k: ['how long', 'how many days', 'week', 'enough time', 'duration'] },
+    { q: 'Do people speak English?', k: ['english', 'language', 'russian', 'kyrgyz', 'speak', 'translate', 'phrasebook'] },
+    { q: 'Is it safe for women travelling alone?', k: ['woman', 'women', 'female', 'girl', 'harass'] },
+    { q: 'What is there at night?', k: ['night', 'nightlife', 'bar', 'club', 'party', 'drink', 'evening', 'opera', 'theatre'] },
+    { q: 'How do I get from the airport?', k: ['airport', 'manas', 'landing', 'arrive', 'flight', 'terminal'] },
+    { q: 'What is the weather like?', k: ['weather', 'temperature', 'rain', 'hot', 'cold', 'climate', 'snow'] }
+  ];
+
+const fallbackAnswer = "I do not have that one written up yet — I answer from a local knowledge base rather than the internet, so I am strong on Kyrgyzstan and blank on everything else.\n\nTry me on: visas, SIM cards and data, when to come, getting around, money and ATMs, food and vegetarian options, altitude, treks, horses, skiing, customs and etiquette, Karakol, Osh, travelling with kids, or what a day costs.\n\nOr ask me to plan a route and I will build the whole thing.";
+
+  // ── Interface languages ──────────────────────────────────────────────────
+  // Not from the design. Covers the app's own chrome — onboarding, navigation,
+  // section headings and the profile. Place descriptions, reviews and the AI
+  // answers stay in English; translating that content is a separate job.
+const languages = [
+    { code: 'en', flag: 'GB', name: 'English', native: 'English' },
+    { code: 'ru', flag: 'RU', name: 'Russian', native: 'Русский' },
+    { code: 'ky', flag: 'KG', name: 'Kyrgyz', native: 'Кыргызча' }
+  ];
+
+const strings = {
+    en: {
+      total620short: "6 h 20",
+      tripSaved: "Trip saved · open My trips",
+      whereToday: "Where to today, {name}?",
+      stopsWord: "stops",
+      placesWord: "places",
+      noMatches: "No matches",
+      level: "Level",
+      toWord: "to",
+      balanceWorth: "balance worth",
+      savedWord: "saved",
+      offlineWord: "Offline",
+      topLevel: "Top level",
+      atWord: "At:",
+      dayWord: "Day",
+      verifiedLower: "verified",
+      earnedLower: "earned",
+      whenItClears: "when it clears",
+      xpEach: "XP each",
+      somWord: "som",
+      todayRate: "NBKR, today",
+      needs: "Needs:",
+      verifiedOn: "Verified",
+      openNow: "Open",
+      totalWord: "total",
+      verifiedVisit: "Verified visit",
+      xpNote: "at partner venues. Because XP becomes real money, every task has to be proven before it counts.",
+      switched: "Switched — this counts the same",
+      checkedInNote: "You checked in here, so this review will be marked",
+      earns2500: "— and it earns 2 500 XP.",
+      avg: 'avg',
+      viewDetails: 'View Details',
+      noPlaces: 'No places found',
+      clearFilters: 'Clear filters',
+      savedPlaces: 'Saved places',
+      nothingSaved: 'Nothing saved yet',
+      nothingSavedSub: 'Tap the heart on any place and it lands here — the list works offline.',
+      explorePlaces: 'Explore places',
+      avgPrice: 'AVG PRICE',
+      gettingThere: 'GETTING THERE',
+      location: 'Location',
+      reviews: 'Reviews',
+      you: 'YOU',
+      writeReview: 'Write a review',
+      getDirections: 'Get Directions',
+      searchArea: 'Search this area',
+      noPins: 'Nothing here in this filter',
+      noPinsSub: 'Pick another category, or search this area to widen the map.',
+      aiSub: 'Ask me anything about Kyrgyzstan, or let me build your whole trip.',
+      aiTitle: 'AI Assistant',
+      newChat: 'New chat',
+      stops12: '12 stops',
+      suggestedItin: 'SUGGESTED ITINERARY',
+      threeDays: '3 days in Kyrgyzstan',
+      estCost: 'EST. COST',
+      travelTime: 'TRAVEL TIME',
+      total620: '6 h 20 total',
+      viewFullItin: 'View full itinerary',
+      builtByAi: '2–4 August · built by AI',
+      totalCost: 'TOTAL COST',
+      about117: 'about $117',
+      over3days: 'over 3 days',
+      stopsCaps: 'STOPS',
+      perDay4: '4 per day',
+      saveTrip: 'Save this trip',
+      rewards: 'Rewards',
+      badges: 'Badges',
+      challengeCaps: 'CHALLENGE',
+      challengeNote: 'XP converts to real money, so each task has to be proven. Nothing counts until the proof clears.',
+      proveIt: 'Prove it',
+      badgeLocked: 'Badge locked',
+      badgeLockedSub: 'Unlocks when every task is verified',
+      badgeEarned: 'Badge earned',
+      proveThisTask: 'PROVE THIS TASK',
+      otherWay: 'OR PROVE IT ANOTHER WAY',
+      checkingProof: 'Checking your proof',
+      underMinute: 'Usually under a minute',
+      writeReviewCaps: 'WRITE A REVIEW',
+      howManyCups: 'HOW MANY CUPS OF KYMYZ?',
+      whatShouldKnow: 'What should other travellers know?',
+      addPhotos: 'Add photos',
+      optionalUpTo10: 'Optional · up to 10',
+      add: 'Add',
+      verifiedWord: 'verified',
+      myTrips: 'My trips',
+      activeCaps: 'ACTIVE',
+      travelCaps: 'TRAVEL',
+      planAnother: 'Plan another trip',
+      phrasebook: 'Phrasebook',
+      currency: 'Currency',
+      youHave: 'YOU HAVE',
+      youGet: 'YOU GET',
+      whatThatBuys: 'What that buys here',
+      convertFrom: 'Convert from',
+      emergency: 'Emergency',
+      emergencySub: 'Kyrgyzstan · works without internet',
+      call112: 'Call 112',
+      allServices: 'All emergency services',
+      ambulance: 'Ambulance',
+      police: 'Police',
+      fire: 'Fire',
+      touristPolice: 'TOURIST POLICE · EN / RU',
+      nearestToYou: 'Nearest to you',
+      shareLocation: 'Share my location',
+      splashSub: 'Kyrgyzstan in your pocket — the mountains, the food, and enough Kyrgyz to get by.',
+      getStarted: 'Get started', takesASec: 'Takes about half a minute · everything stays on this device',
+      langTitle: 'Choose your language', langSub: 'You can change this any time in your profile.',
+      nameTitle: 'What should we call you?', nameSub: 'Only so the app can greet you and sign your reviews.',
+      firstName: 'FIRST NAME', lastName: 'LAST NAME', optional: 'Optional',
+      yourBadge: 'YOUR BADGE', hello: 'Salam',
+      countryTitle: 'Where are you travelling from?', countrySub: 'It sets your currency and shows on reviews you leave.',
+      searchCountries: 'Search countries…', noCountry: 'No country matches that',
+      noCountrySub: 'Check the spelling, or clear the search to see the full list.',
+      cont: 'Continue', pickCountry: 'Pick a country', saveChanges: 'Save changes',
+      step: 'Step', of: 'of',
+      welcomeVisitor: 'The mountains are calling, {name}', welcomeLocal: 'The mountains are calling, {name}',
+      welcomeSubVisitor: '{country} · enjoy Kyrgyzstan',
+      welcomeSubLocal: '{country} · enjoy the trip',
+      doneNote: 'Your phrasebook, currency converter and emergency numbers all work with no signal. Change any of this later under Profile.',
+      startExploring: 'Start exploring', profileSaved: 'Profile saved',
+      /* app chrome */
+      awaits: 'Kyrgyzstan awaits', searchPlaceholder: 'Where do you want to go?',
+      planMyTrip: 'Plan My Trip', keepGoing: 'KEEP GOING',
+      nearby: 'Nearby places', seeAll: 'See all', popular: 'Popular destinations',
+      restaurants: 'Recommended restaurants',
+      tabHome: 'Home', tabMap: 'Map', tabAi: 'AI Assistant', tabProfile: 'Profile',
+      mSaved: 'Saved places', mTrips: 'My trips', mRewards: 'Rewards & badges',
+      mPhrases: 'Phrasebook', mCurrency: 'Currency', mEmergency: 'Emergency',
+      mLanguage: 'Language', mEdit: 'Edit profile',
+      statVerified: 'Tasks verified', statBadges: 'Badges', from: 'Country'
+    },
+    ru: {
+      total620short: "6 ч 20",
+      tripSaved: "Поездка сохранена · открыть",
+      whereToday: "Куда сегодня, {name}?",
+      stopsWord: "остановок",
+      placesWord: "мест",
+      noMatches: "Ничего не найдено",
+      level: "Уровень",
+      toWord: "до",
+      balanceWorth: "баланс стоит",
+      savedWord: "сохранено",
+      offlineWord: "Офлайн",
+      topLevel: "Максимальный уровень",
+      atWord: "Где:",
+      dayWord: "День",
+      verifiedLower: "подтверждено",
+      earnedLower: "получено",
+      whenItClears: "когда подтвердится",
+      xpEach: "XP за каждое",
+      somWord: "сом",
+      todayRate: "НБКР, сегодня",
+      needs: "Нужно:",
+      verifiedOn: "Подтверждено",
+      openNow: "Открыто",
+      totalWord: "всего",
+      verifiedVisit: "Подтверждённый визит",
+      xpNote: "у партнёров. XP превращается в реальные деньги, поэтому каждое задание нужно подтвердить.",
+      switched: "Способ изменён — засчитывается так же",
+      checkedInNote: "Вы отметились здесь, поэтому отзыв будет помечен как",
+      earns2500: "— и принесёт 2 500 XP.",
+      avg: 'сред.',
+      viewDetails: 'Подробнее',
+      noPlaces: 'Ничего не найдено',
+      clearFilters: 'Сбросить фильтры',
+      savedPlaces: 'Сохранённые места',
+      nothingSaved: 'Пока ничего не сохранено',
+      nothingSavedSub: 'Нажмите на сердечко у любого места — список работает офлайн.',
+      explorePlaces: 'Смотреть места',
+      avgPrice: 'СРЕДНИЙ ЧЕК',
+      gettingThere: 'КАК ДОБРАТЬСЯ',
+      location: 'Расположение',
+      reviews: 'Отзывы',
+      you: 'ВЫ',
+      writeReview: 'Написать отзыв',
+      getDirections: 'Построить маршрут',
+      searchArea: 'Искать в этом районе',
+      noPins: 'В этом фильтре ничего нет',
+      noPinsSub: 'Выберите другую категорию или расширьте поиск по карте.',
+      aiSub: 'Спросите что угодно о Кыргызстане — или я соберу вам всю поездку.',
+      aiTitle: 'AI-помощник',
+      newChat: 'Новый чат',
+      stops12: '12 остановок',
+      suggestedItin: 'ПРЕДЛОЖЕННЫЙ МАРШРУТ',
+      threeDays: '3 дня в Кыргызстане',
+      estCost: 'ПРИМ. СТОИМОСТЬ',
+      travelTime: 'ВРЕМЯ В ПУТИ',
+      total620: '6 ч 20 всего',
+      viewFullItin: 'Открыть маршрут',
+      builtByAi: '2–4 августа · собрано AI',
+      totalCost: 'ОБЩАЯ СТОИМОСТЬ',
+      about117: 'около $117',
+      over3days: 'за 3 дня',
+      stopsCaps: 'ОСТАНОВОК',
+      perDay4: '4 в день',
+      saveTrip: 'Сохранить поездку',
+      rewards: 'Награды',
+      badges: 'Значки',
+      challengeCaps: 'ЗАДАНИЕ',
+      challengeNote: 'XP превращается в реальные деньги, поэтому каждое задание нужно подтвердить.',
+      proveIt: 'Подтвердить',
+      badgeLocked: 'Значок закрыт',
+      badgeLockedSub: 'Откроется, когда все задания подтверждены',
+      badgeEarned: 'Значок получен',
+      proveThisTask: 'ПОДТВЕРДИТЕ ЗАДАНИЕ',
+      otherWay: 'ИЛИ ПОДТВЕРДИТЕ ИНАЧЕ',
+      checkingProof: 'Проверяем подтверждение',
+      underMinute: 'Обычно меньше минуты',
+      writeReviewCaps: 'НАПИСАТЬ ОТЗЫВ',
+      howManyCups: 'СКОЛЬКО ЧАШЕК КЫМЫЗА?',
+      whatShouldKnow: 'Что стоит знать другим путешественникам?',
+      addPhotos: 'Добавить фото',
+      optionalUpTo10: 'Необязательно · до 10',
+      add: 'Добавить',
+      verifiedWord: 'подтверждённый',
+      myTrips: 'Мои поездки',
+      activeCaps: 'АКТИВНЫЙ',
+      travelCaps: 'В ПУТИ',
+      planAnother: 'Спланировать ещё поездку',
+      phrasebook: 'Разговорник',
+      currency: 'Валюта',
+      youHave: 'У ВАС ЕСТЬ',
+      youGet: 'ВЫ ПОЛУЧИТЕ',
+      whatThatBuys: 'Что на это можно купить',
+      convertFrom: 'Конвертировать из',
+      emergency: 'Экстренная помощь',
+      emergencySub: 'Кыргызстан · работает без интернета',
+      call112: 'Звонок 112',
+      allServices: 'Все экстренные службы',
+      ambulance: 'Скорая',
+      police: 'Милиция',
+      fire: 'Пожарные',
+      touristPolice: 'ТУРИСТИЧЕСКАЯ ПОЛИЦИЯ · EN / RU',
+      nearestToYou: 'Ближайшее к вам',
+      shareLocation: 'Отправить геолокацию',
+      splashSub: 'Кыргызстан в кармане — горы, еда и немного кыргызского, чтобы не потеряться.',
+      getStarted: 'Начать', takesASec: 'Займёт полминуты · всё хранится только на этом устройстве',
+      langTitle: 'Выберите язык', langSub: 'Это можно изменить в профиле в любой момент.',
+      nameTitle: 'Как к вам обращаться?', nameSub: 'Чтобы приложение здоровалось и подписывало ваши отзывы.',
+      firstName: 'ИМЯ', lastName: 'ФАМИЛИЯ', optional: 'Необязательно',
+      yourBadge: 'ВАШ ЗНАЧОК', hello: 'Салам',
+      countryTitle: 'Откуда вы приехали?', countrySub: 'Определяет валюту и показывается в ваших отзывах.',
+      searchCountries: 'Поиск страны…', noCountry: 'Ничего не найдено',
+      noCountrySub: 'Проверьте написание или очистите поиск, чтобы увидеть весь список.',
+      cont: 'Далее', pickCountry: 'Выберите страну', saveChanges: 'Сохранить',
+      step: 'Шаг', of: 'из',
+      welcomeVisitor: 'Горы зовут, {name}', welcomeLocal: 'Горы зовут, {name}',
+      welcomeSubVisitor: '{country} · хорошей поездки по Кыргызстану',
+      welcomeSubLocal: '{country} · хорошей поездки',
+      doneNote: 'Разговорник, конвертер валют и экстренные номера работают без интернета. Всё это можно изменить в профиле.',
+      startExploring: 'Поехали', profileSaved: 'Профиль сохранён',
+      awaits: 'Кыргызстан ждёт', searchPlaceholder: 'Куда хотите поехать?',
+      planMyTrip: 'Спланировать поездку', keepGoing: 'ПРОДОЛЖАЙТЕ',
+      nearby: 'Места рядом', seeAll: 'Все', popular: 'Популярные направления',
+      restaurants: 'Рекомендуемые рестораны',
+      tabHome: 'Главная', tabMap: 'Карта', tabAi: 'Помощник', tabProfile: 'Профиль',
+      mSaved: 'Сохранённые места', mTrips: 'Мои поездки', mRewards: 'Награды и значки',
+      mPhrases: 'Разговорник', mCurrency: 'Валюта', mEmergency: 'Экстренная помощь',
+      mLanguage: 'Язык', mEdit: 'Изменить профиль',
+      statVerified: 'Заданий пройдено', statBadges: 'Значки', from: 'Страна:'
+    },
+    ky: {
+      total620short: "6 с 20",
+      tripSaved: "Саякат сакталды · ачуу",
+      whereToday: "Бүгүн кайда, {name}?",
+      stopsWord: "токтоо",
+      placesWord: "жер",
+      noMatches: "Эч нерсе табылган жок",
+      level: "Деңгээл",
+      toWord: "чейин",
+      balanceWorth: "баланс наркы",
+      savedWord: "сакталган",
+      offlineWord: "Оффлайн",
+      topLevel: "Эң жогорку деңгээл",
+      atWord: "Кайда:",
+      dayWord: "Күн",
+      verifiedLower: "ырасталды",
+      earnedLower: "алынды",
+      whenItClears: "ырасталганда",
+      xpEach: "XP ар бирине",
+      somWord: "сом",
+      todayRate: "УБКБ, бүгүн",
+      needs: "Керек:",
+      verifiedOn: "Ырасталды",
+      openNow: "Ачык",
+      totalWord: "бардыгы",
+      verifiedVisit: "Ырасталган сапар",
+      xpNote: "өнөктөштөрдө. XP чыныгы акчага айланат, ошондуктан ар бир тапшырма ырасталышы керек.",
+      switched: "Ыкма өзгөрдү — бирдей эсептелет",
+      checkedInNote: "Сиз бул жерде белгилендиңиз, ошондуктан пикириңиз",
+      earns2500: "— жана 2 500 XP берет.",
+      avg: 'орт.',
+      viewDetails: 'Толугураак',
+      noPlaces: 'Эч нерсе табылган жок',
+      clearFilters: 'Чыпкаларды тазалоо',
+      savedPlaces: 'Сакталган жерлер',
+      nothingSaved: 'Азырынча эч нерсе жок',
+      nothingSavedSub: 'Каалаган жердин жүрөгүн басыңыз — тизме интернетсиз иштейт.',
+      explorePlaces: 'Жерлерди көрүү',
+      avgPrice: 'ОРТОЧО БААСЫ',
+      gettingThere: 'КАНТИП БАРУУ',
+      location: 'Жайгашкан жери',
+      reviews: 'Пикирлер',
+      you: 'СИЗ',
+      writeReview: 'Пикир жазуу',
+      getDirections: 'Багыт түзүү',
+      searchArea: 'Бул аймактан издөө',
+      noPins: 'Бул чыпкада эч нерсе жок',
+      noPinsSub: 'Башка категория тандаңыз же картадан кененирээк издеңиз.',
+      aiSub: 'Кыргызстан жөнүндө каалаганыңызды сураңыз — же бүт сапарды түзүп берем.',
+      aiTitle: 'AI-жардамчы',
+      newChat: 'Жаңы маек',
+      stops12: '12 токтоо',
+      suggestedItin: 'СУНУШТАЛГАН МАРШРУТ',
+      threeDays: 'Кыргызстанда 3 күн',
+      estCost: 'БОЛЖОЛДУУ БААСЫ',
+      travelTime: 'ЖОЛДО',
+      total620: '6 с 20 бардыгы',
+      viewFullItin: 'Маршрутту ачуу',
+      builtByAi: '2–4 август · AI түздү',
+      totalCost: 'ЖАЛПЫ БААСЫ',
+      about117: 'болжол менен $117',
+      over3days: '3 күндө',
+      stopsCaps: 'ТОКТООЛОР',
+      perDay4: 'күнүнө 4',
+      saveTrip: 'Саякатты сактоо',
+      rewards: 'Сыйлыктар',
+      badges: 'Белгилер',
+      challengeCaps: 'ТАПШЫРМА',
+      challengeNote: 'XP чыныгы акчага айланат, ошондуктан ар бир тапшырма ырасталышы керек.',
+      proveIt: 'Ырастоо',
+      badgeLocked: 'Белги жабык',
+      badgeLockedSub: 'Бардык тапшырма ырасталганда ачылат',
+      badgeEarned: 'Белги алынды',
+      proveThisTask: 'ТАПШЫРМАНЫ ЫРАСТАҢЫЗ',
+      otherWay: 'ЖЕ БАШКАЧА ЫРАСТАҢЫЗ',
+      checkingProof: 'Ырастоону текшерүүдө',
+      underMinute: 'Көбүнчө бир мүнөттөн аз',
+      writeReviewCaps: 'ПИКИР ЖАЗУУ',
+      howManyCups: 'КАНЧА ЧЫНЫ КЫМЫЗ?',
+      whatShouldKnow: 'Башка саякатчылар эмнени билиши керек?',
+      addPhotos: 'Сүрөт кошуу',
+      optionalUpTo10: 'Милдеттүү эмес · 10го чейин',
+      add: 'Кошуу',
+      verifiedWord: 'ырасталган',
+      myTrips: 'Саякаттарым',
+      activeCaps: 'АКТИВДҮҮ',
+      travelCaps: 'ЖОЛДО',
+      planAnother: 'Дагы саякат түзүү',
+      phrasebook: 'Сүйлөшмө',
+      currency: 'Валюта',
+      youHave: 'СИЗДЕ БАР',
+      youGet: 'СИЗ АЛАСЫЗ',
+      whatThatBuys: 'Буга эмне алса болот',
+      convertFrom: 'Кайсы валютадан',
+      emergency: 'Шашылыш жардам',
+      emergencySub: 'Кыргызстан · интернетсиз иштейт',
+      call112: '112ге чалуу',
+      allServices: 'Бардык шашылыш кызматтар',
+      ambulance: 'Тез жардам',
+      police: 'Милиция',
+      fire: 'Өрт өчүрүүчү',
+      touristPolice: 'ТУРИСТТИК МИЛИЦИЯ · EN / RU',
+      nearestToYou: 'Сизге эң жакын',
+      shareLocation: 'Жайгашууну жөнөтүү',
+      splashSub: 'Кыргызстан чөнтөгүңүздө — тоолор, тамак жана жетиштүү кыргызча сөз.',
+      getStarted: 'Баштоо', takesASec: 'Жарым мүнөт · баары ушул түзмөктө сакталат',
+      langTitle: 'Тилди тандаңыз', langSub: 'Муну профилден каалаган убакта өзгөртсөңүз болот.',
+      nameTitle: 'Сизди кантип атайлы?', nameSub: 'Колдонмо саламдашып, пикирлериңизге кол коюшу үчүн.',
+      firstName: 'АТЫҢЫЗ', lastName: 'ФАМИЛИЯҢЫЗ', optional: 'Милдеттүү эмес',
+      yourBadge: 'СИЗДИН БЕЛГИҢИЗ', hello: 'Салам',
+      countryTitle: 'Кайсы өлкөдөн келдиңиз?', countrySub: 'Валютаны аныктайт жана пикирлериңизде көрүнөт.',
+      searchCountries: 'Өлкө издөө…', noCountry: 'Эч нерсе табылган жок',
+      noCountrySub: 'Жазылышын текшериңиз же издөөнү тазалап, толук тизмени көрүңүз.',
+      cont: 'Улантуу', pickCountry: 'Өлкө тандаңыз', saveChanges: 'Сактоо',
+      step: 'Кадам', of: '/',
+      welcomeVisitor: 'Тоолор чакырып жатат, {name}', welcomeLocal: 'Тоолор чакырып жатат, {name}',
+      welcomeSubVisitor: '{country} · Кыргызстанда жакшы эс алыңыз',
+      welcomeSubLocal: '{country} · жакшы саякат',
+      doneNote: 'Сүйлөшмө, валюта эсептегич жана шашылыш номерлер интернетсиз иштейт. Баарын профилден өзгөртсөңүз болот.',
+      startExploring: 'Кеттик', profileSaved: 'Профиль сакталды',
+      awaits: 'Кыргызстан күтүүдө', searchPlaceholder: 'Кайда баргыңыз келет?',
+      planMyTrip: 'Саякат түзүү', keepGoing: 'УЛАНТЫҢЫЗ',
+      nearby: 'Жакынкы жерлер', seeAll: 'Баары', popular: 'Популярдуу багыттар',
+      restaurants: 'Сунушталган ресторандар',
+      tabHome: 'Башкы', tabMap: 'Карта', tabAi: 'Жардамчы', tabProfile: 'Профиль',
+      mSaved: 'Сакталган жерлер', mTrips: 'Саякаттарым', mRewards: 'Сыйлыктар жана белгилер',
+      mPhrases: 'Сүйлөшмө', mCurrency: 'Валюта', mEmergency: 'Шашылыш жардам',
+      mLanguage: 'Тил', mEdit: 'Профилди өзгөртүү',
+      statVerified: 'Аткарылган тапшырма', statBadges: 'Белгилер', from: 'Өлкө:'
+    }
+  };
+
+  // ── Countries ────────────────────────────────────────────────────────────
+  // Not from the design — added for the onboarding profile step. ISO codes
+  // drive the flag emoji, so the list needs no image assets. `popular` floats
+  // Kyrgyzstan's neighbours and its most common visitor origins to the top.
+const countries = [
+    ['AF', 'Afghanistan'], ['AX', 'Aland Islands'], ['AL', 'Albania'], ['DZ', 'Algeria'],
+    ['AS', 'American Samoa'], ['AD', 'Andorra'], ['AO', 'Angola'], ['AI', 'Anguilla'],
+    ['AQ', 'Antarctica'], ['AG', 'Antigua and Barbuda'], ['AR', 'Argentina'], ['AM', 'Armenia'],
+    ['AW', 'Aruba'], ['AU', 'Australia'], ['AT', 'Austria'], ['AZ', 'Azerbaijan'],
+    ['BS', 'Bahamas'], ['BH', 'Bahrain'], ['BD', 'Bangladesh'], ['BB', 'Barbados'],
+    ['BY', 'Belarus'], ['BE', 'Belgium'], ['BZ', 'Belize'], ['BJ', 'Benin'],
+    ['BM', 'Bermuda'], ['BT', 'Bhutan'], ['BO', 'Bolivia'], ['BA', 'Bosnia and Herzegovina'],
+    ['BW', 'Botswana'], ['BV', 'Bouvet Island'], ['BR', 'Brazil'], ['IO', 'British Indian Ocean Territory'],
+    ['VG', 'British Virgin Islands'], ['BN', 'Brunei'], ['BG', 'Bulgaria'], ['BF', 'Burkina Faso'],
+    ['BI', 'Burundi'], ['KH', 'Cambodia'], ['CM', 'Cameroon'], ['CA', 'Canada'],
+    ['IC', 'Canary Islands'], ['CV', 'Cape Verde'], ['BQ', 'Caribbean Netherlands'], ['KY', 'Cayman Islands'],
+    ['CF', 'Central African Republic'], ['TD', 'Chad'], ['CL', 'Chile'], ['CN', 'China'],
+    ['CX', 'Christmas Island'], ['CP', 'Clipperton Island'], ['CC', 'Cocos (Keeling) Islands'], ['CO', 'Colombia'],
+    ['KM', 'Comoros'], ['CG', 'Congo'], ['CK', 'Cook Islands'], ['CR', 'Costa Rica'],
+    ['CI', 'Ivory Coast'], ['HR', 'Croatia'], ['CU', 'Cuba'], ['CW', 'Curacao'],
+    ['CY', 'Cyprus'], ['CZ', 'Czechia'], ['CD', 'DR Congo'], ['DK', 'Denmark'],
+    ['DG', 'Diego Garcia'], ['DJ', 'Djibouti'], ['DM', 'Dominica'], ['DO', 'Dominican Republic'],
+    ['EC', 'Ecuador'], ['EG', 'Egypt'], ['SV', 'El Salvador'], ['GQ', 'Equatorial Guinea'],
+    ['ER', 'Eritrea'], ['EE', 'Estonia'], ['SZ', 'Eswatini'], ['ET', 'Ethiopia'],
+    ['EU', 'Europe'], ['FK', 'Falkland Islands'], ['FO', 'Faroe Islands'], ['FJ', 'Fiji'],
+    ['FI', 'Finland'], ['FR', 'France'], ['GF', 'French Guiana'], ['PF', 'French Polynesia'],
+    ['TF', 'French Southern Territories'], ['GA', 'Gabon'], ['GM', 'Gambia'], ['GE', 'Georgia'],
+    ['DE', 'Germany'], ['GH', 'Ghana'], ['GI', 'Gibraltar'], ['GR', 'Greece'],
+    ['GL', 'Greenland'], ['GD', 'Grenada'], ['GP', 'Guadeloupe'], ['GU', 'Guam'],
+    ['GT', 'Guatemala'], ['GG', 'Guernsey'], ['GN', 'Guinea'], ['GW', 'Guinea-Bissau'],
+    ['GY', 'Guyana'], ['HT', 'Haiti'], ['HM', 'Heard Island and McDonald Islands'], ['HN', 'Honduras'],
+    ['HK', 'Hong Kong'], ['HU', 'Hungary'], ['IS', 'Iceland'], ['IN', 'India'],
+    ['ID', 'Indonesia'], ['IR', 'Iran'], ['IQ', 'Iraq'], ['IE', 'Ireland'],
+    ['IM', 'Isle of Man'], ['IL', 'Israel'], ['IT', 'Italy'], ['JM', 'Jamaica'],
+    ['JP', 'Japan'], ['JE', 'Jersey'], ['JO', 'Jordan'], ['KZ', 'Kazakhstan'],
+    ['KE', 'Kenya'], ['KI', 'Kiribati'], ['XK', 'Kosovo'], ['KW', 'Kuwait'],
+    ['KG', 'Kyrgyzstan'], ['LA', 'Laos'], ['LV', 'Latvia'], ['LB', 'Lebanon'],
+    ['LS', 'Lesotho'], ['LR', 'Liberia'], ['LY', 'Libya'], ['LI', 'Liechtenstein'],
+    ['LT', 'Lithuania'], ['LU', 'Luxembourg'], ['MO', 'Macau'], ['MG', 'Madagascar'],
+    ['MW', 'Malawi'], ['MY', 'Malaysia'], ['MV', 'Maldives'], ['ML', 'Mali'],
+    ['MT', 'Malta'], ['MH', 'Marshall Islands'], ['MQ', 'Martinique'], ['MR', 'Mauritania'],
+    ['MU', 'Mauritius'], ['YT', 'Mayotte'], ['MX', 'Mexico'], ['FM', 'Micronesia'],
+    ['MD', 'Moldova'], ['MC', 'Monaco'], ['MN', 'Mongolia'], ['ME', 'Montenegro'],
+    ['MS', 'Montserrat'], ['MA', 'Morocco'], ['MZ', 'Mozambique'], ['MM', 'Myanmar'],
+    ['NA', 'Namibia'], ['NR', 'Nauru'], ['NP', 'Nepal'], ['NL', 'Netherlands'],
+    ['NC', 'New Caledonia'], ['NZ', 'New Zealand'], ['NI', 'Nicaragua'], ['NE', 'Niger'],
+    ['NG', 'Nigeria'], ['NU', 'Niue'], ['NF', 'Norfolk Island'], ['KP', 'North Korea'],
+    ['MK', 'North Macedonia'], ['MP', 'Northern Mariana Islands'], ['NO', 'Norway'], ['OM', 'Oman'],
+    ['PC', 'Pacific Community'], ['PK', 'Pakistan'], ['PW', 'Palau'], ['PS', 'Palestine'],
+    ['PA', 'Panama'], ['PG', 'Papua New Guinea'], ['PY', 'Paraguay'], ['PE', 'Peru'],
+    ['PH', 'Philippines'], ['PN', 'Pitcairn'], ['PL', 'Poland'], ['PT', 'Portugal'],
+    ['PR', 'Puerto Rico'], ['QA', 'Qatar'], ['RE', 'Reunion'], ['RO', 'Romania'],
+    ['RU', 'Russia'], ['RW', 'Rwanda'], ['BL', 'Saint Barthelemy'], ['SH', 'Saint Helena'],
+    ['KN', 'Saint Kitts and Nevis'], ['LC', 'Saint Lucia'], ['MF', 'Saint Martin'], ['PM', 'Saint Pierre and Miquelon'],
+    ['VC', 'Saint Vincent and the Grenadines'], ['WS', 'Samoa'], ['SM', 'San Marino'], ['ST', 'Sao Tome and Principe'],
+    ['SA', 'Saudi Arabia'], ['SN', 'Senegal'], ['RS', 'Serbia'], ['SC', 'Seychelles'],
+    ['SL', 'Sierra Leone'], ['SG', 'Singapore'], ['SX', 'Sint Maarten'], ['SK', 'Slovakia'],
+    ['SI', 'Slovenia'], ['SB', 'Solomon Islands'], ['SO', 'Somalia'], ['ZA', 'South Africa'],
+    ['GS', 'South Georgia and the South Sandwich Islands'], ['KR', 'South Korea'], ['SS', 'South Sudan'], ['ES', 'Spain'],
+    ['LK', 'Sri Lanka'], ['SD', 'Sudan'], ['SR', 'Suriname'], ['SJ', 'Svalbard and Jan Mayen'],
+    ['SE', 'Sweden'], ['CH', 'Switzerland'], ['SY', 'Syria'], ['TW', 'Taiwan'],
+    ['TJ', 'Tajikistan'], ['TZ', 'Tanzania'], ['TH', 'Thailand'], ['TL', 'Timor-Leste'],
+    ['TG', 'Togo'], ['TK', 'Tokelau'], ['TO', 'Tonga'], ['TT', 'Trinidad and Tobago'],
+    ['TN', 'Tunisia'], ['TR', 'Turkey'], ['TM', 'Turkmenistan'], ['TC', 'Turks and Caicos Islands'],
+    ['TV', 'Tuvalu'], ['VI', 'U.S. Virgin Islands'], ['UG', 'Uganda'], ['UA', 'Ukraine'],
+    ['AE', 'United Arab Emirates'], ['GB', 'United Kingdom'], ['UN', 'United Nations'], ['US', 'United States'],
+    ['UM', 'United States Minor Outlying Islands'], ['XX', 'Unknown'], ['UY', 'Uruguay'], ['UZ', 'Uzbekistan'],
+    ['VU', 'Vanuatu'], ['VA', 'Vatican City'], ['VE', 'Venezuela'], ['VN', 'Vietnam'],
+    ['WF', 'Wallis and Futuna'], ['EH', 'Western Sahara'], ['YE', 'Yemen'], ['ZM', 'Zambia'],
+    ['ZW', 'Zimbabwe']
+  ];
+
+const popularCountries = ['KZ', 'RU', 'DE', 'US', 'GB', 'CN', 'TR', 'IN'];
+
+
+  // ── Translated place content ─────────────────────────────────────────────
+  // Not from the design. Categories, list headings and the prose for every
+  // place, so a Russian or Kyrgyz reader gets Russian or Kyrgyz place details.
+const catNames = {
+    ru: { 'Kyrgyz cuisine': "Кыргызская кухня", 'Nature': "Природа", 'Market': "Базар", 'Coffee': "Кофе", 'Landmark': "Достопримечательность", 'Museum': "Музей", 'Trek': "Треккинг", 'Stay': "Жильё", 'Park': "Парк", 'Culture': "Культура", 'Street food': "Уличная еда", 'Transfer': "Трансфер", 'Hike': "Поход" },
+    ky: { 'Kyrgyz cuisine': "Кыргыз ашканасы", 'Nature': "Жаратылыш", 'Market': "Базар", 'Coffee': "Кофе", 'Landmark': "Көрүнүктүү жер", 'Museum': "Музей", 'Trek': "Треккинг", 'Stay': "Жашоо", 'Park': "Парк", 'Culture': "Маданият", 'Street food': "Көчө тамагы", 'Transfer': "Трансфер", 'Hike': "Жөө саякат" }
+  };
+
+const listTitles = {
+    ru: { 'What to order': "Что заказать", 'What to do': "Чем заняться", 'What to see': "Что посмотреть", 'What to look for': "На что обратить внимание", 'What to buy': "Что купить", 'What you get': "Что входит", 'What is on': "Что идёт", 'What to know': "Что нужно знать", 'Highlights': "Главное", 'On the route': "На маршруте" },
+    ky: { 'What to order': "Эмне буйрутма кылуу", 'What to do': "Эмне кылуу", 'What to see': "Эмнени көрүү", 'What to look for': "Эмнеге көңүл буруу", 'What to buy': "Эмне сатып алуу", 'What you get': "Эмне кирет", 'What is on': "Эмне болуп жатат", 'What to know': "Эмнени билүү керек", 'Highlights': "Эң башкысы", 'On the route': "Маршрутта" }
+  };
+
+const placeText = {
+    1: { ru: { desc: "Чайхана, куда местные ведут гостей. Бешбармак с тестом ручной резки, бараний бульон, тёплый боорсок и чайник зелёного чая, который будто не кончается.", review: "Заказала бешбармак и не ожидала, что принесут блюдо на четверых. Попросите кымыз — официант объяснит, как его пить." },
+        ky: { desc: "Жергиликтүүлөр конокторун алып келген чайкана. Кол менен кесилген бешбармак, кой сорпосу, жылуу боорсок жана түгөнбөгөн көк чай.", review: "Бешбармак буйрутма кылдым, төрт кишиге табак келди. Кымыз сураңыз — официант кантип ичүүнү айтып берет." } },
+    2: { ru: { desc: "Воссозданное кыргызское поселение из войлочных юрт и садов за городом. Живая музыка комуза,長 длинное меню и самое близкое к деревенскому застолью, что можно забронировать.", review: "Приехали ради юрт, остались на три часа. Такси того стоит — езжайте на закат и садитесь в саду." },
+        ky: { desc: "Шаардын сыртындагы боз үйлөрдөн жана бактардан турган кыргыз айылы. Комуз күүсү, узун меню жана айылдык той сыяктуу дасторкон.", review: "Боз үйлөр үчүн келдик, үч саат отурдук. Такси татыктуу — күн батарда барып, бакта отуруңуз." } },
+    3: { ru: { desc: "Горный задний двор Бишкека: сосновый лес, ледниковая река и тропы от лёгкого часа до двухдневного восхождения. Маршрут к водопаду Ак-Сай занимает около четырёх часов туда и обратно.", review: "Выехал из Бишкека в восемь, дошёл до водопада и вернулся в город к ужину. Возьмите тёплое — наверху заметно холоднее." },
+        ky: { desc: "Бишкектин тоолуу короосу: карагай токою, мөңгү суусу жана бир сааттан эки күнгө чейинки жолдор. Ак-Сай шаркыратмасына баруу төрт саатка жакын.", review: "Саат сегизде чыгып, шаркыратмага жетип, кечки тамакка шаарга кайттым. Жылуу кийим алыңыз — жогору суук." } },
+    4: { ru: { desc: "Настоящий базар. Ряды специй, горы кураги, калпаки, прилавки с кониной и кымыз, который наливают прямо из бочки.", review: "Идите голодным и берите мелкие купюры. Ищите самсу у северных ворот — она лучшая." },
+        ky: { desc: "Чыныгы базар. Жыпар жыттуу катарлар, өрүк тоолору, калпактар, жылкы эти жана челектен куюлган кымыз.", review: "Ач барыңыз жана майда акча алыңыз. Түндүк дарбазанын жанындагы самсаны табыңыз." } },
+    5: { ru: { desc: "Самая любимая кофейня Бишкека. Настоящий эспрессо, серьёзная витрина с тортами и достаточно места, чтобы просидеть два часа с ноутбуком.", review: "Лучший флэт уайт в городе, а чизкейк стоит того, чтобы сделать крюк." },
+        ky: { desc: "Бишкектин эң сүйүктүү кофеканасы. Чыныгы эспрессо, торттор жана ноутбук менен эки саат отурганга орун.", review: "Шаардагы эң мыкты флэт уайт, чизкейк да татыктуу." } },
+    6: { ru: { desc: "Центр страны: Манас на коне, огромный флагшток и смена караула каждый час — две минуты, которые стоит застать.", review: "Подгадайте к смене караула. Музей за площадью тоже действительно хорош." },
+        ky: { desc: "Өлкөнүн борбору: атчан Манас, бийик желек мамысы жана саат сайын болгон кароол алмашуу.", review: "Кароол алмашууга жетишиңиз. Аянттын артындагы музей да чындап жакшы." } },
+    7: { ru: { desc: "Открылся заново и стал гораздо лучше. Петроглифы, интерьеры юрт и целый этаж советских потолочных росписей наверху, который большинство пропускает.", review: "Полтора часа хорошо потраченного времени. Поднимитесь наверх ради росписей — о них никто не говорит." },
+        ky: { desc: "Кайра ачылып, мурункуга караганда алда канча жакшы болду. Петроглифтер, боз үй ичи жана экинчи кабаттагы совет мезгилиндеги шыптагы сүрөттөр.", review: "Бир жарым саат бекер кетпейт. Жогорку кабатка чыгыңыз — сүрөттөр жөнүндө эч ким айтпайт." } },
+    8: { ru: { desc: "Второе по величине высокогорное озеро в мире, летом достаточно тёплое для купания, а на дальнем берегу — снежные вершины. Базируйтесь в Чолпон-Ате или езжайте на юг, где тише.", review: "Не задерживайтесь на северных курортах — езжайте на южный берег. Там пустыннее, дичее и лучше." },
+        ky: { desc: "Дүйнөдөгү экинчи чоң бийик тоолуу көл, жайында сүзгөнгө жылуу, аркы жээгинде кар баскан чокулар. Чолпон-Атада же тынч түштүктө токтоңуз.", review: "Түндүк курорттордо калбаңыз — түштүк жээкке барыңыз. Ал жерде бош жана кооз." } },
+    9: { ru: { desc: "Тот самый трек, ради которого едут: два-четыре дня из Каракола к бирюзовому озеру на 3 532 м, через перевал 3 860 м, с горячими источниками Алтын-Арашан на обратном пути.", review: "День перевала тяжёлый — осыпь и снег даже в августе. Абсолютно того стоит." },
+        ky: { desc: "Баары келген трек: Каракелден 3 532 м бийиктиктеги көк көлгө эки-төрт күн, 3 860 м ашуудан өтүп, Алтын-Арашан булактары аркылуу.", review: "Ашуу күнү оор — август айында да таш жана кар. Бирок толук татыктуу." } },
+    10: { ru: { desc: "Минарет XI века, стоящий один в степи, рядом — поле каменных балбалов. Поднимитесь по тёмной винтовой лестнице ради вида на Чуйскую долину.", review: "Полдня из Бишкека, и в будний день это место будет почти только ваше." },
+        ky: { desc: "Талаада жалгыз турган XI кылымдагы мунара, жанында таш балбалдар. Караңгы тепкич менен чыгып, Чүй өрөөнүн көрүңүз.", review: "Бишкектен жарым күн, жумуш күндөрү бул жер дээрлик бош болот." } },
+    11: { ru: { desc: "Сюда местные водят приезжих родственников. Домашний лагман и манты, очень низкие цены, всегда полно, меню без английского — и оно не нужно.", review: "Вдвоём поели меньше чем на тысячу сомов. Показывайте на то, что едят за соседним столом." },
+        ky: { desc: "Жергиликтүүлөр туугандарын алып келген жер. Үй лагманы жана манты, арзан баа, ар дайым толо.", review: "Экөөбүз миң сомго жетпей тамактандык. Коңшу үстөлдөгүнү көрсөтүңүз." } },
+    12: { ru: { desc: "Одно блюдо, сделанное как надо: холодная дунганская лапша в уксусно-чилийском бульоне с крахмальным желе и яйцом. Подаётся холодной специально. Возьмите к ней горячую самсу.", review: "Странно и прекрасно. В первый раз просите не острое." },
+        ky: { desc: "Бир тамак, бирок мыкты: сирке жана чили сорпосундагы муздак дунган кесмеси, крахмал желеси жана жумуртка. Жанына ысык самса алыңыз.", review: "Кызык жана сонун. Биринчи жолу ачуу эмес сураңыз." } },
+    13: { ru: { desc: "Выбор бэкпекеров в Бишкеке по умолчанию. Чистые дормы, стойка, где бронируют транспорт на Ала-Куль, и кухонный стол, за которым половина комнаты планирует тот же трек.", review: "Забронировал трансфер до Каракола за пять минут. Просите тихую комнату в глубине." },
+        ky: { desc: "Бишкектеги бэкпекерлердин тандоосу. Таза бөлмөлөр, Ала-Көлгө транспорт брондоо жана ашкана үстөлү.", review: "Каракөлгө трансферди беш мүнөттө брондодум. Арткы тынч бөлмөнү сураңыз." } },
+    14: { ru: { desc: "Хостел с двориком, где есть и приватные комнаты, и дормы — на случай, когда хочется дверь с замком и ночь без лестниц на второй ярус.", review: "Доплатил за приват и впервые за неделю нормально выспался." },
+        ky: { desc: "Короосу бар хостел, жеке бөлмөлөр да, жалпы бөлмөлөр да бар.", review: "Жеке бөлмө үчүн бир аз көп төлөдүм жана бир жумада биринчи жолу жакшы уктадым." } },
+    15: { ru: { desc: "Небольшой отель в пяти минутах от площади Ала-Тоо. Разумный вариант среднего уровня: настоящий завтрак, тихие номера, всё в центре пешком.", review: "Безупречно чисто и центрально. Завтрак нормальный, а не грустный шведский стол." },
+        ky: { desc: "Ала-Тоо аянтынан беш мүнөт алыстыктагы кичинекей мейманкана. Чыныгы эртең мененки тамак, тынч бөлмөлөр.", review: "Таза жана борбордо. Эртең мененки тамак чыныгы." } },
+    16: { ru: { desc: "Виды с верхних этажей на хребет Ала-Тоо — главная причина здесь остановиться, а завтрак лучший в городе. Бассейн и бар на крыше включены.", review: "Проснулся и увидел снежные вершины прямо с кровати. Стоит одной шикарной ночи после трека." },
+        ky: { desc: "Жогорку кабаттардан Ала-Тоо кырка тоосунун көрүнүшү жана шаардагы эң мыкты эртең мененки тамак.", review: "Ойгонгондо төшөктөн кар баскан чокуларды көрдүм. Тректен кийин бир түнгө татыктуу." } },
+    17: { ru: { desc: "Ночь в войлочной юрте в часе от города. Холодные ночи, толстые одеяла, полупансион и небо без всякой засветки.", review: "В три часа ночи было ужасно холодно — и оно того полностью стоило. Возьмите шапку для сна." },
+        ky: { desc: "Шаардан бир саат алыстыктагы боз үйдө түнөө. Суук түндөр, калың жуурканд, жарым пансион жана таза асман.", review: "Түнкү үчтө абдан суук болду — бирок толук татыктуу. Уктаганга калпак алыңыз." } },
+    18: { ru: { desc: "Старейший парк города: скульптуры под открытым небом, шахматные столы, где играют всерьёз, и густая тень в жаркий день.", review: "Просидел час, наблюдая за партией в шахматы. Никто не против, если вы останетесь на весь день." },
+        ky: { desc: "Шаардагы эң эски парк: ачык асман астындагы айкелдер, шахмат үстөлдөрү жана калың көлөкө.", review: "Бир саат шахмат оюнун карап отурдум. Күн бою калсаңыз да эч ким тийбейт." } },
+    19: { ru: { desc: "Монументальный мемориал Второй мировой в форме юрты, тихие аллеи вокруг и местные на скамейках почти весь вечер.", review: "Идите в сумерках. Мемориал по-настоящему трогает, и почти никого нет." },
+        ky: { desc: "Боз үй формасындагы Экинчи дүйнөлүк согуш эстелиги, тынч аллеялар жана кечинде отурган жергиликтүүлөр.", review: "Кечинде барыңыз. Эстелик чындап таасирлүү жана эч ким жок." } },
+    20: { ru: { desc: "Скрипучие советские аттракционы под очень старыми деревьями. Странно, немного меланхолично и очень красиво на закате, когда включают огни.", review: "Колесо обозрения стоит копейки, а вид на центр отличный." },
+        ky: { desc: "Абдан эски дарактардын астындагы совет аттракциондору. Кызык, бир аз кайгылуу жана күн батканда сонун.", review: "Дөңгөлөк арзан, борбордун көрүнүшү сонун." } },
+    21: { ru: { desc: "Самый новый большой парк в городе — широкие променады, фонтаны, которые работают весь вечер, и лучшее место для бега без машин.", review: "Бегал здесь каждое утро. Ровные дорожки и много тени." },
+        ky: { desc: "Шаардагы эң жаңы чоң парк — кең жолдор, кечинде иштеген фонтандар жана чуркаганга эң жакшы жер.", review: "Ар күнү эртең менен чуркадым. Тегиз жолдор жана көлөкө." } },
+    22: { ru: { desc: "Полудикий и почти пустой в будни. Заросший арборетум, коллекция роз, которую особо не подстригают, и полная тишина. Возьмите книгу.", review: "Во вторник весь сад был только мой. Возьмите воду — киосков нет." },
+        ky: { desc: "Жарым жапайы жана жумуш күндөрү бош. Өскөн арборетум, роза коллекциясы жана толук тынчтык. Китеп алыңыз.", review: "Шейшембиде бүт бак өзүмдүкү болду. Суу алыңыз — дүкөн жок." } },
+    24: { ru: { desc: "Музей построили вокруг оригинального домика, поэтому вы проходите через зал и обнаруживаете внутри целый деревянный дом. Странно, небольшо и запоминается.", review: "Двадцать минут, и самая необычная музейная идея, что я видел. Стоит того." },
+        ky: { desc: "Музейди үйдүн айланасына курушкан, ошондуктан залдан өтүп, ичинен жыгач үйдү табасыз. Кызык жана эстеликтүү.", review: "Жыйырма мүнөт, мен көргөн эң кызык музей идеясы." } },
+    25: { ru: { desc: "Вечер в опере по цене кофе. Оденьтесь чуть наряднее, берите дешёвые места — акустика всё равно работает идеально.", review: "Заплатил 400 сомов за балет, а там полный оркестр. Невероятная ценность." },
+        ky: { desc: "Кофенин баасына опера кечеси. Бир аз жасаныңыз, арзан орун алыңыз — акустика баары бир мыкты.", review: "Балетке 400 сом төлөдүм, толук оркестр ойноду. Укмуштуудай." } },
+    26: { ru: { desc: "Почти каждый вечер полный зал, а билет стоит меньше чашки кофе. Русский репертуар, так что возьмите с собой краткое содержание, если не говорите по-русски.", review: "Понял примерно половину и получил удовольствие от всего. Атмосферу делает зал." },
+        ky: { desc: "Дээрлик ар кечте зал толо, билет кофеден арзан. Орус репертуары.", review: "Жарымын түшүндүм, баарынан ырахат алдым. Көрүүчүлөр атмосфера жаратат." } },
+    27: { ru: { desc: "Услышать комуз как следует — в зале, который для него и построен. По вечерам иногда читают эпос «Манас»: спросите в кассе, в какие дни.", review: "Соло на комузе стало самым запоминающимся часом всей поездки." },
+        ky: { desc: "Комузду туура угуу — ал үчүн курулган залда. Кээ бир кечтерде «Манас» айтылат.", review: "Комуз солосу бүт сапарымдагы эң эстеликтүү саат болду." } },
+    28: { ru: { desc: "Советский универмаг, превратившийся в место охоты за сувенирами. Пропустите первый этаж и идите на четвёртый за войлоком, серебром и ширдаками.", review: "Настоящие ремёсла — на четвёртом этаже. Торговаться принято, но мягко." },
+        ky: { desc: "Совет универмагы азыр белек издөө жери. Биринчи кабатты өткөрүп, төртүнчүгө барыңыз: кийиз, күмүш, шырдак.", review: "Чыныгы кол өнөрчүлүк төртүнчү кабатта. Соода кылса болот, бирок жумшак." } },
+    29: { ru: { desc: "Километры составленных контейнеров, один из крупнейших базаров Азии. Ошеломляюще, дёшево и само по себе зрелище.", review: "Идите с планом, иначе потеряетесь. Столовые внутри накормят вас за 200 сомов." },
+        ky: { desc: "Километрлеп тизилген контейнерлер, Азиядагы эң чоң базарлардын бири. Таң калыштуу жана арзан.", review: "План менен барыңыз, болбосо адашасыз. Ичиндеги ашканалар 200 сомго тойгузат." } },
+    30: { ru: { desc: "Растущая местная сеть с надёжным кофе и выпечкой, которая обычно заканчивается к полудню. Хорошо для быстрой остановки, а не долгого сидения.", review: "Лучший круассан, что я нашёл в Бишкеке. Приходите до одиннадцати." },
+        ky: { desc: "Ишенимдүү кофе жана түшкө чейин түгөнгөн бөлкө. Тез токтоого ылайык.", review: "Бишкектен тапкан эң мыкты круассан. Он бирге чейин келиңиз." } },
+    31: { ru: { desc: "Небольшая местная обжарка с тихой задней комнатой — из тех мест, которые завсегдатаи предпочли бы не показывать. Здесь главное — фильтр-кофе.", review: "Спросите, что обжарили на этой неделе. Расскажут с удовольствием." },
+        ky: { desc: "Кичинекей жергиликтүү куурулуш жана тынч арткы бөлмө. Бул жерде негизгиси — фильтр кофе.", review: "Бул жумада эмне куурулганын сураңыз. Кубаныч менен айтып беришет." } },
+    32: { ru: { desc: "Лучший дешёвый обед в городе, если выдержите толпу. Показывайте на то, что выглядит вкусно — самса из тандыра, лагман тянут при вас.", review: "Две самсы и чай за 150 сомов, съеденные стоя. Идеально." },
+        ky: { desc: "Эгер элге чыдасаңыз, шаардагы эң арзан түшкү тамак. Тандырдан самса, лагман колдо тартылат.", review: "Эки самса жана чай 150 сомго, туруп жедим. Сонун." } },
+    33: { ru: { desc: "Зелёные летние луга в часе от города, зимой — лыжные склоны и юрты. Самый простой способ оказаться в настоящих горах до обеда.", review: "Выехали на закат с пикником. Лучше любого ресторана в городе." },
+        ky: { desc: "Шаардан бир саат алыстыктагы жашыл жайлоо, кышында лыжа тайгалагы жана боз үйлөр.", review: "Күн батарда пикник менен чыктык. Шаардагы кайсы ресторандан да жакшы." } },
+    34: { ru: { desc: "Красные и жёлтые скальные образования на южном берегу Иссык-Куля, обходятся за два часа, а за спиной — озеро. Тени нет совсем — берите воду.", review: "Пришёл в пять вечера, когда свет делает скалы оранжевыми. Так и делайте." },
+        ky: { desc: "Ысык-Көлдүн түштүк жээгиндеги кызыл жана сары аскалар, эки саатта айланасыз. Көлөкө жок — суу алыңыз.", review: "Кечки бешке бардым, жарык аскаларды кызгылт кылат. Ошентиңиз." } },
+    35: { ru: { desc: "Красные скалы «Семь быков» и скала «Разбитое сердце» в зелёной долине в часе от Каракола. Лёгкие полдня, треккинг не нужен.", review: "Самый доступный большой пейзаж в стране. Маршрутка из Каракола стоит копейки." },
+        ky: { desc: "«Жети-Өгүз» кызыл аскалары жана «Бузулган жүрөк» аскасы, Каракөлдөн бир саат.", review: "Өлкөдөгү эң оңой жеткиликтүү чоң пейзаж. Каракөлдөн маршрутка арзан." } },
+    36: { ru: { desc: "Горячие источники на 2 600 м со стеной гор за спиной, куда добираются на внедорожнике или пятнадцать километров пешком. Наверху есть гостевые дома и юрты.", review: "Сидел в горячем источнике под снегом. Дорога наверх реально страшная — идите пешком." },
+        ky: { desc: "2 600 м бийиктиктеги ысык булактар, тоо капталында. Жол 4×4 менен же он беш чакырым жөө.", review: "Кар астында ысык булакта отурдум. Жогорку жол чындап коркунучтуу — жөө барыңыз." } },
+    37: { ru: { desc: "Высокогорное озеро в кольце летних пастбищ и кочевых юртовых лагерей на 3 016 м. Лошади, тишина и самое чистое ночное небо в стране.", review: "Ни связи, ни дорог, ни шума. Две ночи здесь что-то во мне перезагрузили." },
+        ky: { desc: "3 016 м бийиктиктеги көл, жайлоолор жана боз үй лагерлери. Аттар, тынчтык жана таза түнкү асман.", review: "Байланыш жок, жол жок, ызы-чуу жок. Эки түн мени калыбына келтирди." } }
+  };
+
+
+  // Formulaic fragments in distances, hours, travel times and prices.
+  // Applied longest-first, so "min walk" is matched before "min".
+const microTerms = {
+    ru: [["Box office till", "касса до"], ["Small entry fee", "небольшой вход"], ["24 h reception", "ресепшн 24 ч"], ["Check-in", "заезд"], ["Open 24 h", "круглосуточно"], ["Bring cash", "наличными"], ["Best May–Sep", "лучше май–сен"], ["Late May–Oct", "конец мая–окт"], ["Daylight", "светлое время"], ["Varies", "по-разному"], ["day trek", "дня трека"], ["min walk", "мин пешком"], ["min taxi", "мин на такси"], ["min drive", "мин на машине"], ["h drive", "ч на машине"], ["under $", "меньше $"], ["entry", "вход"], ["From ", "от "], ["from ", "от "], ["Free", "бесплатно"], ["till", "до"], ["som", "сом"], ["car", "машина"], [" km", " км"], [" h ", " ч "], ["hotel", "отеля"], ["walking", "пешком"], ["hiking", "пешком"], ["from hotel", "от отеля"], ["h return", "ч туда-обратно"], ["moderate", "средней сложности"], ["drive back", "обратно на машине"], ["travel", "в пути"], ["hotel", "мейманкана"], ["walking", "жөө"], ["hiking", "жөө"], ["from hotel", "мейманканадан"], ["h return", "с барып-келүү"], ["moderate", "орточо"], ["drive back", "унаа менен кайтуу"], ["travel", "жолдо"], ["Jan", "янв"], ["Feb", "фев"], ["Mar", "мар"], ["Apr", "апр"], ["May", "май"], ["Jun", "июн"], ["Jul", "июл"], ["Aug", "авг"], ["Sep", "сен"], ["Oct", "окт"], ["Nov", "ноя"], ["Dec", "дек"]],
+    ky: [["Box office till", "касса чейин"], ["Small entry fee", "кичине киреше акысы"], ["24 h reception", "ресепшн 24 с"], ["Check-in", "кирүү"], ["Open 24 h", "тынымсыз"], ["Bring cash", "нак акча"], ["Best May–Sep", "май–сен жакшы"], ["Late May–Oct", "май аягы–окт"], ["Daylight", "күндүз"], ["Varies", "ар түрдүү"], ["day trek", "күн трек"], ["min walk", "мүнөт жөө"], ["min taxi", "мүнөт такси"], ["min drive", "мүнөт унаа"], ["h drive", "с унаа"], ["under $", "$ аз"], ["entry", "кире бериш"], ["Free", "акысыз"], ["till", "чейин"], ["som", "сом"], ["car", "унаа"], [" km", " км"], [" h ", " с "], ["Jan", "янв"], ["Feb", "фев"], ["Mar", "мар"], ["Apr", "апр"], ["May", "май"], ["Jun", "июн"], ["Jul", "июл"], ["Aug", "авг"], ["Sep", "сен"], ["Oct", "окт"], ["Nov", "ноя"], ["Dec", "дек"]]
+  };
+
+
+  // Badge and proof wording, per language.
+const badgeText = {
+    ru: { gourmet: { name: "Гурман-кочевник", sub: "Шесть классических блюд, все подтверждены" }, coffee: { name: "Кофеман", sub: "Пять обжарок, все подтверждены" }, nature: { name: "Любитель природы", sub: "Четыре дня в горах" }, history: { name: "Исследователь истории", sub: "Памятники и музеи" }, photo: { name: "Охотник за кадром", sub: "Пять фотозаданий" }, smart: { name: "Умный путешественник", sub: "Неделя на местный бюджет" } },
+    ky: { gourmet: { name: "Гурман көчмөн", sub: "Алты классикалык тамак, баары ырасталган" }, coffee: { name: "Кофе сүйүүчү", sub: "Беш куурулуш, баары ырасталган" }, nature: { name: "Жаратылыш сүйүүчү", sub: "Тоодо төрт күн" }, history: { name: "Тарых изилдөөчү", sub: "Эстеликтер жана музейлер" }, photo: { name: "Сүрөт аңчысы", sub: "Беш сүрөт тапшырмасы" }, smart: { name: "Акылдуу саякатчы", sub: "Жергиликтүү бюджет менен бир жума" } }
+  };
+
+const proofText = {
+    ru: { qr: { label: "Отсканируйте QR на кассе", short: "QR-скан" }, receipt: { label: "Фото чека", short: "Чек" }, gps: { label: "Отметиться на месте", short: "Отметка" }, photo: { label: "Фото с геометкой", short: "Фото" }, trace: { label: "Записать прогулку внутри", short: "Трек прогулки" } },
+    ky: { qr: { label: "Кассадан QR сканерлеңиз", short: "QR скан" }, receipt: { label: "Чектин сүрөтү", short: "Чек" }, gps: { label: "Жерде белгилөө", short: "Белгилөө" }, photo: { label: "Геобелгиси бар сүрөт", short: "Сүрөт" }, trace: { label: "Ичинде басууну жаздыруу", short: "Басуу треги" } }
+  };
+
+
+  // Level names, itinerary themes, proof notes and price anchors.
+const moreText = {
+    ru: {
+      levels: { "Newcomer": "Новичок", "Wanderer": "Странник", "Traveller": "Путешественник", "Explorer": "Исследователь", "Nomad": "Кочевник", "Manaschy": "Манасчы" },
+      themes: { "Bishkek on foot": "Бишкек пешком", "Mountains": "Горы", "Bazaar & Burana": "Базар и Бурана" },
+      proofNotes: { "qr": "Заведение-партнёр — код покажет персонал", "receipt": "Мы считываем заведение, позицию и дату", "gps": "Нужно быть в пределах 150 м в часы работы", "photo": "Место и время считываются из снимка", "trace": "Для больших открытых мест: держите приложение открытым и походите 5 минут внутри территории. Мы сверяем форму вашего маршрута с границей объекта, а не с одной точкой." },
+      anchors: { "Samsa at the bazaar": "Самса на базаре", "City bus, by card": "Автобус по карте", "Beshbarmak at Navat": "Бешбармак в Navat", "Hostel dorm bed": "Койка в хостеле", "Taxi across the centre": "Такси по центру" }
+    },
+    ky: {
+      levels: { "Newcomer": "Жаңы", "Wanderer": "Кезүүчү", "Traveller": "Саякатчы", "Explorer": "Изилдөөчү", "Nomad": "Көчмөн", "Manaschy": "Манасчы" },
+      themes: { "Bishkek on foot": "Бишкек жөө", "Mountains": "Тоолор", "Bazaar & Burana": "Базар жана Бурана" },
+      proofNotes: { "qr": "Өнөктөш жай — кодду кызматкер көрсөтөт", "receipt": "Биз жайды, тамакты жана датаны окуйбуз", "gps": "Иш убагында 150 м ичинде болушуңуз керек", "photo": "Жер жана убакыт сүрөттөн окулат", "trace": "Чоң ачык жерлер үчүн: колдонмону ачык кармап, аймактын ичинде 5 мүнөт басыңыз. Биз жолуңуздун формасын чек ара менен салыштырабыз." },
+      anchors: { "Samsa at the bazaar": "Базардагы самса", "City bus, by card": "Автобус, карта менен", "Beshbarmak at Navat": "Navat’теги бешбармак", "Hostel dorm bed": "Хостелдеги орун", "Taxi across the centre": "Борбор боюнча такси" }
+    }
+  };
+
+
+  // Chips, badge tasks, saved trips, filter labels and Kyrgyz country names.
+const termText = {
+    ru: {
+      dishes: { "Beshbarmak": "Бешбармак", "Manti": "Манты", "Lagman": "Лагман", "Boorsok": "Боорсок", "Kuurdak": "Куурдак", "Kymyz": "Кымыз", "Ak-Sai waterfall trail": "Тропа к водопаду Ак-Сай", "Alpine camp": "Альплагерь", "River picnic spots": "Пикник у реки", "Spices": "Специи", "Kalpak hats": "Калпаки", "Dried fruit": "Сухофрукты", "Samsa stalls": "Самса", "Flat white": "Флэт уайт", "Cheesecake": "Чизкейк", "Filter coffee": "Фильтр-кофе", "Manas statue": "Памятник Манасу", "Flag ceremony": "Смена караула", "History Museum next door": "Исторический музей рядом", "Nomad artefacts": "Кочевые артефакты", "Soviet murals": "Советские росписи", "Yurt interiors": "Интерьеры юрт", "South-shore beaches": "Пляжи южного берега", "Skazka Canyon": "Каньон Сказка", "Cholpon-Ata petroglyphs": "Петроглифы Чолпон-Аты", "3 860 m pass": "Перевал 3 860 м", "Altyn-Arashan springs": "Источники Алтын-Арашан", "Sirota camp": "Лагерь Сирота", "Minaret climb": "Подъём на минарет", "Stone balbals": "Каменные балбалы", "Small museum": "Небольшой музей", "Shorpo": "Шорпо", "Pelmeni": "Пельмени", "Dorm bed": "Койка в общем номере", "Breakfast included": "Завтрак включён", "Shared kitchen": "Общая кухня", "Private rooms": "Отдельные номера", "Dorms": "Общие номера", "Laundry": "Прачечная", "Double room": "Двухместный номер", "Airport transfer": "Трансфер из аэропорта", "Suite": "Люкс", "Pool": "Бассейн", "Rooftop views": "Вид с крыши", "Felt yurt": "Войлочная юрта", "Half board": "Полупансион", "Stargazing": "Звёздное небо", "Sculpture garden": "Сад скульптур", "Chess tables": "Шахматные столы", "Shaded benches": "Скамейки в тени", "WWII memorial": "Мемориал ВОВ", "Shaded alleys": "Тенистые аллеи", "Evening crowds": "Вечерняя публика", "Ferris wheel": "Колесо обозрения", "Old carousels": "Старые карусели", "Ice cream stalls": "Мороженое", "Promenade": "Променад", "Fountains": "Фонтаны", "Running loop": "Беговой круг", "Arboretum": "Арборетум", "Rose collection": "Коллекция роз", "Quiet benches": "Тихие скамейки", "The cottage": "Тот самый домик", "Soviet-era rooms": "Комнаты советской эпохи", "Period photographs": "Фотографии эпохи", "Opera": "Опера", "Ballet": "Балет", "Classical concerts": "Классические концерты", "Drama": "Драма", "Comedy": "Комедия", "Russian repertoire": "Русский репертуар", "Komuz recitals": "Вечера комуза", "Orchestra": "Оркестр", "Manas epic": "Эпос «Манас»", "Felt shyrdaks": "Войлочные ширдаки", "Silver jewellery": "Серебро", "Container city": "Город контейнеров", "Trader canteens": "Столовые для торговцев", "Everything wholesale": "Всё оптом", "Cappuccino": "Капучино", "Croissants": "Круассаны", "Brunch plates": "Бранч", "Local roast beans": "Местная обжарка", "Quiet corner": "Тихий уголок", "Samsa": "Самса", "Shawarma": "Шаурма", "Summer meadows": "Летние луга", "Yurt camps": "Юртовые лагеря", "Winter skiing": "Зимние лыжи", "Rock formations": "Скальные образования", "Lake views": "Виды на озеро", "Two-hour loop": "Круг на два часа", "Seven Bulls cliffs": "Скалы Семь быков", "Broken Heart rock": "Скала Разбитое сердце", "Valley walk": "Прогулка по долине", "Hot springs": "Горячие источники", "Guesthouse stay": "Гостевой дом", "Link to Ala-Kul": "Связка с Ала-Кулем", "Yurt stay": "Ночь в юрте", "Horse riding": "Конные прогулки", "Night sky": "Ночное небо", "Ashlyanfu": "Ашлянфу", "Cold noodles": "Холодная лапша" },
+      tasks: { "Try beshbarmak": "Попробовать бешбармак", "Try manti": "Попробовать манты", "Try kuurdak": "Попробовать куурдак", "Try lagman": "Попробовать лагман", "Try boorsok": "Попробовать боорсок", "Taste kymyz": "Попробовать кымыз", "Visit Ant's Coffee": "Зайти в Ant's Coffee", "Visit Adriano Coffee": "Зайти в Adriano Coffee", "Visit Kölökö": "Зайти в Kölökö", "Order a specialty latte": "Заказать спешелти-латте", "Try a local dessert": "Попробовать местный десерт", "Hike Ala-Archa gorge": "Пройти ущелье Ала-Арча", "Visit the Botanical Garden": "Сходить в Ботанический сад", "Relax in Victory Park": "Отдохнуть в парке Победы", "Watch a mountain sunset": "Встретить закат в горах", "Visit Ala-Too Square": "Побывать на площади Ала-Тоо", "Visit the History Museum": "Сходить в Исторический музей", "Walk through Oak Park": "Пройтись по Дубовому парку", "See the Opera Theatre": "Побывать в оперном театре", "Photo at Ala-Too Square": "Фото на площади Ала-Тоо", "Photo of a Kyrgyz dish": "Фото кыргызского блюда", "Photo in a city park": "Фото в городском парке", "Photo of the mountains": "Фото гор", "Photo of a sunset": "Фото заката", "Eat at Osh Bazaar": "Поесть на Ошском базаре", "Try street samsa": "Попробовать уличную самсу", "Ride a city bus": "Проехать на автобусе", "Visit a free park": "Сходить в бесплатный парк" },
+      at: { "Any chaikhana": "Любая чайхана", "Osh Bazaar · by the ladle": "Ошский базар · из бочки", "Bishkek centre": "Центр Бишкека", "Any partner cafe": "Любое кафе-партнёр", "40 km · full day": "40 км · целый день", "50 som entry · 40 hectares": "вход 50 сом · 40 га", "Free · open grounds": "бесплатно · открытая территория", "Chunkurchak · 20:41": "Чункурчак · 20:41", "Free · guard change hourly": "бесплатно · смена караула ежечасно", "Flag ceremony": "смена караула", "Beshbarmak plate": "блюдо бешбармака", "Oak Park": "Дубовый парк", "Any viewpoint": "любая смотровая", "17 som by card": "17 сом по карте", "Any city park": "любой городской парк" },
+      trips: { "3 days in Kyrgyzstan": "3 дня в Кыргызстане", "Issyk-Kul south shore": "Южный берег Иссык-Куля", "Ala-Kul trek": "Трек на Ала-Куль", "2–4 August": "2–4 августа", "7–10 August": "7–10 августа", "Draft · no dates": "Черновик · без дат" },
+      filters: { "All": "Все", "Food": "Еда", "Stay": "Жильё", "Nature": "Природа", "Culture": "Культура", "Parks": "Парки", "Markets": "Базары" }
+    },
+    ky: {
+      dishes: { "Beshbarmak": "Бешбармак", "Manti": "Манты", "Lagman": "Лагман", "Boorsok": "Боорсок", "Kuurdak": "Куурдак", "Kymyz": "Кымыз", "Ak-Sai waterfall trail": "Ак-Сай шаркыратмасына жол", "Alpine camp": "Альп лагери", "River picnic spots": "Дарыя жээгинде пикник", "Spices": "Жыпар жыттуулар", "Kalpak hats": "Ак калпак", "Dried fruit": "Кургак мөмө", "Samsa stalls": "Самса", "Flat white": "Флэт уайт", "Cheesecake": "Чизкейк", "Filter coffee": "Фильтр кофе", "Manas statue": "Манас эстелиги", "Flag ceremony": "Кароол алмашуу", "History Museum next door": "Жанында тарых музейи", "Nomad artefacts": "Көчмөн буюмдары", "Soviet murals": "Совет сүрөттөрү", "Yurt interiors": "Боз үй ичи", "South-shore beaches": "Түштүк жээктин пляждары", "Skazka Canyon": "Жомок капчыгайы", "Cholpon-Ata petroglyphs": "Чолпон-Ата петроглифтери", "3 860 m pass": "3 860 м ашуу", "Altyn-Arashan springs": "Алтын-Арашан булактары", "Sirota camp": "Сирота лагери", "Minaret climb": "Мунарага чыгуу", "Stone balbals": "Таш балбалдар", "Small museum": "Кичи музей", "Shorpo": "Шорпо", "Pelmeni": "Пелмени", "Dorm bed": "Жалпы бөлмөдө орун", "Breakfast included": "Эртең мененки тамак кирет", "Shared kitchen": "Жалпы ашкана", "Private rooms": "Жеке бөлмөлөр", "Dorms": "Жалпы бөлмөлөр", "Laundry": "Кир жуу", "Double room": "Эки орундуу бөлмө", "Airport transfer": "Аэропорттон трансфер", "Suite": "Люкс", "Pool": "Бассейн", "Rooftop views": "Чатырдан көрүнүш", "Felt yurt": "Кийиз боз үй", "Half board": "Жарым пансион", "Stargazing": "Жылдыздуу асман", "Sculpture garden": "Айкел багы", "Chess tables": "Шахмат үстөлдөрү", "Shaded benches": "Көлөкөдөгү отургучтар", "WWII memorial": "Согуш эстелиги", "Shaded alleys": "Көлөкөлүү аллеялар", "Evening crowds": "Кечки эл", "Ferris wheel": "Айлампа дөңгөлөк", "Old carousels": "Эски карусель", "Ice cream stalls": "Балмуздак", "Promenade": "Сейил жол", "Fountains": "Фонтандар", "Running loop": "Чуркоо тегереги", "Arboretum": "Арборетум", "Rose collection": "Роза коллекциясы", "Quiet benches": "Тынч отургучтар", "The cottage": "Ошол үй", "Soviet-era rooms": "Совет мезгилиндеги бөлмөлөр", "Period photographs": "Ошол мезгилдин сүрөттөрү", "Opera": "Опера", "Ballet": "Балет", "Classical concerts": "Классикалык концерттер", "Drama": "Драма", "Comedy": "Комедия", "Russian repertoire": "Орус репертуары", "Komuz recitals": "Комуз кечелери", "Orchestra": "Оркестр", "Manas epic": "«Манас» эпосу", "Felt shyrdaks": "Кийиз шырдактар", "Silver jewellery": "Күмүш буюмдар", "Container city": "Контейнер шаары", "Trader canteens": "Соодагерлердин ашканасы", "Everything wholesale": "Баары дүң", "Cappuccino": "Капучино", "Croissants": "Круассандар", "Brunch plates": "Бранч", "Local roast beans": "Жергиликтүү куурулуш", "Quiet corner": "Тынч бурч", "Samsa": "Самса", "Shawarma": "Шаурма", "Summer meadows": "Жайкы жайлоо", "Yurt camps": "Боз үй лагерлери", "Winter skiing": "Кышкы лыжа", "Rock formations": "Аска формалары", "Lake views": "Көл көрүнүшү", "Two-hour loop": "Эки сааттык тегерек", "Seven Bulls cliffs": "Жети-Өгүз аскалары", "Broken Heart rock": "Бузулган жүрөк аскасы", "Valley walk": "Өрөөндө басуу", "Hot springs": "Ысык булактар", "Guesthouse stay": "Конок үй", "Link to Ala-Kul": "Ала-Көл менен байланыш", "Yurt stay": "Боз үйдө түнөө", "Horse riding": "Ат менен саякат", "Night sky": "Түнкү асман", "Ashlyanfu": "Ашлянфу", "Cold noodles": "Муздак кесме" },
+      tasks: { "Try beshbarmak": "Бешбармак жеп көрүү", "Try manti": "Манты жеп көрүү", "Try kuurdak": "Куурдак жеп көрүү", "Try lagman": "Лагман жеп көрүү", "Try boorsok": "Боорсок жеп көрүү", "Taste kymyz": "Кымыз ичип көрүү", "Visit Ant's Coffee": "Ant's Coffee'ге баруу", "Visit Adriano Coffee": "Adriano Coffee’ге баруу", "Visit Kölökö": "Kölökö’гө баруу", "Order a specialty latte": "Спешелти латте буйрутма кылуу", "Try a local dessert": "Жергиликтүү десерт жеп көрүү", "Hike Ala-Archa gorge": "Ала-Арча капчыгайын басуу", "Visit the Botanical Garden": "Ботаникалык бакка баруу", "Relax in Victory Park": "Жеңиш паркында эс алуу", "Watch a mountain sunset": "Тоодо күн батышын көрүү", "Visit Ala-Too Square": "Ала-Тоо аянтына баруу", "Visit the History Museum": "Тарых музейине баруу", "Walk through Oak Park": "Дуб паркын кыдыруу", "See the Opera Theatre": "Опера театрына баруу", "Photo at Ala-Too Square": "Ала-Тоо аянтында сүрөт", "Photo of a Kyrgyz dish": "Кыргыз тамагынын сүрөтү", "Photo in a city park": "Шаар паркында сүрөт", "Photo of the mountains": "Тоолордун сүрөтү", "Photo of a sunset": "Күн батышынын сүрөтү", "Eat at Osh Bazaar": "Ош базарында тамактануу", "Try street samsa": "Көчө самсасын жеп көрүү", "Ride a city bus": "Автобуска түшүү", "Visit a free park": "Акысыз паркка баруу" },
+      at: { "Any chaikhana": "Каалаган чайкана", "Osh Bazaar · by the ladle": "Ош базары · челектен", "Bishkek centre": "Бишкек борбору", "Any partner cafe": "Каалаган өнөктөш кафе", "40 km · full day": "40 км · толук күн", "50 som entry · 40 hectares": "кире бериш 50 сом · 40 га", "Free · open grounds": "акысыз · ачык аймак", "Chunkurchak · 20:41": "Чункурчак · 20:41", "Free · guard change hourly": "акысыз · саат сайын кароол", "Flag ceremony": "кароол алмашуу", "Beshbarmak plate": "бешбармак табагы", "Oak Park": "Дуб паркы", "Any viewpoint": "каалаган көрүнүш", "17 som by card": "карта менен 17 сом", "Any city park": "каалаган шаар паркы" },
+      trips: { "3 days in Kyrgyzstan": "Кыргызстанда 3 күн", "Issyk-Kul south shore": "Ысык-Көлдүн түштүк жээги", "Ala-Kul trek": "Ала-Көл треги", "2–4 August": "2–4 август", "7–10 August": "7–10 август", "Draft · no dates": "Долбоор · дата жок" },
+      filters: { "All": "Баары", "Food": "Тамак", "Stay": "Жашоо", "Nature": "Жаратылыш", "Culture": "Маданият", "Parks": "Парктар", "Markets": "Базарлар" }
+    }
+  };
+
+const kyCountries = { "KG": "Кыргызстан", "KZ": "Казакстан", "UZ": "Өзбекстан", "TJ": "Тажикстан", "TM": "Түркмөнстан", "RU": "Орусия", "CN": "Кытай", "TR": "Түркия", "IN": "Индия", "PK": "Пакистан", "MN": "Монголия", "AZ": "Азербайжан", "GE": "Грузия", "AM": "Армения", "UA": "Украина", "BY": "Беларусь", "PL": "Польша", "DE": "Германия", "FR": "Франция", "IT": "Италия", "ES": "Испания", "NL": "Нидерланд", "CH": "Швейцария", "AT": "Австрия", "CZ": "Чехия", "SE": "Швеция", "NO": "Норвегия", "FI": "Финляндия", "GB": "Улуу Британия", "US": "АКШ", "CA": "Канада", "JP": "Япония", "KR": "Түштүк Корея", "AF": "Ооганстан", "IR": "Иран", "AE": "БАЭ", "SA": "Сауд Арабиясы", "EG": "Египет", "AU": "Австралия", "BR": "Бразилия" };
+
+
+  // The assistant, in Russian and Kyrgyz. Keyed by the English question so
+  // the intent matcher keeps working off one canonical set of keywords.
+const aiText = {
+    ru: {
+      "Plan me 3 days in Kyrgyzstan": { q: "Составь маршрут на 3 дня", s: "Бишкек, горы и поездка на день", text: "Вот маршрут на три дня: мало переездов, город и горы поровну.\n\nДень 1 — Бишкек пешком: площадь Ала-Тоо, Исторический музей, обед в Faiza, ужин в Navat.\nДень 2 — Ала-Арча: выезд к 08:00, тропа к водопаду Ак-Сай, кофе уже в городе.\nДень 3 — утром Ошский базар, потом башня Бурана, ужин в юртах Supara.\n\nВсего около 10 250 сом ($117) с такси и входными билетами." },
+      "What should I eat tonight?": { q: "Что поесть сегодня?", s: "Местные блюда рядом", text: "Бешбармак — национальное блюдо: тесто ручной резки, варёная баранина и луковый бульон.\n\nДва варианта. Navat — 900 сом ($10), восемь минут пешком. Supara — 2 600 сом ($30), стоит такси ради юрт и живой музыки.\n\nЕсли хочется дешевле, в Faiza домашний лагман за 450 сом ($5)." },
+      "Best way to reach Issyk-Kul": { q: "Как добраться до Иссык-Куля", text: "Около 250 км на восток — четыре часа по трассе.\n\nМаршрутное такси с Западного автовокзала — 800–1 000 сом ($9–11) за место, отправляется по заполнению. Частная машина 4 500–6 000 сом и можно заехать на Бурану.\n\nЕсли хотите тишины, езжайте на южный берег, а не на северный — Тосор и каньон Сказка там главное." },
+      "Is Bishkek safe for solo travel?": { q: "Безопасно ли одному в Бишкеке?", text: "Да, и это одна из самых спокойных столиц Центральной Азии для прогулок в одиночку, включая вечер в центре.\n\nПользуйтесь приложениями такси, а не машинами с улицы, держите мелкие купюры для базара и сохраните 112 — туристическая полиция отвечает по-английски на +996 705 00 91 02.\n\nОбычная осторожность нужна на Ошском и Дордойском базарах — в толпе бывают карманники." },
+      "What does a day here cost?": { q: "Сколько стоит день здесь?", text: "На бэкпекерском бюджете — примерно 2 000–2 500 сом в день ($23–29).\n\nКойка в хостеле 700 сом, обед на базаре 200 сом, ужин в Faiza 450 сом, проезд 17 сом по карте. Музеи 100–250 сом.\n\nУдвойте, если хотите отдельные номера и такси везде, и добавьте 1 400 сом на машину до Ала-Арчи и обратно." },
+      "Which trek should I do?": { q: "Какой трек выбрать?", s: "Ала-Куль, Сон-Куль или прогулка на день", text: "Ала-Куль, если есть три дня и форма: из Каракола к бирюзовому озеру на 3 532 м, через перевал 3 860 м, обратно через источники Алтын-Арашан.\n\nЕсли день — тропа к водопаду Ак-Сай в Ала-Арче, четыре часа туда-обратно, старт в 45 минутах от Бишкека.\n\nБез ходьбы вообще — Сон-Куль: пять часов по дороге до юртового лагеря на 3 016 м." },
+      "Do I need a visa?": { q: "Нужна ли виза?", s: "Правила въезда и срок пребывания", text: "Скорее всего нет. Кыргызстан безвизовый на 60 дней примерно для 60 стран, включая ЕС, Великобританию, США, Канаду, Австралию, Японию и Южную Корею. Россия, Казахстан и другие страны ЕАЭС — без ограничений.\n\nНужен паспорт, действительный ещё шесть месяцев. Въездного сбора нет, обратный билет на практике не спрашивают.\n\nЕсли остаётесь дольше 60 дней — регистрация в ГРС, и лучше до окончания срока, а не после." },
+      "How do I get a SIM card?": { q: "Где купить SIM-карту?", text: "В аэропорту или в любом салоне Beeline, O! или MegaCom. Нужен паспорт, занимает минут десять.\n\nSIM с 20–30 ГБ стоит 200–400 сом ($2,50–4,50). Покрытие хорошее в Бишкеке, на Иссык-Куле и в Караколе, слабое на высоких перевалах и отсутствует на Сон-Куле.\n\nУ O! обычно быстрее интернет в Бишкеке, у MegaCom — дальше добивает в горах." },
+      "When is the best time to visit?": { q: "Когда лучше приезжать?", s: "Сезон за сезоном, перевал за перевалом", text: "С июня по сентябрь ради гор. Высокие перевалы — Ала-Куль, Сон-Куль, Алтын-Арашан — надёжно открыты только с июля по сентябрь.\n\nМай и октябрь красивы и пусты, но юртовые лагеря закрыты, а снег может перекрыть перевалы.\n\nЗима — это лыжи в Чункурчаке и Караколе, а Бишкек с ноября по февраль стоит в смоге." },
+      "How do I get around Bishkek?": { q: "Как передвигаться по Бишкеку?", text: "Приложения такси. Работают Yandex Go и Namba Taxi, поездка по центру — 150–250 сом ($2–3). Никогда не садитесь в машину с улицы, не договорившись о цене.\n\nМаршрутки стоят 17 сом по карте и едут везде, но там тесно, а номера маршрутов на кириллице.\n\nЦентр небольшой и плоский — почти всё в двадцати минутах пешком от площади Ала-Тоо." },
+      "Can I drink the tap water?": { q: "Можно ли пить воду из-под крана?", text: "В Бишкеке её хлорируют и местные пьют, но у многих приезжих от неё проблемы. Бутилированная вода стоит 30–50 сом за 1,5 литра и продаётся везде.\n\nВ горах вода из ручьёв выше границы леса обычно нормальная, но всё, что ниже пастбищ, лучше фильтровать — там много лошадей и овец.\n\nВ юртовых лагерях спросите, прежде чем пить из бочки." },
+      "What should I pack?": { q: "Что взять с собой?", text: "Слои. В июле в Бишкеке может быть 35 °C, а в Ала-Арче 10 °C, и на Сон-Куле ночью ниже нуля — всё в один день.\n\nВозьмите нормальные ботинки, тёплую шапку и перчатки для ночи в юрте, крем от солнца (вы будете на высоте) и павербанк.\n\nВозьмите наличные в долларах или евро на обмен — новые купюры без надрывов меняют по лучшему курсу." },
+      "Is it good for vegetarians?": { q: "Как тут вегетарианцам?", text: "Честно — сложно. Национальная кухня стоит на баранине, говядине и конине.\n\nВаше главное слово — этсиз (без мяса). Ашлянфу, лагман без мяса, самса с тыквой и дунганские салаты вполне подойдут.\n\nВ Бишкеке есть настоящие вегетарианские кафе, и в любой спешелти-кофейне нормально кормят. За городом ждите много хлеба, помидоров и молочного." },
+      "How much should I tip?": { q: "Сколько оставлять на чай?", text: "Культуры чаевых как таковой нет. В заведениях поприличнее в счёт уже включают 10–15 % за обслуживание — проверьте, прежде чем добавлять.\n\nГде сервисного сбора нет, округлить или оставить 10 % — щедро и приятно. В такси округляют до ближайших 50 сом.\n\nИсключение — гиды и водители на многодневных выездах: там нормально 500–1 000 сом в день." },
+      "Where do I get cash?": { q: "Где снять наличные?", text: "Банкоматов в Бишкеке много, Visa и Mastercard принимают. У Демир Банка и Оптимы машины надёжнее всего для иностранных карт.\n\nРоссийские карты не работают. Возьмите запасную карту — здесь их блокируют чаще, чем ожидаешь.\n\nОбменники дают лучший курс, чем банки, а для долларов лучший ряд — на проспекте Чуй." },
+      "Tell me about altitude": { q: "Расскажи про высоту", text: "Бишкек всего 800 м, так что в городе проблем нет. Начинается выше.\n\nСон-Куль — 3 016 м, перевал Ала-Куля — 3 860 м. Ждите головной боли и плохого сна в первую ночь на такой высоте. Поднимайтесь медленно, пейте больше, чем хочется, и не пейте алкоголь в первую ночь.\n\nЕсли к головной боли добавились рвота или шаткость — спускайтесь. Это не то, что можно переспать." },
+      "What can I do with kids?": { q: "Что делать с детьми?", text: "Больше, чем кажется. В Панфиловском парке старый советский луна-парк и колесо обозрения за копейки. В Дубовом парке тень и скульптуры.\n\nВ Ала-Арче есть ровные прогулки вдоль реки — подходят для коротких ног, а поляна у входа хороша для пикника.\n\nИссык-Куль летом — это полноценный пляжный отдых, на северном берегу есть курорты для семей." },
+      "What souvenirs should I buy?": { q: "Какие сувениры купить?", text: "Войлок. Ширдаки, тапочки и панно — это настоящее ремесло, а хороший ширдак вещь серьёзная.\n\nИдите на четвёртый этаж ЦУМа за войлоком, серебром и калпаками по фиксированным ценам — или на Ошский базар, если хотите торговаться.\n\nЕщё стоит взять настоящий ак-калпак, струны для комуза, горный мёд и курагу килограммами." },
+      "Tell me about Osh and the south": { q: "Расскажи про Ош и юг", text: "Ош — второй город, и он ощущается древнее Бишкека: ему три тысячи лет.\n\nПоднимитесь на Сулайман-Тоо, священную гору посреди города, и пройдите Жайма-базар — лучший рынок страны.\n\nЧас лёта из Бишкека примерно за 3 000 сом или двенадцать часов по трассе через перевал Тоо-Ашуу — впечатляюще, но не зимой." },
+      "What about Karakol?": { q: "А что в Караколе?", text: "Каракол — база для треков на восточном конце Иссык-Куля, шесть часов от Бишкека.\n\nЕзжайте ради деревянной дунганской мечети, построенной без гвоздей, православного собора и воскресного скотного рынка — он начинается на рассвете и абсолютно настоящий.\n\nОтсюда же стартуют Ала-Куль и Алтын-Арашан, а зимой это лыжная база." },
+      "Can I ride horses?": { q: "Можно покататься на лошадях?", text: "Да, и стоит — здесь это культура, а не аттракцион для туристов.\n\nКлассика — Сон-Куль: дневные выезды по джайлоо от вашего юртового лагеря, примерно 1 500–2 500 сом за полдня с проводником.\n\nЛошадей организуют и в Жети-Огузе, и в Алтын-Арашане. Скажите честно, если никогда не ездили — подберут спокойную." },
+      "Is there skiing?": { q: "Есть ли горные лыжи?", text: "Да. Главный курорт — Каракол: 20 км трасс до 3 040 м, и снег правда хороший с декабря по март.\n\nЧункурчак и ЗиЛ в сорока минутах от Бишкека и вполне годятся на день.\n\nСкипасс в Караколе около 2 000 сом в день, прокат дешёвый. Настоящая изюминка здесь — фрирайд и ски-тур." },
+      "What are the local customs?": { q: "Какие тут обычаи?", s: "Хлеб, обувь и где садиться", text: "Обувь снимают в помещении всегда. Чай принимают правой рукой или двумя.\n\nХлеб почти священен — не кладите лепёшку лицом вниз и не выбрасывайте. За столом гостю подают первым, а отказываться от еды наотрез неловко: возьмите немного.\n\nВ юрте подождите, пока вам покажут место. Дальняя от входа сторона — для старших и почётных гостей." },
+      "Tell me about the food": { q: "Расскажи про еду", text: "Бешбармак — национальное блюдо: тесто ручной резки под варёной бараниной, едят на праздниках. Лагман — повседневный любимец: тянутая лапша, мясо и перец.\n\nЕщё: манты, самса из тандыра, куурдак, шорпо и боорсок — жареный хлеб, который приносят ко всему.\n\nИз напитков: кымыз (на любителя), максым и чалап из тележек «Шоро», и зелёный чай ко всему." },
+      "How many days do I need?": { q: "Сколько дней нужно?", text: "Три дня — это Бишкек плюс один день в горах. Хватает, чтобы увидеть город и постоять в настоящих горах; так делает большинство на пересадке.\n\nНеделя добавляет южный берег Иссык-Куля и либо Каракол, либо Сон-Куль.\n\nОт десяти дней до двух недель страна раскрывается: Ала-Куль, Сон-Куль, Ош и южная трасса помещаются без спешки." },
+      "Do people speak English?": { q: "Говорят ли по-английски?", text: "В Бишкеке — местами: в хостелах, спешелти-кофейнях и турагентствах да. В остальном редко.\n\nРусский — рабочий язык города, с ним вы уйдёте дальше, чем с английским. Кыргызский — государственный, и даже пара фраз мгновенно располагает людей.\n\nВаш разговорник работает офлайн и содержит те двадцать шесть фраз, которые реально пригождаются." },
+      "Is it safe for women travelling alone?": { q: "Безопасно ли женщине одной?", text: "В целом да, и сюда действительно ездит много женщин соло. По центру Бишкека вечером можно ходить одной.\n\nОжидайте некоторое количество взглядов и иногда навязчивого внимания — особенно на базарах и в маршрутках. Твёрдое «нет» работает.\n\nВечером берите такси через приложение, а не с улицы, и учитывайте, что алкоголь в юртовых лагерях и сёлах меняет атмосферу. Туристическая полиция отвечает по-английски: +996 705 00 91 02." },
+      "What is there at night?": { q: "Что тут вечером?", text: "В Бишкеке есть нормальная ночная жизнь. Барная полоса — вокруг Чуй и Эркиндика, и работает допоздна.\n\nЕсли хочется тише: в Опере дают полноценный спектакль по цене кофе, а в Филармонии вечера комуза, ради которых стоит подстроить планы.\n\nЛетом парки и фонтаны на Ала-Тоо заполнены далеко за полночь — и город на самом деле там." },
+      "How do I get from the airport?": { q: "Как добраться из аэропорта?", text: "Аэропорт «Манас» в 25 км к северу от города. Yandex Go до центра — 400–600 сом ($5–7), около 35 минут.\n\nАвтобус 380 идёт в центр за 50 сом и едет час — нормально днём и с лёгким багажом.\n\nТаксисты внутри терминала попросят 1 500 сом и больше. Выйдите на улицу и закажите через приложение." },
+      "What is the weather like?": { q: "Какая тут погода?", text: "Континентальный и резкий. В Бишкеке июль до 35 °C, январь до −10 °C.\n\nВ горах на 15–20 градусов холоднее, и погода меняется быстро: ясное утро в Ала-Арче к обеду может стать мокрым снегом.\n\nВесна и осень в городе самые приятные, примерно 15–25 °C, а свет в конце сентября — лучший за год." }
+    },
+    ky: {
+      "Plan me 3 days in Kyrgyzstan": { q: "Мага 3 күндүк маршрут түз", s: "Бишкек, тоолор жана бир күндүк сапар", text: "Үч күндүк маршрут: жол аз, шаар менен тоо тең.\n\n1-күн — Бишкек жөө: Ала-Тоо аянты, Тарых музейи, Faiza’да түшкү тамак, Navat’та кечки тамак.\n2-күн — Ала-Арча: 08:00дө чыгуу, Ак-Сай шаркыратмасына жол, шаарга кайтып кофе.\n3-күн — эртең менен Ош базары, анан Бурана мунарасы, Supara боз үйлөрүндө кечки тамак.\n\nБаары болуп 10 250 сом ($117), такси жана кире бериш менен." },
+      "What should I eat tonight?": { q: "Бүгүн эмне жесем болот?", s: "Жакын жердеги улуттук тамактар", text: "Бешбармак — улуттук тамак: кол менен кесилген камыр, кайнатылган кой эти жана пияз сорпосу.\n\nЭки жол бар. Navat — 900 сом ($10), сегиз мүнөт жөө. Supara — 2 600 сом ($30), боз үй жана комуз үчүн такси татыктуу.\n\nАрзаныраак болсо, Faiza’да үй лагманы 450 сом ($5)." },
+      "Best way to reach Issyk-Kul": { q: "Ысык-Көлгө кантип барам", text: "Чыгышка 250 чакырымдай — жол менен төрт саат.\n\nБатыш автобекеттен маршрут таксиси 800–1 000 сом ($9–11), толгондо жөнөйт. Жеке унаа 4 500–6 000 сом, жолдо Буранага токтосо болот.\n\nТынчтык кааласаңыз, түндүк эмес түштүк жээкке барыңыз — Тосор жана Жомок капчыгайы ошол жакта." },
+      "Is Bishkek safe for solo travel?": { q: "Бишкекте жалгыз коопсузбу?", text: "Ооба, Борбор Азиядагы жалгыз басканга эң ыңгайлуу борборлордун бири, кечинде да.\n\nКөчөдөн такси кармабай, тиркеме колдонуңуз, базарга майда акча алыңыз жана 112ни сактаңыз — туристтик милиция +996 705 00 91 02 номеринде англисче жооп берет.\n\nОш жана Дордой базарларында этият болуңуз — көп элде чөнтөкчүлөр кездешет." },
+      "What does a day here cost?": { q: "Бул жерде бир күн канча турат?", text: "Бэкпекер бюджети менен күнүнө 2 000–2 500 сом ($23–29).\n\nХостелде орун 700 сом, базарда түшкү тамак 200 сом, Faiza’да кечки тамак 450 сом, жол акысы карта менен 17 сом. Музейлер 100–250 сом.\n\nЖеке бөлмө жана такси кааласаңыз эки эсе, Ала-Арчага унаа үчүн дагы 1 400 сом." },
+      "Which trek should I do?": { q: "Кайсы трекке барайын?", s: "Ала-Көл, Сон-Көл же бир күндүк жол", text: "Үч күн жана күчүңүз болсо — Ала-Көл: Каракөлдөн 3 532 м көлгө, 3 860 м ашуудан өтүп, Алтын-Арашан булактары аркылуу кайтуу.\n\nБир күн болсо — Ала-Арчадагы Ак-Сай шаркыратмасына жол, төрт саат, Бишкектен 45 мүнөт.\n\nЖөө басбай эле — Сон-Көл: беш саат жол менен 3 016 м бийиктиктеги боз үй лагерине." },
+      "Do I need a visa?": { q: "Виза керекпи?", s: "Кирүү эрежелери жана мөөнөт", text: "Көбүнчө керек эмес. Кыргызстан 60 күнгө визасыз, 60ка жакын өлкө үчүн: ЕБ, Улуу Британия, АКШ, Канада, Австралия, Япония, Түштүк Корея. Орусия, Казакстан жана ЕАЭБ өлкөлөрү — чектөөсүз.\n\nПаспорт дагы алты ай жарактуу болушу керек. Кире бериш акысы жок.\n\n60 күндөн ашса — МКАда каттоо, мөөнөт бүткөнчө." },
+      "How do I get a SIM card?": { q: "SIM картаны кайдан алам?", text: "Аэропорттон же Beeline, O!, MegaCom салонунан. Паспорт керек, он мүнөттөй убакыт алат.\n\n20–30 ГБ бар SIM 200–400 сом ($2,50–4,50). Байланыш Бишкекте, Ысык-Көлдө, Каракөлдө жакшы, бийик ашууларда начар, Сон-Көлдө жок.\n\nБишкекте O! ылдамыраак, тоолордо MegaCom алысыраак жетет." },
+      "When is the best time to visit?": { q: "Качан келген жакшы?", s: "Мезгил-мезгили, ашуу-ашуусу менен", text: "Тоолор үчүн июндан сентябрга чейин. Бийик ашуулар — Ала-Көл, Сон-Көл, Алтын-Арашан — июль–сентябрда гана ачык.\n\nМай менен октябрь кооз жана бош, бирок боз үй лагерлери жабык, кар ашууларды жабышы мүмкүн.\n\nКыш — Чункурчак менен Каракөлдө лыжа, ал эми Бишкек ноябрдан февралга чейин түтүн астында." },
+      "How do I get around Bishkek?": { q: "Бишкекте кантип жүрөм?", text: "Такси тиркемелери. Yandex Go жана Namba Taxi иштейт, борбор боюнча 150–250 сом ($2–3). Көчөдөн баа келишпей унаага түшпөңүз.\n\nМаршрутка карта менен 17 сом, бардык жерге барат, бирок кысык жана номерлери кириллицада.\n\nБорбор кичине жана тегиз — көпчүлүк жер Ала-Тоо аянтынан жыйырма мүнөт жөө." },
+      "Can I drink the tap water?": { q: "Кран суусун ичсе болобу?", text: "Бишкекте хлорлонот жана жергиликтүүлөр ичет, бирок келгендердин көбүнө жакпайт. Бөтөлкө суу 1,5 литр 30–50 сом, бардык жерде бар.\n\nТоодо токойдон жогорудагы булак суусу көбүнчө жакшы, бирок жайлоодон ылдыйкысын чыпкалаңыз — ат менен кой көп.\n\nБоз үй лагеринде челектен ичээрде сураңыз." },
+      "What should I pack?": { q: "Эмне алып келейин?", text: "Кабат-кабат кийим. Июлда Бишкекте 35 °C, Ала-Арчада 10 °C, Сон-Көлдө түнү нөлдөн төмөн — бир эле күндө.\n\nЖакшы бут кийим, боз үйдө түнөгөнгө жылуу калпак жана колкап, күндөн коргоочу крем жана павербанк алыңыз.\n\nАлмаштырууга доллар же евро нак алыңыз — жаңы банкноттордун курсу жакшыраак." },
+      "Is it good for vegetarians?": { q: "Вегетарианчыларга кандай?", text: "Чынын айтканда, кыйын. Улуттук ашкана кой, уй жана жылкы этине негизделген.\n\nНегизги сөзүңүз — этсиз. Ашлянфу, этсиз лагман, ашкабактуу самса жана дунган салаттары болот.\n\nБишкекте вегетариан кафелери бар. Шаардан тышкары нан, помидор жана сүт азыктары көп." },
+      "How much should I tip?": { q: "Чай акы канча калтырам?", text: "Чай акы маданияты күчтүү эмес. Жакшы жайларда эсепке 10–15 % кызмат акысы кошулат — кошуудан мурун текшериңиз.\n\nКызмат акысы жок жерде тегеректөө же 10 % калтыруу жетиштүү. Таксиде 50 сомго чейин тегеретишет.\n\nКөп күндүк саякаттагы гид менен айдоочу башка — күнүнө 500–1 000 сом кадимки." },
+      "Where do I get cash?": { q: "Накты кайдан алам?", text: "Бишкекте банкомат көп, Visa жана Mastercard кабыл алынат. Демир Банк менен Оптиманын банкоматтары чет өлкө карталары үчүн ишенимдүү.\n\nОрусиянын карталары иштебейт. Кошумча карта алыңыз — бул жерде бөгөттөө көп кездешет.\n\nАлмашуу түйүндөрү банктан жакшы курс берет, доллар үчүн Чүй проспектисиндеги катар эң жакшы." },
+      "Tell me about altitude": { q: "Бийиктик жөнүндө айт", text: "Бишкек 800 м гана, шаарда көйгөй жок. Жогоруда башталат.\n\nСон-Көл 3 016 м, Ала-Көл ашуусу 3 860 м. Биринчи түнү баш ооруп, уйку бузулушу мүмкүн. Жайыраак көтөрүлүңүз, көбүрөөк суу ичиңиз, биринчи түнү арак ичпеңиз.\n\nБаш оору кусуу же тең салмактын бузулушу менен кошо келсе — ылдый түшүңүз." },
+      "What can I do with kids?": { q: "Балдар менен эмне кылса болот?", text: "Ойлогондон көп. Панфилов паркында эски совет аттракциондору жана арзан айлампа дөңгөлөк бар. Дуб паркында көлөкө жана айкелдер.\n\nАла-Арчада дарыя жээгинде тегиз жол бар — кичине балдарга ыңгайлуу, кире бериштеги алаң пикникке жакшы.\n\nЫсык-Көл жайында чыныгы деңиз эс алуусу, түндүк жээкте үй-бүлөгө ылайык курорттор." },
+      "What souvenirs should I buy?": { q: "Кайсы белектерди алайын?", text: "Кийиз. Шырдак, чарык жана дубал көрнөкчөлөрү — чыныгы кол өнөрчүлүк, жакшы шырдак олуттуу буюм.\n\nЦУМдун төртүнчү кабатына барыңыз: кийиз, күмүш, калпак туруктуу баада. Соода кылгыңыз келсе — Ош базары.\n\nДагы: чыныгы ак калпак, комуз кылдары, тоо балы жана килолоп өрүк." },
+      "Tell me about Osh and the south": { q: "Ош жана түштүк жөнүндө айт", text: "Ош — экинчи шаар, Бишкектен эски сезилет: үч миң жылдык тарыхы бар.\n\nШаардын ортосундагы ыйык Сулайман-Тоого чыгыңыз жана Жайма базарды кыдырыңыз — өлкөдөгү эң мыкты базар.\n\nБишкектен бир саат учуу 3 000 сомдой, же Төө-Ашуу ашуусу аркылуу он эки саат жол — сонун, бирок кышында эмес." },
+      "What about Karakol?": { q: "Каракөлдө эмне бар?", text: "Каракөл — Ысык-Көлдүн чыгышындагы трек базасы, Бишкектен алты саат.\n\nМык колдонулбай курулган дунган мечити, православ соборы жана жекшемби мал базары үчүн барыңыз — базар таң атканда башталат.\n\nАла-Көл менен Алтын-Арашан ушул жерден башталат, кышында лыжа базасы." },
+      "Can I ride horses?": { q: "Ат минсе болобу?", text: "Ооба, сөзсүз минип көрүңүз — бул жерде ат маданият, туристтик кызык эмес.\n\nКлассикасы — Сон-Көл: боз үй лагеринен жайлоо боюнча күндүзгү чабыш, жарым күнгө жетекчи менен 1 500–2 500 сом.\n\nЖети-Өгүз менен Алтын-Арашанда да уюштурулат. Мурда минбесеңиз айтыңыз — жоош ат беришет." },
+      "Is there skiing?": { q: "Лыжа тебүү барбы?", text: "Ооба. Негизги курорт — Каракөл: 3 040 м бийиктикке чейин 20 чакырым трасса, кар декабрдан мартка чейин жакша.\n\nЧункурчак менен ЗиЛ Бишкектен кырк мүнөт, бир күнгө жетиштүү.\n\nКаракөлдө скипасс күнүнө 2 000 сомдой, ижара арзан. Негизги кызыгы — фрирайд жана ски-тур." },
+      "What are the local customs?": { q: "Жергиликтүү салттар кандай?", s: "Нан, бут кийим жана кайда отуруу", text: "Үйгө киргенде бут кийим чечилет. Чайды оң кол менен же эки кол менен алыңыз.\n\nНан ыйык — нанды төңкөрүп койбоңуз, ыргытпаңыз. Дасторкондо конокко биринчи берилет, таптакыр баш тартуу ыңгайсыз: бир аз алыңыз.\n\nБоз үйдө орун көрсөткөнчө күтүңүз. Эшиктен алыс жагы улууларга жана сыйлуу конокторго." },
+      "Tell me about the food": { q: "Тамак жөнүндө айт", text: "Бешбармак — улуттук тамак: кол менен кесилген камыр жана кайнатылган кой эти, тойлордо желет. Лагман — күнүмдүк сүйүктүү: колдо тартылган кесме, эт жана калемпир.\n\nДагы: манты, тандыр самса, куурдак, шорпо жана боорсок.\n\nИчимдик: кымыз, «Шоро» арабаларынан максым менен чалап, жана бардыгына көк чай." },
+      "How many days do I need?": { q: "Канча күн керек?", text: "Үч күн — Бишкек жана тоодо бир күн. Шаарды көрүп, чыныгы тоодо турганга жетет.\n\nБир жума Ысык-Көлдүн түштүк жээгин жана Каракөл же Сон-Көлдү кошот.\n\nОн күндөн эки жумага чейин өлкө ачылат: Ала-Көл, Сон-Көл, Ош жана түштүк жол шашпай батат." },
+      "Do people speak English?": { q: "Англисче сүйлөшөбү?", text: "Бишкекте кээ бир жерде: хостел, спешелти кофекана жана туристтик агенттиктерде ооба. Калганында сейрек.\n\nОрус тили шаардын жумушчу тили, англисчеге караганда алыс алып барат. Кыргыз тили — мамлекеттик, бир-эки сөз айтсаңыз эле жылуу мамиле болот.\n\nСүйлөшмөңүз интернетсиз иштейт." },
+      "Is it safe for women travelling alone?": { q: "Аял жалгыз коопсузбу?", text: "Жалпысынан ооба, бул жерге жалгыз келген аялдар көп. Бишкектин борборунда кечинде жалгыз басса болот.\n\nКарап калуу, кээде жабышкан көңүл бурууну күтүңүз — өзгөчө базарда жана маршруткада. Катуу «жок» иштейт.\n\nКечинде көчөдөн эмес, тиркеме аркылуу такси алыңыз. Туристтик милиция: +996 705 00 91 02." },
+      "What is there at night?": { q: "Кечинде эмне бар?", text: "Бишкекте чыныгы түнкү жашоо бар. Бар тилкеси Чүй менен Эркиндик тегерегинде, кечке чейин иштейт.\n\nТынчыраак кааласаңыз: Операда кофенин баасына толук спектакль, Филармонияда комуз кечелери.\n\nЖайында парктар менен Ала-Тоо фонтандары түн ортосуна чейин толо." },
+      "How do I get from the airport?": { q: "Аэропорттон кантип барам?", text: "«Манас» аэропорту шаардан 25 чакырым түндүктө. Yandex Go менен борборго 400–600 сом ($5–7), 35 мүнөттөй.\n\n380 автобус борборго 50 сомго барат, бир саат — күндүз жана жүгүңүз жеңил болсо ыңгайлуу.\n\nТерминалдын ичиндеги таксисттер 1 500 сом жана андан көп сурашат. Сыртка чыгып, тиркемеден чакырыңыз." },
+      "What is the weather like?": { q: "Аба ырайы кандай?", text: "Континенталдык жана кескин. Бишкекте июль 35 °C, январь −10 °C.\n\nТоодо 15–20 градус муздак, аба ырайы тез өзгөрөт: Ала-Арчада ачык эртең мененки күн түшкө чейин кар аралаш жамгырга айланышы мүмкүн.\n\nЖаз менен күз шаарда эң жагымдуу, 15–25 °C, сентябрь аягындагы жарык жылдын эң мыктысы." }
+    }
+  };
+
+const fallbackText = { ru: "У меня пока нет готового ответа на это — я отвечаю из локальной базы знаний, а не из интернета, поэтому силён по Кыргызстану и пуст во всём остальном.\n\nСпросите про: визы, SIM-карты и интернет, когда приезжать, транспорт, деньги и банкоматы, еду и вегетарианские варианты, высоту, треки, лошадей, лыжи, обычаи, Каракол, Ош, поездку с детьми или сколько стоит день.\n\nИли попросите составить маршрут — соберу целиком.", ky: "Бул суроого даяр жообум жок — мен интернеттен эмес, жергиликтүү билим базасынан жооп берем, ошондуктан Кыргызстан боюнча күчтүүмүн.\n\nМындай сураңыз: виза, SIM жана интернет, качан келүү, транспорт, акча жана банкомат, тамак жана вегетариан тандоолор, бийиктик, трек, ат, лыжа, салттар, Каракөл, Ош, балдар менен саякат же бир күндүн баасы.\n\nЖе маршрут түзүп берүүнү сураңыз." };
+
+const reviewers = [
+    ['Marta K.', 'Poland'], ['Tom H.', 'United Kingdom'], ['Yuki S.', 'Japan'], ['Aigerim B.', 'Kazakhstan'],
+    ['Luca R.', 'Italy'], ['Sara M.', 'Germany'], ['Ben C.', 'United States'], ['Nurlan T.', 'Kyrgyzstan']
+  ];
+const reviewAges = ['3 days ago', 'last week', '2 weeks ago', 'last month', '6 days ago'];
+
+const levels = [[0, 'Newcomer'], [25000, 'Wanderer'], [60000, 'Traveller'], [100000, 'Explorer'], [200000, 'Nomad'], [350000, 'Manaschy']];
+const BASE_XP = 34000;
+
+const mapPins = [
+    { id: 5, label: "Ant's Coffee", top: 268, left: 42 },
+    { id: 18, label: 'Oak Park', top: 214, left: 214 },
+    { id: 1, label: 'Navat', top: 352, left: 196 },
+    { id: 6, label: 'Ala-Too Square', top: 316, left: 250 },
+    { id: 7, label: 'History Museum', top: 456, left: 62 },
+    { id: 15, label: 'Boutique Hotel', top: 500, left: 178 },
+    { id: 4, label: 'Osh Bazaar', top: 546, left: 40 }
+  ];
+
+const mapGroups = {
+    All: null,
+    Food: ['Kyrgyz cuisine', 'Coffee', 'Street food'],
+    Stay: ['Stay'],
+    Parks: ['Park', 'Nature'],
+    Culture: ['Museum', 'Landmark', 'Culture'],
+    Markets: ['Market']
+  };
+
+  window.NOMAD_DATA = {
+    places, badgeSkins, RATE, proofKinds, badgeList, phrases, phraseAudio,
+    currencies, savedTrips, itinerary, prompts, answers, intents,
+    fallbackAnswer, reviewers, reviewAges, levels, BASE_XP, mapPins, mapGroups,
+    countries, popularCountries, languages, strings, catNames, listTitles, placeText, microTerms, badgeText, proofText, moreText, termText, kyCountries, aiText, fallbackText
+  };
+})();

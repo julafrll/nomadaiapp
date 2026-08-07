@@ -1,0 +1,109 @@
+/* Nomad AI — design tokens and shared primitives.
+   Token values, shadows and keyframes are lifted from the design so the
+   implementation and the prototype render identically. Component styling
+   stays inline in the templates, matching how the design expresses it. */
+
+:root {
+  --bg:#F7F3EE; --surface:#FFFFFF; --surface2:#F4EFE9; --line:#EBE3D9;
+  --ink:#1B1411; --ink2:#6C5F53; --ink3:#9C8C7C;
+  --brand:#A03D4E; --brandInk:#FFFFFF; --brandSoft:#F9EEEC;
+  --green:#3E7A5A; --greenSoft:#EAF3EE; --gold:#C08A3E;
+  --imgbg:#EFE8E0;
+  --shadow:0 1px 2px rgba(27,20,17,.05), 0 6px 20px rgba(27,20,17,.06);
+  --shadowLg:0 2px 6px rgba(27,20,17,.05), 0 18px 40px rgba(27,20,17,.11);
+  --bezel:linear-gradient(160deg,#E4DBD0,#CFC3B5 45%,#BFB2A3);
+  --pagebg:#EFEAE3;
+  /* The logo's own olive, sampled from the supplied artwork, so the mark sits
+     in the palette instead of reading as a black cut-out. */
+  --logo:#3A3F2B;
+}
+
+.nomDark {
+  --bg:#241B18; --surface:#312622; --surface2:#3E312C; --line:rgba(247,239,230,.15);
+  --ink:#F8F1E9; --ink2:#C8B8A7; --ink3:#A08F7E;
+  --brand:#D96C7E; --brandInk:#2A1216; --brandSoft:rgba(217,108,126,.20);
+  --green:#82BA98; --greenSoft:rgba(130,186,152,.18); --gold:#EDC079;
+  --imgbg:#3E312C;
+  --shadow:0 1px 2px rgba(0,0,0,.22), 0 8px 22px rgba(0,0,0,.26);
+  --shadowLg:0 2px 8px rgba(0,0,0,.26), 0 20px 44px rgba(0,0,0,.38);
+  --bezel:linear-gradient(160deg,#57453D,#332723 45%,#241B18);
+  --pagebg:#1A1310;
+  --logo:#C7CBA6;
+}
+
+html, body { margin:0; padding:0; background:#EFEAE3; }
+body { font-family:'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+* { box-sizing:border-box; }
+a { color:#A03D4E; text-decoration:none; }
+a:hover { color:#7E2C3B; }
+
+@keyframes nomIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes nomFade { from { opacity:0; } to { opacity:1; } }
+@keyframes nomBlink { 0%,100% { opacity:.25; } 50% { opacity:1; } }
+@keyframes nomRaySpin { to { transform:rotate(360deg); } }
+@keyframes nomPop {
+  0% { opacity:0; transform:scale(.3) rotate(-14deg); }
+  55% { opacity:1; transform:scale(1.14) rotate(5deg); }
+  76% { transform:scale(.96) rotate(-2deg); }
+  100% { opacity:1; transform:scale(1) rotate(0); }
+}
+@keyframes nomBurst { 0% { transform:scale(.4); opacity:.9; } 100% { transform:scale(2.2); opacity:0; } }
+@keyframes nomFall {
+  0% { transform:translateY(0) rotate(0); opacity:0; }
+  8% { opacity:1; } 88% { opacity:1; }
+  100% { transform:translateY(700px) rotate(720deg); opacity:0; }
+}
+@keyframes nomRise { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Intro motion ──────────────────────────────────────────────────────
+   One easing curve throughout, no overshoot, no rotation. Everything
+   fades and moves a short distance; the overlay dissolves into the home
+   screen rather than being swapped out. */
+@keyframes nomLogoIn {
+  from { opacity:0; transform:scale(.96); }
+  to   { opacity:1; transform:scale(1); }
+}
+@keyframes nomSoftUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes nomSoftIn { from { opacity:0; } to { opacity:1; } }
+/* leaving: the overlay lifts and dissolves, revealing the app beneath */
+@keyframes nomIntroOut {
+  from { opacity:1; transform:scale(1); }
+  to   { opacity:0; transform:scale(1.04); }
+}
+
+/* Profile-complete animation. Deliberately unlike the badge celebration:
+   no confetti — a route drawing itself, a pin landing on it, and calm
+   ripples out of the avatar. */
+@keyframes nomDraw { from { stroke-dashoffset:var(--len); } to { stroke-dashoffset:0; } }
+@keyframes nomRipple {
+  0% { transform:scale(.6); opacity:.42; }
+  100% { transform:scale(1.95); opacity:0; }
+}
+@keyframes nomPin {
+  0% { transform:translateY(-30px) scale(.5); opacity:0; }
+  62% { transform:translateY(3px) scale(1.08); opacity:1; }
+  100% { transform:translateY(0) scale(1); opacity:1; }
+}
+@keyframes nomSheen { from { transform:translateX(-130%) skewX(-18deg); } to { transform:translateX(130%) skewX(-18deg); } }
+
+/* Touch feedback — every control acknowledges a press. */
+[data-h] { -webkit-tap-highlight-color:transparent; }
+[data-h]:active { transform:scale(.978); transition:transform .07s ease-out; }
+
+.nomScroll::-webkit-scrollbar { width:0; height:0; }
+.nomScroll { scrollbar-width:none; }
+
+/* Inputs inherit the app font rather than the UA default. */
+input, textarea, button { font-family:inherit; }
+
+/* Keyboard users get a visible focus ring; pointer users do not. */
+[data-h]:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline:2px solid var(--brand); outline-offset:2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
