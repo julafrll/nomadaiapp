@@ -610,10 +610,17 @@
 
   /* ── 5. The assistant ──────────────────────────────────────────────── */
 
+  /* Where the server functions live, when the site is hosted somewhere that
+     runs them. They hold the API keys so the browser never sees one. Set
+     proxyBase to '' in nomad-config.js to force the old direct calls. */
+  var PROXY = (CFG.proxyBase === undefined ? '/api' : CFG.proxyBase)
+    .replace(/\/+$/, '');
+  var proxyGone = false;   // set once /api/ai has answered 404
+
   /* A key the visitor set for themselves wins, so anyone who brings their own
-     is not drawing on the shared demo quota. Otherwise the app falls back to
-     the one shipped in nomad-config.js — that fallback is what lets the
-     assistant answer for everybody with nothing to type. */
+     is not drawing on the shared quota. Otherwise the app falls back to the
+     one shipped in nomad-config.js — empty on the published site, because
+     there the function supplies it instead. */
   function apiKey() {
     var own = '';
     try { own = (localStorage.getItem(KEY_STORE) || '').trim(); } catch (e) { own = ''; }
@@ -622,7 +629,8 @@
   function setApiKey(k) {
     try { localStorage.setItem(KEY_STORE, (k || '').trim()); } catch (e) { /* private mode */ }
   }
-  function hasKey() { return !!apiKey(); }
+  // With a function in front, nobody needs a key of their own.
+  function hasKey() { return (!!PROXY && !proxyGone) || !!apiKey(); }
 
   var STOP_WORDS = (' what where when which who how the and for with near best good some any can you should ' +
     'would there here have does are is in at to of a me my i do it on get find show tell about want like ' +
@@ -930,7 +938,17 @@
 
   function callGemini(model, question, ctx, cb) {
     var key = apiKey();
-    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
+    /* Through the server function when there is one, so the key stays out
+       of the browser. `proxyGone` is set the first time /api/ai answers 404
+       — on a plain file server or GitHub Pages there is no function — and
+       from then on the call goes straight to Google with whatever key the
+       config or the visitor supplied, exactly as it used to. */
+    var viaProxy = !proxyGone && !!PROXY;
+    var url = viaProxy
+      ? PROXY + '/ai?model=' + encodeURIComponent(model)
+      : 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
+    var headers = { 'content-type': 'application/json' };
+    if (!viaProxy) headers['x-goog-api-key'] = key;
     var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = setTimeout(function () { if (controller) controller.abort(); },
       (CFG.aiTimeoutSeconds || 25) * 1000);
@@ -944,7 +962,7 @@
 
     fetch(url, {
       method: 'POST',
-      headers: { 'x-goog-api-key': key, 'content-type': 'application/json' },
+      headers: headers,
       signal: controller ? controller.signal : undefined,
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM }] },
@@ -953,11 +971,33 @@
       })
     })
       .then(function (r) {
-        return r.json().then(function (body) { return { ok: r.ok, status: r.status, body: body }; });
+        /* Read as text and parse leniently. A missing endpoint answers with
+           an HTML error page, and r.json() would reject on it — which sent
+           the whole thing to the catch below as a network failure, so the
+           "no function here, call Google directly" branch was never reached
+           and every model got written off as out of quota instead. */
+        return r.text().then(function (raw) {
+          var body = null;
+          try { body = JSON.parse(raw); } catch (e) { /* not JSON */ }
+          return { ok: r.ok, status: r.status, body: body };
+        });
       })
       .then(function (res) {
         clearTimeout(timer);
         if (!res.ok) {
+          /* No function deployed here. Remember it and retry the same
+             question directly, so a local run off a plain file server
+             behaves as it did before the proxy existed.
+
+             Three statuses, because a missing endpoint answers differently
+             depending on what is serving: 404 from a static host, 405 from
+             one that routes the path but not the method, and 501 from
+             python -m http.server, which implements no POST at all. */
+          if (viaProxy && (res.status === 404 || res.status === 405 || res.status === 501)) {
+            proxyGone = true;
+            callGemini(model, question, ctx, cb);
+            return;
+          }
           var msg = (res.body && res.body.error && res.body.error.message) || ('HTTP ' + res.status);
           // An older model refusing thinkingConfig: drop it and try once more
           // before writing the model off.
@@ -969,7 +1009,7 @@
           cb({ error: msg, status: res.status });
           return;
         }
-        var cand = res.body.candidates && res.body.candidates[0];
+        var cand = res.body && res.body.candidates && res.body.candidates[0];
         var parts = (cand && cand.content && cand.content.parts) || [];
         var text = parts.filter(function (p) { return !p.thought && typeof p.text === 'string'; })
           .map(function (p) { return p.text; }).join('').trim();

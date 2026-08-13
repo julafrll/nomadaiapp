@@ -5,3 +5,7 @@ __pycache__/
 *.pyc
 node_modules/
 nomad-keys.local.txt
+# Secrets. .env.example is the committed template and carries no values.
+.env
+.env.*
+!.env.example

@@ -20,7 +20,7 @@
    transport departures and routes are not reusable, and a stale one is
    worse than an honest failure. */
 
-var VERSION = 'v5';
+var VERSION = 'v9';
 
 var SHELL_CACHE  = 'nomad-shell-'  + VERSION;
 var PHOTO_CACHE  = 'nomad-photo-'  + VERSION;
@@ -167,6 +167,13 @@ self.addEventListener('fetch', function (e) {
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
   if (NEVER_CACHE.indexOf(url.hostname) !== -1) return;   // straight to network
+
+  /* The server functions. Same origin, so without this they would fall into
+     the app-shell branch at the bottom and the assistant would start
+     replaying one cached answer to every question. /api/transit sets its own
+     Cache-Control instead, which the HTTP cache honours on its own. */
+  if (url.origin === self.location.origin &&
+      url.pathname.indexOf(BASE + 'api/') === 0) return;
 
   // The app shell, opened offline.
   if (req.mode === 'navigate') {

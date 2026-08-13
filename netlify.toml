@@ -1,0 +1,40 @@
+# Nomad AI — Netlify site settings.
+#
+# The app is static: no build step, the folder is the site. The only moving
+# parts are the two functions, which hold the API keys so the browser does
+# not have to.
+#
+# Set these on the site before deploying —
+#   Site configuration → Environment variables, or:
+#     netlify env:import .env
+#
+#   GEMINI_API_KEY   the assistant
+#   TWOGIS_API_KEY   public transport stops and routes
+#
+# Without them the app still runs; the assistant falls back to asking each
+# visitor for their own key, and the transport section does not appear.
+
+[build]
+  publish = "."
+  # No command: nothing to compile.
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# The functions declare their own routes (/api/ai, /api/transit) with the
+# `config.path` export, so no redirects are needed here.
+
+# The service worker must never be served from cache, or an installed app
+# can be pinned to an old build forever.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Long-lived assets. Every URL the app requests carries ?v=, so a new build
+# is a new URL and this cannot serve a stale one.
+[[headers]]
+  for = "/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

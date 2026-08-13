@@ -36,11 +36,21 @@
 */
 window.Nomad2GIS = (function () {
   var CFG = window.NOMAD_CONFIG || {};
-  var API = 'https://catalog.api.2gis.com/3.0/items';
+  var DIRECT = 'https://catalog.api.2gis.com/3.0/items';
   var PAGE_MAX = 10;                       // 2GIS caps page_size at 10
 
-  function key() { return CFG.twoGisKey || ''; }
-  function enabled() { return !!key(); }
+  /* Through the server function where one is deployed, so the key stays out
+     of the browser; straight to 2GIS otherwise, with whatever key the config
+     carries. See netlify/functions/transit.mjs. */
+  var PROXY = (CFG.proxyBase === undefined ? '/api' : CFG.proxyBase).replace(/\/+$/, '');
+  var proxyGone = false;                   // set once /api/transit has 404ed
+
+  function viaProxy() { return !!PROXY && !proxyGone; }
+  function base() { return viaProxy() ? PROXY + '/transit' : DIRECT; }
+
+  // Empty when proxying: the function attaches the real one server-side.
+  function key() { return viaProxy() ? '' : (CFG.twoGisKey || ''); }
+  function enabled() { return viaProxy() || !!(CFG.twoGisKey || ''); }
 
   /* ── Shared helpers ────────────────────────────────────────────────── */
 
@@ -56,9 +66,30 @@ window.Nomad2GIS = (function () {
   function get(url, cb) {
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 12000);
+    var wasProxied = viaProxy();
     fetch(url, { signal: ctrl ? ctrl.signal : undefined })
-      .then(function (r) { return r.json(); })
-      .then(function (j) { clearTimeout(timer); cb(null, j); })
+      .then(function (r) {
+        /* No function deployed here — a plain file server, or GitHub Pages.
+           Remember it and reissue the same query straight to 2GIS with the
+           key from the config, exactly as before the proxy existed. */
+        if (wasProxied && (r.status === 404 || r.status === 405 || r.status === 501)) {
+          clearTimeout(timer);
+          proxyGone = true;   // must precede key(), which reads it
+          /* The query already carries an empty `key=`, because that is what
+             key() returns while proxying. Replace it rather than append —
+             2GIS takes the first of a repeated parameter, so appending
+             leaves the empty one winning and reads as a bad key. */
+          get(url.replace(PROXY + '/transit', DIRECT)
+                 .replace(/([?&])key=[^&]*/, '$1key=' + encodeURIComponent(key())), cb);
+          return null;
+        }
+        return r.json();
+      })
+      .then(function (j) {
+        if (j === null) return;         // already retried directly
+        clearTimeout(timer);
+        cb(null, j);
+      })
       .catch(function (e) {
         clearTimeout(timer);
         cb(e.name === 'AbortError' ? 'timed out' : e.message);
@@ -202,7 +233,7 @@ window.Nomad2GIS = (function () {
     if (!enabled()) { cb({ ok: false, error: 'no2gisKey', stops: [] }); return; }
 
     once(ck, function (done) {
-      var url = API + '?q=' + encodeURIComponent('остановка') + '&type=station' +
+      var url = base() + '?q=' + encodeURIComponent('остановка') + '&type=station' +
         '&point=' + lng + ',' + lat + '&radius=' + radius + '&page_size=10' +
         '&fields=' + encodeURIComponent('items.point,items.routes,items.route_type') +
         '&key=' + encodeURIComponent(key());
@@ -295,7 +326,7 @@ window.Nomad2GIS = (function () {
       var q = String(place.name).replace(/\s*(№\s*\d+|&.*|\(.*\))\s*$/g, '').trim() || place.name;
       var here = { lat: place.lat, lng: place.lng };
 
-      var url = API + '?q=' + encodeURIComponent(q) +
+      var url = base() + '?q=' + encodeURIComponent(q) +
         '&location=' + place.lng + ',' + place.lat + '&page_size=' + PAGE_MAX +
         '&fields=' + encodeURIComponent('items.org,items.point,items.address_name') +
         '&key=' + encodeURIComponent(key());
@@ -333,7 +364,7 @@ window.Nomad2GIS = (function () {
     var locale = localeFor(lang);
 
     function step() {
-      var url = API + '?org_id=' + encodeURIComponent(orgId) +
+      var url = base() + '?org_id=' + encodeURIComponent(orgId) +
         '&location=' + place.lng + ',' + place.lat +
         '&page=' + page + '&page_size=' + PAGE_MAX +
         '&fields=' + encodeURIComponent('items.point,items.address_name,items.schedule') +
