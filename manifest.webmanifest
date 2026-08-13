@@ -1,0 +1,27 @@
+{
+  "name": "Nomad AI — Kyrgyzstan travel companion",
+  "short_name": "Nomad AI",
+  "description": "Find places, plan a route and ask about Kyrgyzstan — offline-ready.",
+  "id": "/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EFEAE3",
+  "theme_color": "#F7F3EE",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["travel", "navigation", "food"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/01-home.png", "sizes": "788x1704", "type": "image/png", "form_factor": "narrow", "label": "Nearby places and your current challenge" },
+    { "src": "screenshots/02-search.png", "sizes": "788x1704", "type": "image/png", "form_factor": "narrow", "label": "Search 65 verified places by food, stay or nature" },
+    { "src": "screenshots/05-map.png", "sizes": "788x1704", "type": "image/png", "form_factor": "narrow", "label": "Every place on the map, with its rating on the pin" },
+    { "src": "screenshots/06-ai.png", "sizes": "788x1704", "type": "image/png", "form_factor": "narrow", "label": "Ask the assistant about anything in Kyrgyzstan" },
+    { "src": "screenshots/07-itinerary.png", "sizes": "788x1704", "type": "image/png", "form_factor": "narrow", "label": "A day-by-day itinerary with costs and travel time" }
+  ]
+}

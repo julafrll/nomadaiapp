@@ -22,9 +22,9 @@
   var D = window.NOMAD_DATA;
 
   var TEMPLATE = `
-  <div class="{{ themeClass }}" style="min-height:100vh;background:var(--pagebg);color:var(--ink);padding:30px 28px 44px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:background .3s,color .3s">
-  
-    <div style="max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:26px">
+  <div class="nomPage {{ themeClass }}" style="min-height:100vh;background:var(--pagebg);color:var(--ink);padding:30px 28px 44px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;transition:background .3s,color .3s">
+
+    <div class="nomDemoChrome" style="max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:26px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="line-height:0">{{ logoMarkSmall }}</div>
         <div style="line-height:0">{{ logoWordSmall }}</div>
@@ -47,19 +47,19 @@
       </div>
     </div>
   
-    <div style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px">
-  
-      <div class="nomScroll" style="display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:4px">
+    <div class="nomStage" style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px">
+
+      <div class="nomScroll nomDemoChrome" style="display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:4px">
         <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
           <div onClick="{{ c.go }}" style="{{ c.css }}">{{ c.name }}</div>
         </sc-for>
       </div>
   
-      <div style="position:relative;width:417px;height:876px;border-radius:56px;padding:12px;background:var(--bezel);box-shadow:0 30px 70px rgba(27,20,17,.22), 0 0 0 1px rgba(27,20,17,.06);transition:background .3s">
-        <div style="position:relative;width:393px;height:852px;border-radius:45px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;transition:background .3s">
+      <div class="nomBezel" style="position:relative;width:417px;height:876px;border-radius:56px;padding:12px;background:var(--bezel);box-shadow:0 30px 70px rgba(27,20,17,.22), 0 0 0 1px rgba(27,20,17,.06);transition:background .3s">
+        <div class="nomScreen" style="position:relative;width:393px;height:852px;border-radius:45px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;transition:background .3s">
   
           <sc-if value="{{ isIos }}" hint-placeholder-val="{{ true }}">
-            <div style="position:relative;z-index:6;height:52px;flex:0 0 52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 8px;font-size:14px;font-weight:700;color:var(--ink)">
+            <div class="nomFakeStatus" style="position:relative;z-index:6;height:52px;flex:0 0 52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 8px;font-size:14px;font-weight:700;color:var(--ink)">
               <div>9:41</div>
               <div style="position:absolute;left:50%;top:9px;transform:translateX(-50%);width:110px;height:31px;border-radius:20px;background:#0B0706"></div>
               <div style="display:flex;align-items:center;gap:6px;color:var(--ink)">
@@ -70,7 +70,7 @@
             </div>
           </sc-if>
           <sc-if value="{{ isAndroid }}">
-            <div style="position:relative;z-index:6;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:13px;font-weight:700;color:var(--ink)">
+            <div class="nomFakeStatus" style="position:relative;z-index:6;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:13px;font-weight:700;color:var(--ink)">
               <div>14:20</div>
               <div style="display:flex;align-items:center;gap:7px;color:var(--ink)">
                 <svg width="15" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor"><path d="M8 10.5 1 4.2a10 10 0 0 1 14 0L8 10.5Z" stroke-width="1.4" stroke-linejoin="round"/></svg>
@@ -132,7 +132,7 @@
                           </div>
                           <div style="margin-top:11px;font-size:14.5px;font-weight:700;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ n.name }}</div>
                           <div style="margin-top:4px;display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)">
-                            <svg width="12" height="12" viewBox="0 0 24 24" style="color:var(--gold);flex:0 0 12px" fill="currentColor"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 24 24" style="color:var(--gold);flex:0 0 12px" fill="currentColor"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
                             <span style="font-weight:700;color:var(--ink)">{{ n.rating }}</span>
                             <span>·</span><span>{{ n.dist }}</span>
                           </div>
@@ -177,7 +177,7 @@
                                 <div style="margin-top:6px;font-size:13px;color:var(--ink2)">{{ r.cat }} · {{ r.dist }}</div>
                               </div>
                               <div style="flex:0 0 auto;display:flex;align-items:center;gap:5px">
-                                <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
                                 <span style="font-size:14px;font-weight:800;color:var(--ink)">{{ r.rating }}</span>
                               </div>
                             </div>
@@ -234,7 +234,7 @@
                               <div style="margin-top:6px;font-size:13px;color:var(--ink2)">{{ r.cat }} · {{ r.dist }}</div>
                             </div>
                             <div style="flex:0 0 auto;display:flex;align-items:center;gap:5px">
-                              <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
+                              <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
                               <span style="font-size:14px;font-weight:800;color:var(--ink)">{{ r.rating }}</span>
                             </div>
                           </div>
@@ -290,7 +290,7 @@
                               <div style="margin-top:6px;font-size:13px;color:var(--ink2)">{{ r.cat }} · {{ r.dist }} · {{ r.price }}</div>
                             </div>
                             <div style="flex:0 0 auto;display:flex;align-items:center;gap:5px">
-                              <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
+                              <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
                               <span style="font-size:14px;font-weight:800;color:var(--ink)">{{ r.rating }}</span>
                             </div>
                           </div>
@@ -317,7 +317,9 @@
               <sc-if value="{{ isPlace }}">
                 <div data-screen-label="Place" style="display:flex;flex-direction:column;min-height:100%">
                   <div style="position:relative;height:300px;flex:0 0 300px;background:var(--imgbg)">
-                    <image-slot id="{{ pSlot }}" shape="rect" placeholder="{{ pPh }}"></image-slot>
+                    <!-- rep-offset lifts the "representative" badge clear of
+                         the content sheet that laps over this image. -->
+                    <image-slot id="{{ pSlot }}" shape="rect" placeholder="{{ pPh }}" rep-offset="38"></image-slot>
                     <div style="position:absolute;top:14px;left:20px;right:20px;display:flex;justify-content:space-between">
                       <div onClick="{{ back }}" role="button" tabIndex="0" aria-label="Go back" style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.16)">
                         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1B1411"><path d="M15 5l-7 7 7 7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -331,9 +333,11 @@
                   <div style="flex:1;margin-top:-26px;position:relative;border-radius:26px 26px 0 0;background:var(--bg);padding:26px 22px 22px;display:flex;flex-direction:column;gap:24px">
                     <div>
                       <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
-                        <div style="padding:6px 12px;border-radius:99px;background:var(--greenSoft);font-size:11.5px;font-weight:700;letter-spacing:.02em;color:var(--green)">{{ pCat }}</div>
+                        <!-- Same colour the pin uses on the map, so the two
+                             read as the same thing. -->
+                        <div style="{{ pCatCss }}"><span style="{{ pCatDot }}"></span>{{ pCat }}</div>
                         <div style="display:flex;align-items:center;gap:5px">
-                          <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
+                          <svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--gold)" fill="currentColor"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
                           <span style="font-size:13.5px;font-weight:800;color:var(--ink)">{{ pRating }}</span>
                           <span style="font-size:12.5px;color:var(--ink3)">({{ pReviews }})</span>
                         </div>
@@ -356,8 +360,19 @@
                       </div>
                     </div>
   
+                    <!-- Said outright, not just badged on the photo: no
+                         free-licensed photograph of most of these venues
+                         exists, and a picture of the right kind of food is
+                         not a picture of the place. -->
+                    <sc-if value="{{ pPhotoIsRep }}">
+                      <div style="display:flex;gap:11px;align-items:flex-start;padding:13px 15px;border-radius:15px;background:var(--surface2)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--ink3);flex:0 0 16px;margin-top:1px"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><path d="M12 11v6M12 7.6v.4" stroke-width="2" stroke-linecap="round"/></svg>
+                        <div style="flex:1;font-size:12.5px;line-height:1.5;color:var(--ink2);text-wrap:pretty">{{ t.repPhotoNote }}</div>
+                      </div>
+                    </sc-if>
+
                     <div style="font-size:15px;line-height:1.62;color:var(--ink2);text-wrap:pretty">{{ pDesc }}</div>
-  
+
                     <div style="display:flex;flex-direction:column;gap:12px">
                       <div style="font-size:16px;font-weight:800;letter-spacing:-.024em;color:var(--ink)">{{ pListTitle }}</div>
                       <div style="display:flex;flex-wrap:wrap;gap:8px">
@@ -382,6 +397,35 @@
                         </div>
                       </div>
                     </div>
+
+                    <!-- Chains: the bot listed every branch inside one address
+                         field, which rendered as an unreadable run-on line and
+                         put a single pin on the map. -->
+                    <sc-if value="{{ pHasBranches }}">
+                      <div style="display:flex;flex-direction:column;gap:11px">
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                          <div style="font-size:16px;font-weight:800;letter-spacing:-.024em;color:var(--ink)">{{ t.otherBranches }}</div>
+                          <div style="font-size:12.5px;color:var(--ink3)">{{ pBranchCount }}</div>
+                        </div>
+                        <sc-if value="{{ pBranchesLoading }}">
+                          <div style="font-size:12px;color:var(--ink3)">{{ t.checkingBranches }}</div>
+                        </sc-if>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                          <sc-for list="{{ pBranches }}" as="br" hint-placeholder-count="4">
+                            <div onClick="{{ br.go }}" role="button" tabIndex="0" style="display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:15px;background:var(--surface);border:1px solid var(--line);cursor:pointer">
+                              <span style="{{ br.dot }}"></span>
+                              <div style="flex:1;min-width:0">
+                                <div style="font-size:13.5px;font-weight:600;color:var(--ink)">{{ br.addr }}</div>
+                                <sc-if value="{{ br.isApprox }}">
+                                  <div style="margin-top:3px;font-size:11.5px;color:var(--ink3)">{{ t.approxPin }}</div>
+                                </sc-if>
+                              </div>
+                              <div style="font-size:12.5px;font-weight:700;color:var(--brand);white-space:nowrap">{{ br.dist }}</div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
   
                     <div style="display:flex;flex-direction:column;gap:12px">
                       <div style="display:flex;align-items:baseline;justify-content:space-between">
@@ -404,10 +448,10 @@
                             <div style="display:flex;gap:2px;flex:0 0 auto">
                               <sc-for list="{{ rv.stars }}" as="s" hint-placeholder-count="5">
                                 <sc-if value="{{ s.on }}">
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
                                 </sc-if>
                                 <sc-if value="{{ s.off }}">
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:var(--ink3);opacity:.3"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:var(--ink3);opacity:.3"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
                                 </sc-if>
                               </sc-for>
                             </div>
@@ -439,24 +483,19 @@
   
               <sc-if value="{{ isMap }}">
                 <div data-screen-label="Map" style="position:relative;min-height:100%;display:flex;flex-direction:column">
-                  <!-- One transformed layer: backdrop, pins and the user dot pan and zoom together. -->
-                  <div data-ref="mapLayer" style="position:absolute;inset:0;transform-origin:0 0;will-change:transform;touch-action:none;cursor:grab">
-                    <div style="position:absolute;left:-100%;top:-100%;width:300%;height:300%;background:var(--surface2)">
-                      <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 62px),repeating-linear-gradient(0deg,var(--line) 0 1px,transparent 1px 70px)"></div>
-                    </div>
-                    <div style="position:absolute;left:-600px;right:-600px;top:214px;height:20px;background:var(--line)"></div>
-                    <div style="position:absolute;left:-600px;right:-600px;top:472px;height:14px;background:var(--line)"></div>
-                    <div style="position:absolute;top:-600px;bottom:-600px;left:148px;width:18px;background:var(--line)"></div>
-                    <div style="position:absolute;top:150px;left:196px;width:120px;height:96px;border-radius:14px;background:var(--greenSoft)"></div>
-                    <div style="position:absolute;top:400px;left:36px;width:96px;height:78px;border-radius:14px;background:var(--greenSoft)"></div>
-                    <div style="position:absolute;left:44px;top:588px;width:20px;height:20px;border-radius:50%;background:var(--green);border:3px solid #FFF;box-shadow:0 0 0 8px rgba(62,122,90,.18)"></div>
-                    <sc-for list="{{ pins }}" as="pin" hint-placeholder-count="3">
-                      <div onClick="{{ pin.go }}" role="button" tabIndex="0" aria-label="{{ pin.label }}" style="{{ pin.css }}">
-                        <div style="{{ pin.chipCss }}">{{ pin.label }}</div>
-                        <div style="{{ pin.dotCss }}"></div>
-                      </div>
-                    </sc-for>
-                  </div>
+                  <!-- A real OpenStreetMap. data-keep stops the renderer from
+                       morphing away the tiles and markers Leaflet puts here;
+                       nomad-engine.js owns everything inside it.
+
+                       z-index:0 is load-bearing. Leaflet gives its own panes
+                       z-indexes from 200 (tiles) to 1000 (controls). Without
+                       an index of its own this container creates no stacking
+                       context, so those panes competed with the screen's own
+                       controls in the same context and won on every count —
+                       the search bar, the filter chips, the zoom buttons and
+                       the place card were all painted behind the map. Any
+                       integer here confines them to this element. -->
+                  <div data-ref="mapLayer" data-keep style="position:absolute;inset:0;z-index:0;background:var(--surface2)"></div>
   
                   <div style="position:relative;padding:12px 20px 0;display:flex;flex-direction:column;gap:12px">
                     <div style="display:flex;gap:10px">
@@ -473,6 +512,34 @@
                         <div onClick="{{ m.go }}" style="{{ m.css }}">{{ m.name }}</div>
                       </sc-for>
                     </div>
+
+                    <!-- What the pin colours mean. Only the categories the
+                         current filter actually shows. -->
+                    <div class="nomScroll" style="display:flex;gap:12px;overflow-x:auto;padding:1px 2px 3px">
+                      <sc-for list="{{ mapLegend }}" as="lg" hint-placeholder-count="5">
+                        <div style="flex:0 0 auto;display:flex;align-items:center;gap:6px;white-space:nowrap">
+                          <span style="{{ lg.dot }}"></span>
+                          <span style="font-size:11px;font-weight:700;color:var(--ink2);text-shadow:0 1px 3px var(--bg)">{{ lg.name }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ hasRouteNote }}">
+                      <div style="padding:10px 14px;border-radius:14px;background:var(--surface);box-shadow:var(--shadow);font-size:13px;font-weight:700;color:var(--ink)">{{ routeNote }}</div>
+                    </sc-if>
+
+                    <!-- Without this there was no way back to location once a
+                         first refusal had been remembered: every distance in
+                         the app stayed measured from the middle of Bishkek and
+                         nothing said so. -->
+                    <sc-if value="{{ showLocateCta }}">
+                      <div onClick="{{ locateMe }}" role="button" tabIndex="0" style="display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:14px;background:var(--surface);box-shadow:var(--shadow);cursor:pointer">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand);flex:0 0 17px"><circle cx="12" cy="12" r="3.2" stroke-width="2"/><path d="M12 2.4v3.4M12 18.2v3.4M2.4 12h3.4M18.2 12h3.4" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="8" stroke-width="1.5" stroke-opacity=".4"/></svg>
+                        <div style="flex:1;min-width:0">
+                          <div style="font-size:13px;font-weight:700;color:var(--ink)">{{ locateTitle }}</div>
+                          <div style="margin-top:2px;font-size:11.5px;line-height:1.4;color:var(--ink3);text-wrap:pretty">{{ locateSub }}</div>
+                        </div>
+                      </div>
+                    </sc-if>
                   </div>
   
                   <div style="position:absolute;right:18px;top:184px;display:flex;flex-direction:column;gap:9px">
@@ -495,28 +562,95 @@
                     </div>
                   </sc-if>
   
-                  <div style="margin-top:auto;position:relative;padding:0 16px 18px">
-                    <div onClick="{{ mapCardGo }}" style="border-radius:22px;overflow:hidden;background:var(--surface);box-shadow:var(--shadowLg);cursor:pointer">
-                      <div style="display:flex;justify-content:center;padding:10px 0 4px"><div style="width:40px;height:4px;border-radius:99px;background:var(--line)"></div></div>
-                      <div style="padding:8px 16px 16px;display:flex;gap:14px">
-                        <div style="width:88px;height:88px;flex:0 0 88px;border-radius:16px;overflow:hidden;background:var(--imgbg)">
-                          <image-slot id="{{ mapCardSlot }}" shape="rect" placeholder="{{ mapCardPh }}"></image-slot>
-                        </div>
-                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
-                          <div style="font-size:16px;font-weight:800;letter-spacing:-.026em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ mapCardName }}</div>
-                          <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)">
-                            <svg width="12" height="12" viewBox="0 0 24 24" style="color:var(--gold);flex:0 0 12px" fill="currentColor"><path d="M12 2l2.6 6.5L21 9.8l-4.8 4.4L17.5 21 12 17.6 6.5 21l1.3-6.8L3 9.8l6.4-1.3L12 2Z"/></svg>
-                            <span style="font-weight:700;color:var(--ink)">{{ mapCardRating }}</span>
-                            <span>·</span><span>{{ mapCardCat }}</span>
+                  <!-- Tapping a pin reveals this card; nothing is shown until
+                       one is tapped, so the card always refers to a place the
+                       traveller actually chose. The patcher is positional and
+                       unkeyed, so swapping places morphs the text in place and
+                       the change goes unnoticed — syncMapCard() restarts this
+                       animation by hand whenever the selection changes. -->
+                  <sc-if value="{{ hasMapCard }}">
+                    <div style="margin-top:auto;position:relative;padding:0 16px 18px">
+                      <div data-ref="mapCardBox" style="border-radius:22px;overflow:hidden;background:var(--surface);box-shadow:var(--shadowLg);animation:nomCardUp .28s cubic-bezier(.34,1.28,.5,1) both">
+                        <div onClick="{{ mapCardGo }}" style="cursor:pointer">
+                          <div style="display:flex;justify-content:center;padding:10px 0 4px"><div style="width:40px;height:4px;border-radius:99px;background:var(--line)"></div></div>
+                          <div style="padding:8px 16px 14px;display:flex;gap:14px">
+                            <div style="width:88px;height:88px;flex:0 0 88px;border-radius:16px;overflow:hidden;background:var(--imgbg)">
+                              <image-slot id="{{ mapCardSlot }}" shape="rect" placeholder="{{ mapCardPh }}"></image-slot>
+                            </div>
+                            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
+                              <div style="display:flex;align-items:flex-start;gap:8px">
+                                <div style="flex:1;min-width:0;font-size:16px;font-weight:800;letter-spacing:-.026em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ mapCardName }}</div>
+                                <div onClick="{{ mapCardClose }}" role="button" tabIndex="0" aria-label="Close" style="width:26px;height:26px;flex:0 0 26px;margin:-2px -2px 0 0;border-radius:9px;background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer">
+                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--ink2)"><path d="M6 6l12 12M18 6L6 18" stroke-width="2.4" stroke-linecap="round"/></svg>
+                                </div>
+                              </div>
+                              <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden">
+                                <svg width="12" height="12" viewBox="0 0 24 24" style="color:var(--gold);flex:0 0 12px" fill="currentColor"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
+                                <span style="font-weight:700;color:var(--ink)">{{ mapCardRating }}</span>
+                                <span>·</span>
+                                <span style="{{ mapCardDot }}"></span><span>{{ mapCardCat }}</span>
+                                <sc-if value="{{ hasMapCardDist }}">
+                                  <span>·</span><span style="font-weight:700;color:var(--brand)">{{ mapCardDist }}</span>
+                                </sc-if>
+                              </div>
+                              <sc-if value="{{ mapCardHasBranches }}">
+                                <div style="font-size:11.5px;font-weight:600;color:var(--ink3)">{{ mapCardBranches }}</div>
+                              </sc-if>
+                              <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-top:auto">{{ mapCardPrice }}</div>
+                            </div>
                           </div>
-                          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto">
-                            <div style="font-size:13.5px;font-weight:700;color:var(--ink)">{{ mapCardPrice }}</div>
-                            <div style="padding:9px 15px;border-radius:12px;background:var(--brandSoft);font-size:12.5px;font-weight:700;color:var(--brand)">{{ t.viewDetails }}</div>
+                        </div>
+
+                        <!-- Every branch, tappable: the map centres on the
+                             one you pick. Outside the card's own onClick so
+                             a branch does not also open the place screen. -->
+                        <sc-if value="{{ mapCardHasBranches }}">
+                          <div class="nomScroll" style="display:flex;gap:7px;overflow-x:auto;padding:0 16px 12px">
+                            <sc-for list="{{ mapCardBranchList }}" as="mb" hint-placeholder-count="4">
+                              <div onClick="{{ mb.go }}" role="button" tabIndex="0" style="{{ mb.css }}">
+                                <span style="{{ mb.dot }}"></span>{{ mb.addr }}
+                              </div>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+
+                        <!-- The nearest stop and its route numbers. On the map
+                             this is one line of context you can act on; it
+                             used to be a whole section on the place screen,
+                             which is not where you are when you are working
+                             out how to get somewhere. -->
+                        <sc-if value="{{ mapCardHasBus }}">
+                          <div onClick="{{ mapCardBusGo }}" role="button" tabIndex="0" style="display:flex;align-items:center;gap:9px;margin:0 16px 14px;padding:10px 13px;border-radius:13px;background:var(--surface2);cursor:pointer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand);flex:0 0 15px"><rect x="4" y="3.5" width="16" height="13" rx="3" stroke-width="1.8"/><path d="M4 11h16M7.5 20v-3.5M16.5 20v-3.5" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="13.8" r="1" fill="currentColor"/><circle cx="16" cy="13.8" r="1" fill="currentColor"/></svg>
+                            <div style="flex:1;min-width:0">
+                              <div style="font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ mapCardBusStop }}</div>
+                              <div style="margin-top:2px;font-size:11.5px;font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ mapCardBusRoutes }}</div>
+                            </div>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--ink3);flex:0 0 14px"><path d="M9 5l7 7-7 7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                          </div>
+                        </sc-if>
+
+                        <div style="display:flex;gap:9px;padding:0 16px 16px">
+                          <div onClick="{{ mapCardGo }}" role="button" tabIndex="0" style="flex:1;height:42px;border-radius:13px;background:var(--brandSoft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--brand);cursor:pointer">{{ t.viewDetails }}</div>
+                          <div onClick="{{ mapCardRoute }}" role="button" tabIndex="0" style="flex:1;height:42px;border-radius:13px;background:var(--brand);display:flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:700;color:var(--brandInk);cursor:pointer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="flex:0 0 15px"><path d="M12 2 22 22 12 17.5 2 22 12 2Z" stroke-width="2" stroke-linejoin="round"/></svg>
+                            {{ t.getDirections }}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </sc-if>
+
+                  <!-- Nothing selected: say what to do rather than leaving the
+                       bottom of the map blank. -->
+                  <sc-if value="{{ showMapHint }}">
+                    <div style="margin-top:auto;position:relative;padding:0 16px 18px">
+                      <div style="padding:13px 16px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow);display:flex;align-items:center;gap:11px;animation:nomFade .3s ease both">
+                        <div style="width:15px;height:15px;flex:0 0 15px;border-radius:50%;background:#C9808D;border:2px solid #7E2C3B"></div>
+                        <div style="flex:1;font-size:13px;font-weight:600;color:var(--ink2)">{{ mapHint }}</div>
+                      </div>
+                    </div>
+                  </sc-if>
                 </div>
               </sc-if>
   
@@ -559,6 +693,9 @@
                       <sc-for list="{{ chatMsgs }}" as="m" hint-placeholder-count="2">
                         <div style="display:flex;flex-direction:column;gap:14px;align-items:stretch">
                           <div style="{{ m.css }}">{{ m.text }}</div>
+                          <sc-if value="{{ m.hasNote }}">
+                            <div style="font-size:11.5px;font-weight:600;line-height:1.45;color:var(--ink3)">{{ m.note }}</div>
+                          </sc-if>
                           <sc-if value="{{ m.hasChips }}">
                             <div style="display:flex;flex-wrap:wrap;gap:8px">
                               <sc-for list="{{ m.chips }}" as="c" hint-placeholder-count="2">
@@ -572,11 +709,9 @@
                           <sc-if value="{{ m.hasItin }}">
                             <div onClick="{{ goItin }}" style="border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadowLg);cursor:pointer">
                               <div style="position:relative;height:112px;background:var(--surface2)">
-                                <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 44px),repeating-linear-gradient(0deg,var(--line) 0 1px,transparent 1px 40px)"></div>
-                                <div style="position:absolute;left:38px;top:34px;width:4px;height:46px;border-radius:99px;background:var(--brand)"></div>
-                                <div style="position:absolute;left:38px;top:34px;width:132px;height:4px;border-radius:99px;background:var(--brand)"></div>
-                                <div style="position:absolute;left:164px;top:28px;width:14px;height:14px;border-radius:50%;background:var(--brand);border:2.5px solid #FFF"></div>
-                                <div style="position:absolute;left:32px;top:74px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2.5px solid #FFF"></div>
+                                <sc-if value="{{ itinHasRoute }}">
+                                  <div style="position:absolute;inset:0">{{ itinRouteMapSmall }}</div>
+                                </sc-if>
                                 <div style="position:absolute;right:14px;bottom:12px;padding:6px 11px;border-radius:99px;background:var(--surface);font-size:11px;font-weight:700;color:var(--ink2);box-shadow:var(--shadow)">{{ t.stops12 }}</div>
                               </div>
                               <div style="padding:16px 17px 17px">
@@ -634,13 +769,16 @@
   
                   <div style="padding:0 22px">
                     <div style="border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)">
-                      <div style="position:relative;height:136px;background:var(--surface2)">
-                        <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 48px),repeating-linear-gradient(0deg,var(--line) 0 1px,transparent 1px 44px)"></div>
-                        <div style="position:absolute;left:44px;top:38px;width:170px;height:4px;border-radius:99px;background:var(--brand)"></div>
-                        <div style="position:absolute;left:210px;top:38px;width:4px;height:56px;border-radius:99px;background:var(--brand)"></div>
-                        <div style="position:absolute;left:38px;top:32px;width:15px;height:15px;border-radius:50%;background:var(--green);border:3px solid #FFF;box-shadow:0 2px 6px rgba(27,20,17,.2)"></div>
-                        <div style="position:absolute;left:204px;top:88px;width:15px;height:15px;border-radius:50%;background:var(--brand);border:3px solid #FFF;box-shadow:0 2px 6px rgba(27,20,17,.2)"></div>
-                        <div style="position:absolute;left:262px;top:56px;width:76px;height:56px;border-radius:12px;background:var(--greenSoft)"></div>
+                      <!-- The real three-day route, drawn from the stops.
+                           Tapping it puts the whole thing on the map. -->
+                      <div onClick="{{ itinShowAll }}" role="button" tabIndex="0" aria-label="Show the whole trip on the map" style="position:relative;height:136px;background:var(--surface2);cursor:pointer">
+                        <sc-if value="{{ itinHasRoute }}">
+                          <div style="position:absolute;inset:0">{{ itinRouteMap }}</div>
+                        </sc-if>
+                        <div style="position:absolute;right:12px;bottom:12px;display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:99px;background:var(--surface);box-shadow:var(--shadow);font-size:11.5px;font-weight:700;color:var(--brand)">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="flex:0 0 13px"><path d="M9 20 3 22V6l6-2 6 2 6-2v16l-6 2-6-2Z" stroke-width="2" stroke-linejoin="round"/><path d="M9 4v16M15 6v16" stroke-width="2"/></svg>
+                          {{ t.showOnMap }}
+                        </div>
                       </div>
                       <div style="padding:16px 18px;display:flex;justify-content:space-between;gap:14px">
                         <div>
@@ -671,9 +809,15 @@
                   <div style="padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:12px">
                     <div style="min-width:0">
                       <div style="font-size:17px;font-weight:800;letter-spacing:-.026em;color:var(--ink)">{{ itinTheme }}</div>
-                      <div style="margin-top:4px;font-size:12px;color:var(--ink3)">{{ itinWalk }}</div>
+                      <div style="margin-top:4px;font-size:12px;color:var(--ink3)">{{ itinWalk }} · {{ itinCost }}</div>
                     </div>
-                    <div style="flex:0 0 auto;font-size:12.5px;font-weight:700;color:var(--ink2)">{{ itinCost }}</div>
+                    <!-- This day's stops, routed on the real map. -->
+                    <sc-if value="{{ itinDayHasRoute }}">
+                      <div onClick="{{ itinShowDay }}" role="button" tabIndex="0" style="flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:13px;background:var(--brandSoft);font-size:12.5px;font-weight:700;color:var(--brand);cursor:pointer">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="flex:0 0 14px"><path d="M9 20 3 22V6l6-2 6 2 6-2v16l-6 2-6-2Z" stroke-width="2" stroke-linejoin="round"/><path d="M9 4v16M15 6v16" stroke-width="2"/></svg>
+                        {{ t.showOnMap }}
+                      </div>
+                    </sc-if>
                   </div>
   
                   <div style="padding:0 22px;display:flex;flex-direction:column;gap:14px">
@@ -992,7 +1136,7 @@
                       <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px">
                         <div style="aspect-ratio:1;border-radius:16px;overflow:hidden;background:var(--imgbg)"><image-slot id="v2-rev-a" shape="rect" placeholder="Your photo"></image-slot></div>
                         <div style="aspect-ratio:1;border-radius:16px;overflow:hidden;background:var(--imgbg)"><image-slot id="v2-rev-b" shape="rect" placeholder="Your photo"></image-slot></div>
-                        <div style="aspect-ratio:1;border-radius:16px;background:var(--surface);border:1.5px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer">
+                        <div onClick="{{ rAddPhoto }}" role="button" tabIndex="0" aria-label="Add a photo" style="aspect-ratio:1;border-radius:16px;background:var(--surface);border:1.5px dashed var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer">
                           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><path d="M12 5v14M5 12h14" stroke-width="2.2" stroke-linecap="round"/></svg>
                           <div style="font-size:11px;font-weight:700;color:var(--ink3)">{{ t.add }}</div>
                         </div>
@@ -1023,12 +1167,13 @@
                   <div style="display:flex;flex-direction:column;gap:16px">
                     <sc-for list="{{ trips }}" as="t" hint-placeholder-count="3">
                       <div onClick="{{ t.go }}" style="{{ t.css }}">
+                        <!-- The real shape of this trip, drawn from the
+                             coordinates of the places it visits. Every card
+                             used to show the same hand-placed line. -->
                         <div style="position:relative;height:112px;background:var(--surface2)">
-                          <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 44px),repeating-linear-gradient(0deg,var(--line) 0 1px,transparent 1px 40px)"></div>
-                          <div style="position:absolute;left:40px;top:32px;width:4px;height:48px;border-radius:99px;background:var(--brand)"></div>
-                          <div style="position:absolute;left:40px;top:32px;width:130px;height:4px;border-radius:99px;background:var(--brand)"></div>
-                          <div style="position:absolute;left:164px;top:26px;width:14px;height:14px;border-radius:50%;background:var(--brand);border:2.5px solid #FFF"></div>
-                          <div style="position:absolute;left:34px;top:74px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2.5px solid #FFF"></div>
+                          <sc-if value="{{ t.hasRoute }}">
+                            <div style="position:absolute;inset:0">{{ t.routeMap }}</div>
+                          </sc-if>
                           <sc-if value="{{ t.isActive }}">
                             <div style="position:absolute;top:12px;right:12px;padding:6px 11px;border-radius:99px;background:var(--brand);font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--brandInk)">{{ t.activeCaps }}</div>
                           </sc-if>
@@ -1190,32 +1335,78 @@
                     </div>
                   </div>
   
-                  <div style="height:82px;border-radius:20px;background:var(--brand);display:flex;align-items:center;justify-content:center;gap:14px;cursor:pointer;box-shadow:var(--shadowLg)">
+                  <!-- Our own desk, above the national numbers but visibly
+                       not one of them: 112 is what you call when it is an
+                       emergency, this is who you call when you are stuck.
+                       Channels appear only where nomad-config.js has real
+                       details; the assistant is always offered because it
+                       needs nothing configured. -->
+                  <div style="padding:16px 17px;border-radius:20px;background:var(--greenSoft);display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;align-items:flex-start;gap:11px">
+                      <div style="width:34px;height:34px;flex:0 0 34px;border-radius:11px;background:var(--green);display:flex;align-items:center;justify-content:center">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:#FFF"><path d="M18.5 12a6.5 6.5 0 0 0-13 0" stroke-width="1.9" stroke-linecap="round"/><rect x="3" y="12" width="3.6" height="6" rx="1.6" stroke-width="1.9"/><rect x="17.4" y="12" width="3.6" height="6" rx="1.6" stroke-width="1.9"/><path d="M19.2 18v.6a2.4 2.4 0 0 1-2.4 2.4H13" stroke-width="1.9" stroke-linecap="round"/></svg>
+                      </div>
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:15.5px;font-weight:800;letter-spacing:-.024em;color:var(--ink)">{{ supportTitle }}</div>
+                        <div style="margin-top:3px;font-size:12.5px;line-height:1.45;color:var(--ink2);text-wrap:pretty">{{ supportSub }}</div>
+                      </div>
+                    </div>
+                    <!-- The numbers are shown in full so they can be read
+                         and dialled by hand too, which matters on the one
+                         screen someone opens when things have gone wrong. -->
+                    <sc-for list="{{ supportNumbers }}" as="sn" hint-placeholder-count="2">
+                      <div style="display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:14px;background:var(--surface)">
+                        <div style="flex:1;min-width:0;font-size:14px;font-weight:800;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sn.label }}</div>
+                        <sc-if value="{{ sn.hasWhatsapp }}">
+                          <div onClick="{{ sn.wa }}" role="button" tabIndex="0" aria-label="{{ sn.waLabel }}" style="display:flex;align-items:center;gap:6px;padding:9px 13px;border-radius:11px;background:#25D366;font-size:12.5px;font-weight:700;color:#FFF;cursor:pointer;white-space:nowrap">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex:0 0 14px"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.6-.1a12 12 0 0 1-6.5-5.7c-.5-.8-.8-1.7-.8-2.5 0-.8.4-1.4.8-1.8.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .5.4l.8 1.9c0 .2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6.4.7.9 1.3 1.5 1.8.6.5 1.1.8 1.4.9.3.1.4 0 .6-.1l.8-.9c.2-.2.3-.2.5-.1l1.8.9c.2.1.3.2.4.3 0 .1 0 .4-.2.9Z"/></svg>
+                            WhatsApp
+                          </div>
+                        </sc-if>
+                        <div onClick="{{ sn.call }}" role="button" tabIndex="0" aria-label="{{ sn.callLabel }}" style="width:38px;height:38px;flex:0 0 38px;border-radius:11px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;cursor:pointer">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--green)"><path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2Z" stroke-width="1.9" stroke-linejoin="round"/></svg>
+                        </div>
+                      </div>
+                    </sc-for>
+
+                    <div style="display:flex;flex-wrap:wrap;gap:8px">
+                      <sc-for list="{{ supportChannels }}" as="sc" hint-placeholder-count="2">
+                        <div onClick="{{ sc.go }}" role="button" tabIndex="0" aria-label="{{ sc.label }}" style="{{ sc.css }}">
+                          <span style="{{ sc.iconCss }}">{{ sc.icon }}</span>{{ sc.name }}
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+
+                  <div onClick="{{ call112 }}" role="button" tabIndex="0" aria-label="Call 112" style="height:82px;border-radius:20px;background:var(--brand);display:flex;align-items:center;justify-content:center;gap:14px;cursor:pointer;box-shadow:var(--shadowLg)">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brandInk);flex:0 0 26px"><path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2Z" stroke-width="1.9" stroke-linejoin="round"/></svg>
                     <div>
                       <div style="font-size:26px;font-weight:800;letter-spacing:-.035em;color:var(--brandInk);line-height:1.1">{{ t.call112 }}</div>
                       <div style="margin-top:2px;font-size:12px;font-weight:600;color:var(--brandInk);opacity:.8">{{ t.allServices }}</div>
                     </div>
                   </div>
-  
+
                   <div style="display:flex;gap:10px">
-                    <div style="flex:1;padding:17px 8px;border-radius:17px;background:var(--surface);border:1px solid var(--line);text-align:center;cursor:pointer;box-shadow:var(--shadow)">
+                    <div onClick="{{ call103 }}" role="button" tabIndex="0" aria-label="Call 103, ambulance" style="flex:1;padding:17px 8px;border-radius:17px;background:var(--surface);border:1px solid var(--line);text-align:center;cursor:pointer;box-shadow:var(--shadow)">
                       <div style="font-size:21px;font-weight:800;letter-spacing:-.032em;color:var(--ink)">103</div>
                       <div style="margin-top:5px;font-size:12px;font-weight:600;color:var(--ink3)">{{ t.ambulance }}</div>
                     </div>
-                    <div style="flex:1;padding:17px 8px;border-radius:17px;background:var(--surface);border:1px solid var(--line);text-align:center;cursor:pointer;box-shadow:var(--shadow)">
+                    <div onClick="{{ call102 }}" role="button" tabIndex="0" aria-label="Call 102, police" style="flex:1;padding:17px 8px;border-radius:17px;background:var(--surface);border:1px solid var(--line);text-align:center;cursor:pointer;box-shadow:var(--shadow)">
                       <div style="font-size:21px;font-weight:800;letter-spacing:-.032em;color:var(--ink)">102</div>
                       <div style="margin-top:5px;font-size:12px;font-weight:600;color:var(--ink3)">{{ t.police }}</div>
                     </div>
-                    <div style="flex:1;padding:17px 8px;border-radius:17px;background:var(--surface);border:1px solid var(--line);text-align:center;cursor:pointer;box-shadow:var(--shadow)">
+                    <div onClick="{{ call101 }}" role="button" tabIndex="0" aria-label="Call 101, fire" style="flex:1;padding:17px 8px;border-radius:17px;background:var(--surface);border:1px solid var(--line);text-align:center;cursor:pointer;box-shadow:var(--shadow)">
                       <div style="font-size:21px;font-weight:800;letter-spacing:-.032em;color:var(--ink)">101</div>
                       <div style="margin-top:5px;font-size:12px;font-weight:600;color:var(--ink3)">{{ t.fire }}</div>
                     </div>
                   </div>
-  
-                  <div style="padding:17px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)">
+
+                  <div onClick="{{ callTourist }}" role="button" tabIndex="0" aria-label="Call the tourist police" style="padding:17px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
                     <div style="font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--brand)">{{ t.touristPolice }}</div>
-                    <div style="margin-top:9px;font-size:19px;font-weight:800;letter-spacing:-.03em;color:var(--ink)">+996 705 00 91 02</div>
+                    <div style="margin-top:9px;display:flex;align-items:center;gap:10px">
+                      <div style="flex:1;font-size:19px;font-weight:800;letter-spacing:-.03em;color:var(--ink)">+996 705 00 91 02</div>
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand);flex:0 0 19px"><path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2Z" stroke-width="1.9" stroke-linejoin="round"/></svg>
+                    </div>
                     <div style="margin-top:5px;font-size:12.5px;color:var(--ink3)">WhatsApp available · Bishkek &amp; Issyk-Kul</div>
                   </div>
   
@@ -1241,7 +1432,7 @@
                     </div>
                   </div>
   
-                  <div style="display:flex;align-items:center;justify-content:center;gap:10px;height:54px;border-radius:17px;background:var(--surface);border:1px solid var(--line);cursor:pointer;box-shadow:var(--shadow)">
+                  <div onClick="{{ shareLocation }}" role="button" tabIndex="0" style="display:flex;align-items:center;justify-content:center;gap:10px;height:54px;border-radius:17px;background:var(--surface);border:1px solid var(--line);cursor:pointer;box-shadow:var(--shadow)">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand);flex:0 0 18px"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke-width="1.9" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.5" stroke-width="1.9"/></svg>
                     <div style="font-size:14.5px;font-weight:700;color:var(--ink)">{{ t.shareLocation }}</div>
                   </div>
@@ -1299,7 +1490,7 @@
           </div>
   
           <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
-            <div style="position:relative;z-index:5;flex:0 0 auto;background:var(--surface);border-top:1px solid var(--line)">
+            <div data-ref="tabBar" style="position:relative;z-index:5;flex:0 0 auto;background:var(--surface);border-top:1px solid var(--line)">
               <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:10px 10px 4px">
                 <div onClick="{{ goHome }}" role="button" tabIndex="0" aria-label="Home" style="{{ tabHome }}">
                   <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1v-9.5Z" stroke-width="1.9" stroke-linejoin="round"/></svg>
@@ -1319,10 +1510,10 @@
                 </div>
               </div>
               <sc-if value="{{ isIos }}" hint-placeholder-val="{{ true }}">
-                <div style="display:flex;justify-content:center;padding:4px 0 9px"><div style="width:136px;height:5px;border-radius:99px;background:var(--ink3);opacity:.5"></div></div>
+                <div class="nomFakeNav" style="display:flex;justify-content:center;padding:4px 0 9px"><div style="width:136px;height:5px;border-radius:99px;background:var(--ink3);opacity:.5"></div></div>
               </sc-if>
               <sc-if value="{{ isAndroid }}">
-                <div style="display:flex;align-items:center;justify-content:center;gap:56px;padding:8px 0 11px;color:var(--ink3)">
+                <div class="nomFakeNav" style="display:flex;align-items:center;justify-content:center;gap:56px;padding:8px 0 11px;color:var(--ink3)">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 5l-7 7 7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   <div style="width:86px;height:4px;border-radius:99px;background:currentColor"></div>
                   <div style="width:14px;height:14px;border-radius:3px;border:2px solid currentColor"></div>
@@ -1331,6 +1522,32 @@
             </div>
           </sc-if>
   
+          <!-- The assistant, reachable without leaving what you are looking
+               at. On the map it also carries what is on screen into the
+               question, so "what is near here" means this view. Sits above
+               the tab bar and left of the map's zoom column. -->
+          <sc-if value="{{ showAiBubble }}">
+            <div onClick="{{ goAiFromBubble }}" role="button" tabIndex="0" aria-label="Ask the AI assistant" style="{{ aiBubbleCss }}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="color:var(--brandInk);flex:0 0 24px"><path d="M12 3.2l2 5.4 5.4 2-5.4 2-2 5.4-2-5.4-5.4-2 5.4-2 2-5.4Z" fill="currentColor"/><path d="M18.6 15.4l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" fill="currentColor"/></svg>
+              <sc-if value="{{ aiBubbleHasLabel }}">
+                <div style="font-size:13px;font-weight:700;color:var(--brandInk);white-space:nowrap">{{ aiBubbleLabel }}</div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <!-- Confirmation for things that leave the app — placing a call,
+               sharing a location. Desktop browsers do nothing visible when a
+               tel: link is followed, so saying what happened is the only
+               feedback there is. -->
+          <sc-if value="{{ hasToast }}">
+            <div data-ref="toastBox" style="position:absolute;left:18px;right:18px;bottom:96px;z-index:28;padding:14px 17px;border-radius:16px;background:var(--ink);box-shadow:var(--shadowLg);display:flex;align-items:center;gap:12px;animation:nomCardUp .26s cubic-bezier(.34,1.28,.5,1) both">
+              <div style="flex:1;font-size:13.5px;font-weight:600;line-height:1.45;color:var(--bg);text-wrap:pretty">{{ toast }}</div>
+              <div onClick="{{ closeToast }}" role="button" tabIndex="0" aria-label="Dismiss" style="width:24px;height:24px;flex:0 0 24px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.6">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--bg)"><path d="M6 6l12 12M18 6L6 18" stroke-width="2.4" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+          </sc-if>
+
           <sc-if value="{{ celebrating }}">
             <div style="position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:34px 26px;background:var(--bg);animation:nomFade .3s ease-out">
               {{ celebConfetti }}
@@ -1671,6 +1888,16 @@
       return;
     }
 
+    /* data-keep means another library owns this element — Leaflet, for the
+       map container. Leave it alone completely, attributes included: the
+       attribute sync below deletes anything the template does not name, and
+       it was stripping the `leaflet-container` class and `tabindex` Leaflet
+       puts on the container the moment anything else re-rendered. That class
+       carries Leaflet's own overflow, cursor and touch-action rules, so the
+       map lost them on the first state change after it mounted. Nothing in
+       the template's attributes for this node varies anyway. */
+    if (oldNode.hasAttribute('data-keep')) return;
+
     var na = newNode.attributes, i;
     for (i = 0; i < na.length; i++) {
       if (oldNode.getAttribute(na[i].name) !== na[i].value) oldNode.setAttribute(na[i].name, na[i].value);
@@ -1730,7 +1957,9 @@
     placeId: 1,
     filter: 'All',
     mapFilter: 'All',
-    mapPin: 3,
+    // No pin is chosen until one is tapped, so the map opens showing the
+    // country rather than a card for a place nobody asked about.
+    mapPin: null,
     favs: [1, 11],
     chat: [],
     typing: false,
@@ -1745,6 +1974,15 @@
     reviewText: '',
     reviews: {},
     searchQuery: '',
+    // What the last real route or location attempt reported, shown on the map.
+    routeNote: '',
+    // place id -> { loading, ok, stops, error } from 2GIS
+    transport: {},
+    // place id -> { loading, ok, branches, total } — every branch of the chain
+    orgBranches: {},
+    // the branch address just tapped, so the map can mark it
+    activeBranch: null,
+    toast: '',
     chatInput: '',
     speaking: null,
     phraseCat: 'hello',
@@ -1821,25 +2059,99 @@
     return bestScore > 0 ? best : null;
   }
 
-  function ask(q) {
-    var query = (q || '').trim();
-    if (!query) return;
+  /* The written answers this app shipped with. They are no longer the
+     assistant — they are what it says when it cannot reach Gemini, so the
+     prototype still answers on a plane or behind a blocked network. */
+  function cannedAnswer(query) {
     var key = D.answers[query] ? query : matchIntent(query);
     var a = (key && D.answers[key]) || null;
     var L = uiLang();
-    var body = a ? aiOf(key, 'text', a.text)
-      : ((L !== 'en' && D.fallbackText[L]) || D.fallbackAnswer);
-    a = a || { chips: [] };
-    var shown = key ? aiOf(key, 'q', query) : query;
-    setState(function (st) { return { chat: st.chat.concat([{ who: 'me', text: shown }]), typing: true, chatInput: '' }; });
+    return {
+      key: key,
+      body: a ? aiOf(key, 'text', a.text) : ((L !== 'en' && D.fallbackText[L]) || D.fallbackAnswer),
+      chips: (a && a.chips) || [],
+      itin: !!(a && a.itin)
+    };
+  }
+
+  /** Why the real assistant could not answer, in one line the user can act on. */
+  function offlineNote(reason, detail) {
+    if (reason === 'nokey') return 'Offline answer — add a Gemini key to get live ones.';
+    if (reason === 'quota') return 'Offline answer — the Gemini key is out of free quota for today.';
+    if (reason === 'badkey') return 'Offline answer — Google rejected the Gemini key.';
+    return 'Offline answer — could not reach Gemini' + (detail ? ' (' + detail + ')' : '') + '.';
+  }
+
+  /**
+   * Ask for the key once, the first time someone uses the assistant without
+   * one. It is stored in this browser only — never in a file, because every
+   * file here is downloadable by anyone who opens the app.
+   */
+  var keyAsked = false;
+  function promptForKey(retryQuestion) {
+    if (keyAsked || !ENG) return;
+    keyAsked = true;
     setTimeout(function () {
+      var k = window.prompt(
+        'Paste a Gemini API key to turn on the live assistant.\n\n' +
+        'Get one free at aistudio.google.com/apikey\n' +
+        'It is saved in this browser only. Leave empty to keep using offline answers.'
+      );
+      if (k && k.trim()) {
+        ENG.setApiKey(k);
+        if (retryQuestion) ask(retryQuestion);
+      }
+    }, 300);
+  }
+
+  function ask(q) {
+    var query = (q || '').trim();
+    if (!query) return;
+
+    var canned = cannedAnswer(query);
+    var shown = canned.key ? aiOf(canned.key, 'q', query) : query;
+
+    setState(function (st) {
+      return { chat: st.chat.concat([{ who: 'me', text: shown }]), typing: true, chatInput: '' };
+    });
+
+    if (!ENG) {
+      // Engine missing entirely (a file failed to load) — behave as before.
+      setTimeout(function () {
+        setState(function (st) {
+          return { typing: false, chat: st.chat.concat([{ who: 'ai', text: canned.body, chips: canned.chips, itin: canned.itin }]) };
+        });
+      }, 400);
+      return;
+    }
+
+    ENG.ask(query, function (res) {
       setState(function (st) {
-        return {
-          typing: false,
-          chat: st.chat.concat([{ who: 'ai', text: body, chips: a.chips || [], itin: !!a.itin }])
-        };
+        var msg;
+        if (res.offline) {
+          // Fall back to the written answer, and say why it is not the live one
+          // rather than passing an offline reply off as the assistant's.
+          msg = {
+            who: 'ai',
+            text: canned.body,
+            chips: canned.chips,
+            itin: canned.itin,
+            note: offlineNote(res.reason, res.detail)
+          };
+          if (res.reason === 'nokey') promptForKey(query);
+        } else {
+          msg = {
+            who: 'ai',
+            text: res.text,
+            // Places the answer actually named become the tappable chips the
+            // design already renders under a reply.
+            chips: (res.places || []).map(function (p) { return p.name; }),
+            itin: false
+          };
+        }
+        return { typing: false, chat: st.chat.concat([msg]) };
       });
-    }, 950);
+    });
   }
 
   function sendChat() { ask(state.chatInput); }
@@ -1868,6 +2180,22 @@
       clipEl = el;
       el.onended = clear;
       el.onerror = clear;
+
+      /* Seek past the room tone the recordings open with — about a second
+         of it, which played as silence and read as a broken button. The
+         offsets are measured per clip in phrase-audio.js.
+
+         The seek has to wait for enough of the clip to be readable;
+         setting currentTime before then is silently ignored. */
+      var lead = (window.NOMAD_PHRASE_LEADIN || {})[item.id] || 0;
+      if (lead > 0) {
+        var seek = function () {
+          try { if (el.currentTime < lead) el.currentTime = lead; } catch (e) { /* not seekable yet */ }
+        };
+        if (el.readyState >= 1) seek();
+        else el.addEventListener('loadedmetadata', seek, { once: true });
+      }
+
       setState({ speaking: item.id });
       var p = el.play();
       if (p && p.catch) p.catch(clear);
@@ -2235,89 +2563,561 @@
     });
   }
 
+  /* ── Category colour ──────────────────────────────────────────────────
+     The engine owns the palette so the pin on the map and the dot on a card
+     can never drift apart. */
+
+  function catColourOf(cat) {
+    return (ENG && ENG.catColour) ? ENG.catColour(cat) : { fill: '#A03D4E', ring: '#6E2734' };
+  }
+
+  /** A small filled circle in the category's colour. */
+  function catDotCss(cat, size, hollow) {
+    var c = catColourOf(cat);
+    return 'display:inline-block;flex:0 0 ' + size + 'px;width:' + size + 'px;height:' + size +
+      'px;border-radius:50%;background:' + (hollow ? 'var(--surface)' : c.fill) +
+      ';border:' + (hollow ? '2.5px' : '1.5px') + ' solid ' + c.ring + ';box-sizing:border-box';
+  }
+
+  /** The category pill on the place screen, tinted to match its pin. */
+  function catChipCss(cat) {
+    var c = catColourOf(cat);
+    return 'display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:99px;' +
+      'background:' + c.fill + '1F;font-size:11.5px;font-weight:700;letter-spacing:.02em;color:' + c.ring;
+  }
+
+  /* ── Public transport ─────────────────────────────────────────────────
+     Bishkek's marshrutkas are gone. Rather than swap one hand-written
+     paragraph for another that will also age, the stops near a place and
+     the routes calling at them are read from 2GIS when the place opens. */
+
+  var TR = window.Nomad2GIS || null;
+
+  /** Ask for the stops around a place, once, and re-render when they land. */
+  function loadTransport(p) {
+    if (!TR || !TR.enabled() || !p || typeof p.lat !== 'number') return;
+    var id = p.id;
+    if (state.transport[id]) return;                 // already have it or asking
+    setState(function (st) {
+      var next = Object.assign({}, st.transport);
+      next[id] = { loading: true };
+      return { transport: next };
+    });
+    TR.stopsNear(p.lat, p.lng, function (res) {
+      setState(function (st) {
+        var next = Object.assign({}, st.transport);
+        next[id] = { loading: false, ok: res.ok, stops: res.stops || [], error: res.error };
+        return { transport: next };
+      });
+    });
+  }
+
+  /**
+   * Ask 2GIS for every branch of the business at `p`, once per language.
+   *
+   * Addresses come back in the reader's language — Kyrgyz and Russian from
+   * 2GIS directly, English transliterated, since 2GIS has no English for
+   * Kyrgyzstan. Keying the cache by language means switching it re-asks
+   * rather than leaving Cyrillic on an English screen.
+   */
+  function loadBranches(p) {
+    if (!TR || !TR.enabled() || !p || typeof p.lat !== 'number') return;
+    var lang = uiLang();
+    var key = p.id + ':' + lang;
+    if (state.orgBranches[key]) return;
+    setState(function (st) {
+      var next = Object.assign({}, st.orgBranches);
+      next[key] = { loading: true };
+      return { orgBranches: next };
+    });
+    TR.branchesOf(p, lang, function (res) {
+      setState(function (st) {
+        var next = Object.assign({}, st.orgBranches);
+        next[key] = { loading: false, ok: res.ok, branches: res.branches || [], total: res.total || 0 };
+        return { orgBranches: next };
+      });
+    });
+  }
+
+  /** Whatever branches we hold for this place in the current language. */
+  function branchEntry(p) {
+    return p ? state.orgBranches[p.id + ':' + uiLang()] : null;
+  }
+
+  /* ── Chain branches ───────────────────────────────────────────────────
+     nomad-branches.js carries the locations the bot listed as text. */
+
+  /**
+   * Every branch of a place.
+   *
+   * 2GIS is the source when it has matched the business — it knows far
+   * more chains than the two the bot happened to spell out, and its
+   * coordinates are the real shopfronts rather than geocoded street
+   * addresses. nomad-branches.js remains the fallback for those two, so
+   * the app still shows them with no key or no network.
+   */
+  function placeBranches(p) {
+    if (!p) return [];
+    var live = branchEntry(p);
+    if (live && live.ok && live.branches.length) {
+      // The one this screen is about is not an "other branch".
+      return live.branches.filter(function (b) { return !b.isThisOne; });
+    }
+    return (ENG && ENG.branchesOf) ? ENG.branchesOf(p.id) : [];
+  }
+
+  /**
+   * The address line for a place.
+   *
+   * A chain's `addr` is the whole branch list — "Сеть кофеен, филиалы:\n•
+   * Уметалиева 74\n• …" — which the address row rendered as one squashed
+   * run-on. The branches have their own section now, so only the chain's
+   * own description is kept here.
+   */
+  function addrOf(p) {
+    var addr = (p && p.addr) || '';
+    if (!placeBranches(p).length) return addr;
+    return addr.split('\n')[0].replace(/[,\s]*(филиалы|branches)\s*:?\s*$/i, '').trim() || addr;
+  }
+
+  /**
+   * How far a branch is.
+   *
+   * From the traveller when their position is known. Otherwise from the
+   * branch they are reading about, which is what 2GIS measured and reads
+   * naturally under a heading of "other branches" — the alternative was a
+   * list with no distances at all whenever location is off.
+   */
+  function branchDistance(b) {
+    if (ENG && ENG.position()) {
+      return ENG.formatKm(ENG.distanceKm(ENG.position(), { lat: b.lat, lng: b.lng }));
+    }
+    if (typeof b.metres === 'number' && ENG) return ENG.formatKm(b.metres / 1000);
+    return '';
+  }
+
+  /** Open the map on the chain, centred on the branch that was tapped. */
+  function showBranchOnMap(place, branch) {
+    setState(function (st) {
+      return { screen: 'map', mapPin: place.id, mapFilter: 'All', routeNote: '',
+        activeBranch: branch.addr, stack: st.stack.concat([st.screen]) };
+    });
+    if (ENG) ENG.drawRoute(null);
+    lastMapFit = null;
+    // After the map has mounted and the branch rings are drawn.
+    setTimeout(function () { if (ENG) ENG.panTo(branch.lat, branch.lng); }, 260);
+  }
+
+  /* ── Toast ────────────────────────────────────────────────────────────
+     One line, bottom of the phone, gone after a few seconds. Used where an
+     action leaves the app and the browser gives no sign it worked. */
+
+  var toastTimer = null;
+  function toast(msg, ms) {
+    if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+    setState({ toast: msg });
+    toastTimer = setTimeout(function () {
+      toastTimer = null;
+      setState({ toast: '' });
+    }, ms || 4200);
+  }
+
+  /* ── Support desk ─────────────────────────────────────────────────────
+     Whoever runs this app, reachable from the Emergency screen. Every
+     channel is optional and driven by nomad-config.js, so nothing here
+     invents a contact detail — an unstaffed number on an emergency screen
+     is worse than no number at all. */
+
+  function supportCfg() { return (window.NOMAD_CONFIG && window.NOMAD_CONFIG.support) || {}; }
+
+  /**
+   * Hand off to another app — WhatsApp, the mail client, Telegram.
+   *
+   * A straight assignment rather than window.open: on a phone that is what
+   * makes the handset switch to WhatsApp immediately instead of opening a
+   * browser tab that then has to redirect. The app is a single page held in
+   * localStorage, so coming back lands exactly where it left off.
+   */
+  function openExternal(url) {
+    window.location.href = url;
+  }
+
+  function waLink(number) {
+    // wa.me wants digits only — a +, a space or a dash and the link dies.
+    return 'https://wa.me/' + String(number).replace(/\D/g, '');
+  }
+
+  /**
+   * Start an email to the support desk.
+   *
+   * `mailto:` only goes anywhere if the device has a mail client registered
+   * for it. On a desktop browser with none — which is most of them now —
+   * the link is silently ignored and the button looks broken. There is no
+   * way to detect that, so this does not rely on it: the address goes to
+   * the clipboard and is named in a toast either way, and the traveller
+   * ends up holding it whatever their machine does with the link.
+   */
+  function emailSupport(address, t) {
+    var url = 'mailto:' + address + '?subject=' + encodeURIComponent('Nomad AI — help');
+    try { window.location.href = url; } catch (e) { /* no handler — the toast carries it */ }
+    copyText(address, function (copied) {
+      toast(copied ? t.supportEmailCopied.replace('{email}', address)
+                   : t.supportEmailIs.replace('{email}', address), 7000);
+    });
+  }
+
+  /** The desk's numbers, each offering WhatsApp and a plain call. */
+  function supportNumbers(t) {
+    var s = supportCfg();
+    return (s.numbers || []).filter(function (n) { return n && (n.whatsapp || n.dial); })
+      .map(function (n) {
+        return {
+          label: n.label || n.dial,
+          hasWhatsapp: !!n.whatsapp,
+          waLabel: 'Message support on WhatsApp at ' + (n.label || n.dial),
+          callLabel: 'Call support on ' + (n.label || n.dial),
+          wa: function (e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            openExternal(waLink(n.whatsapp));
+          },
+          call: function (e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            callNumber(n.dial || n.label, t.supportName);
+          }
+        };
+      });
+  }
+
+  /** Everything that is not a phone number: email, Telegram, the assistant. */
+  function supportChannels(t) {
+    var s = supportCfg();
+    var list = [];
+
+    if (s.telegram) {
+      list.push({ key: 'telegram', name: 'Telegram', icon: '✈', label: 'Message support on Telegram',
+        go: function () { openExternal('https://t.me/' + String(s.telegram).replace(/^@/, '')); } });
+    }
+    if (s.email) {
+      list.push({ key: 'email', name: t.supportEmail, icon: '✉', label: 'Email support at ' + s.email,
+        go: function () { emailSupport(s.email, t); } });
+    }
+
+    /* Always last, always present: it needs nothing configured, and with no
+       desk set up at all it is the only thing here that can help. */
+    list.push({
+      key: 'ai', name: t.supportAsk, icon: '✦', label: 'Ask the assistant for help',
+      go: function () { jump('ai'); }
+    });
+
+    return list.map(function (c) {
+      return Object.assign(c, {
+        css: 'display:flex;align-items:center;gap:8px;padding:11px 15px;border-radius:13px;cursor:pointer;' +
+          'font-size:13px;font-weight:700;white-space:nowrap;' +
+          'background:var(--surface);color:var(--ink);border:1px solid var(--line)',
+        iconCss: 'font-size:13px;line-height:1;opacity:.95'
+      });
+    });
+  }
+
+  /* ── Emergency ────────────────────────────────────────────────────────
+     The design drew these as buttons but wired none of them. */
+
+  /**
+   * Place a call.
+   *
+   * On a phone `tel:` opens the dialer. A desktop browser usually does
+   * nothing at all, so the number is copied and named in a toast — the
+   * traveller can still read it out or dial it on another handset, which is
+   * the one thing that must never fail on this screen.
+   */
+  function callNumber(number, label) {
+    var plain = String(number).replace(/[^\d+]/g, '');
+    var said = label ? label + ' · ' + number : number;
+    try { window.location.href = 'tel:' + plain; } catch (e) { /* blocked — the toast still carries the number */ }
+    copyText(number, function (copied) {
+      toast(copied ? 'Calling ' + said + '. Number copied to the clipboard.'
+                   : 'Calling ' + said + '.');
+    });
+  }
+
+  function copyText(text, cb) {
+    function done(ok) { if (cb) cb(ok); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      return;
+    }
+    done(false);
+  }
+
+  /**
+   * Share where the traveller is, for the emergency screen.
+   *
+   * Uses the platform share sheet when there is one; otherwise the link goes
+   * to the clipboard. Without a fix the note says so rather than sharing the
+   * middle of Bishkek as if it were the user's position.
+   */
+  function shareLocation() {
+    if (!ENG) return;
+    function send(pos) {
+      if (!pos) {
+        toast(ENG.geoMessage() || 'Your position could not be determined, so there is nothing to share yet.');
+        return;
+      }
+      var coords = pos.lat.toFixed(5) + ',' + pos.lng.toFixed(5);
+      var link = 'https://www.openstreetmap.org/?mlat=' + pos.lat.toFixed(5) + '&mlon=' + pos.lng.toFixed(5) + '#map=17/' + coords.replace(',', '/');
+      var text = 'I am at ' + coords + ' — ' + link;
+      if (navigator.share) {
+        navigator.share({ title: 'My location', text: text, url: link })
+          .then(function () { toast('Location shared.'); })
+          .catch(function () { /* the sheet was dismissed — say nothing */ });
+        return;
+      }
+      copyText(text, function (ok) {
+        toast(ok ? 'Location copied: ' + coords + '. Paste it to whoever needs it.'
+                 : 'Your location is ' + coords + '.', 7000);
+      });
+    }
+    if (ENG.position()) send(ENG.position());
+    else { toast('Finding your location…', 2000); ENG.locate(send); }
+  }
+
   /* ── Map interaction ──────────────────────────────────────────────────
      Pan, wheel/pinch zoom and pin focus. The transform is applied straight
      to the layer rather than held in state — dragging must not re-render the
      app sixty times a second. */
 
-  var mapView = { x: 0, y: 0, z: 1 };
-  var MAP_MIN = 0.6, MAP_MAX = 2.6;
+  /* The map used to be a drawing: a CSS grid with the pins positioned at
+     hand-measured pixel offsets, panned and zoomed by transforming the layer.
+     It is now a real OpenStreetMap. Leaflet handles dragging, wheel zoom and
+     double-tap itself, so all that is left here is pointing the app's own
+     buttons at it — nomad-engine.js owns the map object. */
+  var ENG = window.NomadEngine || null;
 
-  function applyMapView(el, animate) {
-    if (!el) return;
-    el.style.transition = animate ? 'transform .38s cubic-bezier(.22,.7,.2,1)' : 'none';
-    el.style.transform = 'translate(' + mapView.x + 'px,' + mapView.y + 'px) scale(' + mapView.z + ')';
-  }
   function mapEl() { return root && root.querySelector('[data-ref="mapLayer"]'); }
 
-  function mapZoomTo(z, cx, cy, animate) {
+  /**
+   * Centre the map on the traveller.
+   *
+   * With no position yet this used to quietly fit the whole country instead,
+   * which looked like the button was broken — and once a first refusal had
+   * been remembered there was no way left in the app to turn location on at
+   * all. Asking is now what the button does when there is nothing to centre
+   * on, and the outcome is reported either way.
+   */
+  function mapRecenter() {
+    if (!ENG) return;
+    if (ENG.position()) { ENG.recenter(); return; }
+    requestLocation();
+  }
+
+  /** Ask for the position, and say what happened. */
+  function requestLocation(after) {
+    if (!ENG) return;
+    if (!ENG.canAsk()) { setState({ routeNote: ENG.geoMessage() }); return; }
+    setState({ routeNote: 'Looking for your location…' });
+    ENG.locate(function (pos) {
+      if (pos) {
+        ENG.recenter();
+        setState({ routeNote: '' });
+        toast('Located you. Distances are now measured from where you are.');
+        if (after) after(pos);
+      } else {
+        setState({ routeNote: ENG.geoMessage() });
+      }
+    });
+  }
+
+  // Bring the selected place into the middle of the visible map area.
+  function mapFocusPin(pin) { if (ENG && pin) ENG.focusPlace(pin.id); }
+
+  /**
+   * Draw a real road route to `target` and report the distance and time.
+   *
+   * Shared by "Get directions" on a place and the Directions button on the
+   * map card. Location is asked for first when we do not have it yet — OSRM
+   * needs a starting point, and refusing is not an error, it is just a note.
+   */
+  function routeToPlace(target) {
+    if (!ENG || !target) return;
+    setState({ routeNote: 'Finding a route…' });
+    function build() {
+      ENG.route([target], 'driving', function (res) {
+        if (res.error) { setState({ routeNote: res.error }); return; }
+        ENG.drawRoute(res.coords);
+        setState({
+          routeNote: ENG.formatKm(res.distanceKm) + ' · ' + Math.round(res.minutes) + ' min by car to ' + target.name
+        });
+      });
+    }
+    if (ENG.position()) build();
+    else ENG.locate(function (pos) { if (pos) build(); else setState({ routeNote: ENG.geoMessage() }); });
+  }
+
+  /* The patcher is positional and unkeyed, so tapping a second pin morphs the
+     new place's text into the card that is already on screen — correct, but
+     completely silent. Replay the entry animation whenever the selection
+     changes so the card visibly answers the tap. */
+  /**
+   * Tell the assistant what is on screen.
+   *
+   * Run after every render so a question typed at any moment is answered
+   * against the view the traveller is actually looking at, rather than in a
+   * vacuum. Cheap: reading Leaflet's bounds and a name list, no work beyond
+   * what the map already knows.
+   */
+  var SCREEN_NAMES = {
+    home: 'Home', search: 'Search', place: 'Place', map: 'Map', ai: 'AI Assistant',
+    itinerary: 'Itinerary', rewards: 'Rewards', challenge: 'Challenge', verify: 'Verify',
+    review: 'Write review', saved: 'Saved places', trips: 'My trips', phrasebook: 'Phrasebook',
+    currency: 'Currency', emergency: 'Emergency', profile: 'Profile'
+  };
+
+  function syncAssistantView() {
+    if (!ENG || !ENG.setView) return;
+    var st = state;
+    var v = { screen: st.screen, screenName: SCREEN_NAMES[st.screen] || st.screen };
+
+    // The map's own centre, zoom and visible places are read live by the
+    // engine when a question is asked — panning does not re-render, so a
+    // copy taken here would be stale.
+    if (st.screen === 'map') {
+      v.filter = st.mapFilter;
+      if (st.routeNote) v.route = st.routeNote;
+    }
+
+    // Whatever place the traveller has in front of them.
+    var subject = null;
+    if (st.screen === 'place') subject = D.places.filter(function (p) { return p.id === st.placeId; })[0];
+    else if (st.screen === 'map' && st.mapPin != null) subject = D.places.filter(function (p) { return p.id === st.mapPin; })[0];
+    if (subject) {
+      v.selected = subject.name;
+      var br = placeBranches(subject);
+      if (br.length) v.branches = br.map(function (b) { return b.addr; });
+
+      // Whatever 2GIS has already told us about this place's stops.
+      var tr = st.transport[subject.id];
+      if (tr && tr.ok && tr.stops && tr.stops.length) {
+        v.stops = tr.stops.slice(0, 4).map(function (s) {
+          var city = s.routes.city.map(function (r) {
+            return r.number + (r.electric ? ' (electric)' : '') + (r.night ? ' (night)' : '');
+          });
+          var bits = [s.name + ' — ' + s.metres + ' m away'];
+          if (city.length) bits.push('city buses: ' + city.join(', '));
+          if (s.routes.regional.length) {
+            bits.push('regional coaches: ' + s.routes.regional.map(function (r) { return r.number + ' to ' + r.to; }).join(', '));
+          }
+          if (s.routes.train.length) bits.push('elektrichka: ' + s.routes.train.map(function (r) { return r.number; }).join(', '));
+          return bits.join(' | ');
+        });
+      }
+    }
+    if (st.screen === 'itinerary') v.day = st.itinDay;
+
+    ENG.setView(v);
+  }
+
+  /**
+   * Keep the floating assistant clear of the map card.
+   *
+   * The card's height is not fixed — a chain adds a scrolling row of branch
+   * chips — so a hard-coded offset put the bubble straight over the card's
+   * name and rating. Measure the card and sit above whatever is there.
+   */
+  function syncAiBubble() {
+    var bubble = root && root.querySelector('[aria-label="Ask the AI assistant"]');
+    if (!bubble) return;
+    var frame = bubble.offsetParent;
+    if (!frame) return;
+
+    /* Always clear the tab bar. A flat 20px put the bubble straight on top
+       of the Profile tab, and the bar's height is not a constant — the iOS
+       home indicator and the Android navigation row are different sizes. */
+    var bar = root.querySelector('[data-ref="tabBar"]');
+    var floor = bar ? bar.offsetHeight : 0;
+
+    var card = state.screen === 'map' ? root.querySelector('[data-ref="mapCardBox"]') : null;
+    if (!card) { bubble.style.bottom = (floor + 14) + 'px'; return; }
+
+    /* Offsets, not getBoundingClientRect. This runs immediately after the
+       render that reveals the card, while the card's entry animation still
+       has it translated 26px down — measuring its rect then reads the
+       animated position and parks the bubble that much too low, straight
+       over the card. offsetTop is layout, which transforms do not touch. */
+    var top = 0, el = card;
+    while (el && el !== frame) { top += el.offsetTop; el = el.offsetParent; }
+
+    bubble.style.bottom = Math.max(floor + 14, Math.round(frame.clientHeight - top + 12)) + 'px';
+  }
+
+  var lastCardPin = null;
+  function syncMapCard() {
+    var box = root && root.querySelector('[data-ref="mapCardBox"]');
+    if (!box) { lastCardPin = null; return; }
+    if (state.mapPin === lastCardPin) return;
+    lastCardPin = state.mapPin;
+    // Assigned in full rather than cleared: box.style IS the inline style the
+    // template wrote the animation into, so setting it back to '' would
+    // delete the animation instead of restoring it.
+    box.style.animation = 'none';
+    void box.offsetWidth;              // forces the restart
+    box.style.animation = CARD_ANIM;
+  }
+  var CARD_ANIM = 'nomCardUp .28s cubic-bezier(.34,1.28,.5,1) both';
+
+  /** Mount or refresh the map. Called after every render of the map screen. */
+  function syncMap() {
+    if (!ENG || !ENG.leafletReady()) return;
     var el = mapEl();
     if (!el) return;
-    var next = Math.max(MAP_MIN, Math.min(MAP_MAX, z));
-    var r = el.getBoundingClientRect();
-    // keep the point under the cursor (or the centre) fixed while scaling
-    var px = (cx === undefined ? r.width / 2 : cx - r.left);
-    var py = (cy === undefined ? r.height / 2 : cy - r.top);
-    // With transform: translate(x,y) scale(z), a layer point L lands at
-    // x + L*z. Holding the screen point p still gives x' = p - (p - x) * k.
-    var k = next / mapView.z;
-    mapView.x = px - (px - mapView.x) * k;
-    mapView.y = py - (py - mapView.y) * k;
-    mapView.z = next;
-    applyMapView(el, animate !== false);
-  }
 
-  function mapRecenter() {
-    mapView.x = 0; mapView.y = 0; mapView.z = 1;
-    applyMapView(mapEl(), true);
-  }
-
-  // Bring the selected pin into the middle of the visible map area.
-  function mapFocusPin(pin) {
-    var el = mapEl();
-    if (!el || !pin) return;
-    var r = el.getBoundingClientRect();
-    mapView.x = r.width / 2 - pin.left * mapView.z;
-    mapView.y = r.height * 0.42 - pin.top * mapView.z;
-    applyMapView(el, true);
-  }
-
-  function wireMap(el) {
-    if (!el || el._mapWired) return;
-    el._mapWired = true;
-    var drag = null;
-
-    el.addEventListener('pointerdown', function (e) {
-      if (e.target.closest('[data-h]')) return;      // let pins take their taps
-      drag = { x: e.clientX, y: e.clientY, ox: mapView.x, oy: mapView.y, moved: false };
-      el.setPointerCapture(e.pointerId);
-      el.style.cursor = 'grabbing';
-    });
-    el.addEventListener('pointermove', function (e) {
-      if (!drag) return;
-      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-      if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
-      mapView.x = drag.ox + dx;
-      mapView.y = drag.oy + dy;
-      applyMapView(el, false);
-    });
-    function end(e) {
-      if (!drag) return;
-      drag = null;
-      el.style.cursor = 'grab';
-      try { el.releasePointerCapture(e.pointerId); } catch (err) { /* already released */ }
+    /* The map screen sizes itself with min-height:100%, which a browser cannot
+       resolve because every ancestor up to the scroller has an automatic
+       height — with the drawn map gone there is no longer enough content to
+       fill it, so the screen collapsed to the height of its controls and the
+       map with it. Give it the scroller's measured height instead. */
+    var screenEl = el.parentElement;
+    var scroller = root && root.querySelector('[data-ref="scrollRef"]');
+    if (screenEl && scroller && scroller.clientHeight) {
+      var h = scroller.clientHeight + 'px';
+      if (screenEl.style.height !== h) {
+        screenEl.style.height = h;
+        ENG.invalidateSize();
+      }
     }
-    el.addEventListener('pointerup', end);
-    el.addEventListener('pointercancel', end);
+    var shown = visibleMapPlaces();
+    // The engine used to look branches up itself, from the two chains the
+    // bot hard-coded; everything 2GIS found drew nothing. Hand it the same
+    // list the cards are showing.
+    var sel = state.mapPin != null
+      ? D.places.filter(function (p) { return p.id === state.mapPin; })[0] : null;
+    ENG.mountMap(el, {
+      places: shown,
+      activeId: state.mapPin,
+      branches: sel ? placeBranches(sel) : null,
+      activeBranch: state.activeBranch,
+      // Tapping a marker reveals its card.
+      onSelect: function (id) { setState({ mapPin: id, routeNote: '', activeBranch: null }); },
+      // Tapping the map itself — anywhere that is not a marker — puts it away.
+      onBackground: function () {
+        if (state.mapPin === null) return;
+        setState({ mapPin: null, routeNote: '', activeBranch: null });
+        ENG.drawRoute(null);
+      },
+      // Only refit when the screen is first opened or the filter changed;
+      // refitting on every render would fight the user's own panning.
+      fit: mapFitKey() !== lastMapFit
+    });
+    lastMapFit = mapFitKey();
+  }
 
-    el.addEventListener('wheel', function (e) {
-      e.preventDefault();
-      mapZoomTo(mapView.z * (e.deltaY < 0 ? 1.16 : 0.86), e.clientX, e.clientY, false);
-    }, { passive: false });
+  var lastMapFit = null;
+  function mapFitKey() { return state.mapFilter + '|' + (state.screen === 'map'); }
 
-    // double-tap / double-click to zoom in
-    el.addEventListener('dblclick', function (e) {
-      mapZoomTo(mapView.z * 1.5, e.clientX, e.clientY, true);
+  function visibleMapPlaces() {
+    var cats = D.mapGroups[state.mapFilter];
+    return D.places.filter(function (p) {
+      if (typeof p.lat !== 'number' || typeof p.lng !== 'number') return false;
+      return !cats || cats.indexOf(p.cat) >= 0;
     });
   }
 
@@ -2378,6 +3178,151 @@
     }
   }
 
+  /* ── Trip routes ──────────────────────────────────────────────────────
+     Each trip card carried the same hand-drawn picture of a route: a CSS
+     grid with two coloured bars and two dots at fixed pixel offsets,
+     identical for all three trips and unrelated to anywhere they go. These
+     build a real one from the coordinates of the places the trip visits. */
+
+  /** The places a trip visits, in order, as far as they can be resolved. */
+  function tripPlaces(trip) {
+    var out = [], seen = {};
+    (trip.route || []).forEach(function (name) {
+      var p = D.places.filter(function (x) { return x.name === name; })[0];
+      if (p && typeof p.lat === 'number' && !seen[p.id]) { seen[p.id] = 1; out.push(p); }
+    });
+    return out;
+  }
+
+  /**
+   * The places one itinerary day visits.
+   *
+   * Its stops are labelled for a reader — "Lunch at Faiza", "Drive to
+   * Ala-Archa" — so each is matched back to the longest place name it
+   * contains. Pass no day to get the whole three-day route.
+   */
+  function itineraryPlaces(day) {
+    var days = day ? [String(day)] : Object.keys(D.itinerary);
+    var out = [], seen = {};
+    days.forEach(function (k) {
+      ((D.itinerary[k] || {}).stops || []).forEach(function (s) {
+        var label = String(s.n).toLowerCase();
+        var hit = D.places.filter(function (p) {
+          return typeof p.lat === 'number' && label.indexOf(p.name.toLowerCase()) >= 0;
+        }).sort(function (a, b) { return b.name.length - a.name.length; })[0];
+        if (hit && !seen[hit.id]) { seen[hit.id] = 1; out.push(hit); }
+      });
+    });
+    return out;
+  }
+
+  /**
+   * A small true-to-shape map of a trip.
+   *
+   * Web Mercator, fitted to the stops with padding, so the drawing is the
+   * real geometry of the journey — a tight cluster for the city days, a long
+   * eastward reach for Issyk-Kul. Returns '' when nothing resolved, and the
+   * card falls back to a plain panel rather than a route to nowhere.
+   */
+  function tripRouteSvg(trip, w, h) {
+    return routeSvg(tripPlaces(trip), w, h, trip.name);
+  }
+
+  function routeSvg(pts, w, h, seed) {
+    if (pts.length < 1) return '';
+
+    /* Both axes in radians. Mercator's y is derived from radians, so feeding
+       it degrees of longitude would make x ~57× too large and flatten every
+       route into a horizontal line. */
+    function projY(lat) {
+      var r = lat * Math.PI / 180;
+      return Math.log(Math.tan(Math.PI / 4 + r / 2));
+    }
+    var xs = pts.map(function (p) { return p.lng * Math.PI / 180; });
+    var ys = pts.map(function (p) { return projY(p.lat); });
+    var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+    var padX = 26, padY = 22;
+    var spanX = maxX - minX, spanY = maxY - minY;
+
+    // A single stop, or several within a few hundred metres, would divide by
+    // ~0 and fling the points off-canvas; give those a minimum span so the
+    // cluster sits sensibly in the middle instead. Radians — about 1.3 km.
+    var MIN_SPAN = 0.0002;
+    if (spanX < MIN_SPAN) { var cx = (minX + maxX) / 2; minX = cx - MIN_SPAN / 2; spanX = MIN_SPAN; }
+    if (spanY < MIN_SPAN) { var cy = (minY + maxY) / 2; minY = cy - MIN_SPAN / 2; spanY = MIN_SPAN; }
+
+    // One scale for both axes keeps the shape undistorted.
+    var scale = Math.min((w - padX * 2) / spanX, (h - padY * 2) / spanY);
+    var offX = (w - spanX * scale) / 2, offY = (h - spanY * scale) / 2;
+
+    var xy = pts.map(function (p, i) {
+      return {
+        x: offX + (xs[i] - minX) * scale,
+        // SVG y grows downward; Mercator y grows north.
+        y: h - (offY + (ys[i] - minY) * scale)
+      };
+    });
+
+    var line = xy.map(function (c, i) {
+      return (i ? 'L' : 'M') + c.x.toFixed(1) + ' ' + c.y.toFixed(1);
+    }).join(' ');
+
+    var dots = xy.map(function (c, i) {
+      var first = i === 0, last = i === xy.length - 1;
+      var fill = first ? 'var(--green)' : last ? 'var(--brand)' : 'var(--surface)';
+      var r = first || last ? 5.5 : 3.6;
+      return '<circle cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + r +
+        '" fill="' + fill + '" stroke="var(--surface)" stroke-width="' + (first || last ? 2.5 : 2) + '"/>';
+    }).join('');
+
+    var pid = 'tg' + Math.abs(hashName(seed));
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="100%" ' +
+      'preserveAspectRatio="none" aria-hidden="true" style="display:block">' +
+      '<defs><pattern id="' + pid + '" width="44" height="40" patternUnits="userSpaceOnUse">' +
+      '<path d="M44 0 V40 M0 40 H44" stroke="var(--line)" stroke-width="1" fill="none"/></pattern></defs>' +
+      '<rect width="' + w + '" height="' + h + '" fill="url(#' + pid + ')"/>' +
+      (xy.length > 1
+        ? '<path d="' + line + '" fill="none" stroke="var(--brand)" stroke-width="3.5" ' +
+          'stroke-linecap="round" stroke-linejoin="round" opacity=".95"/>'
+        : '') +
+      dots + '</svg>';
+  }
+
+  // Pattern ids have to differ per card or every card reuses the first one.
+  function hashName(s) {
+    var h = 0, str = String(s);
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    return h;
+  }
+
+  /** Open the map and draw a road route through `pts`, labelled `label`. */
+  function showRouteOnMap(label, pts, fallbackScreen) {
+    if (!ENG || pts.length < 2) { if (fallbackScreen) go(fallbackScreen); return; }
+    setState(function (st) {
+      return { screen: 'map', mapPin: null, mapFilter: 'All', stack: st.stack.concat([st.screen]),
+        routeNote: 'Plotting ' + label + '…' };
+    });
+    lastMapFit = null;
+    ENG.route(pts, 'driving', function (res) {
+      if (res.error) {
+        // Still worth showing where it goes even with no road route.
+        ENG.drawRoute(pts.map(function (p) { return [p.lat, p.lng]; }));
+        setState({ routeNote: label + ' · ' + pts.length + ' stops (straight lines — ' + res.error + ')' });
+        return;
+      }
+      ENG.drawRoute(res.coords);
+      setState({
+        routeNote: label + ' · ' + ENG.formatKm(res.distanceKm) +
+          ' · ' + Math.round(res.minutes) + ' min driving · ' + pts.length + ' stops'
+      });
+    });
+  }
+
+  function showTripRoute(trip) {
+    showRouteOnMap(term('trips', trip.name), tripPlaces(trip), 'itinerary');
+  }
+
   function currentTripName() { return tr('en').threeDays; }
   function isTripSaved() {
     return (state.userTrips || []).some(function (t) { return t.name === currentTripName(); });
@@ -2393,7 +3338,8 @@
       cost: fmt(tot.som) + ' som · $' + tot.usd,
       time: '6 h 20 travel',
       active: true,
-      tags: ['Bishkek', 'Ala-Archa', 'Burana']
+      tags: ['Bishkek', 'Ala-Archa', 'Burana'],
+      route: itineraryPlaces().map(function (p) { return p.name; })
     };
     var list = (state.userTrips || []).concat([trip]);
     persistTrips(list);
@@ -2497,8 +3443,10 @@
       var pl = D.places.filter(function (x) { return x.id === mp.id; })[0];
       return pl && mapCats.indexOf(pl.cat) >= 0;
     });
-    var activePin = visiblePins.filter(function (mp) { return mp.id === st.mapPin; })[0] || visiblePins[0] || null;
-    var pin = (activePin && D.places.filter(function (p) { return p.id === activePin.id; })[0]) || D.places[0];
+    // Only a pin the traveller tapped — and that the current filter still
+    // shows — puts a card on screen. Nothing selected means no card.
+    var activePin = visiblePins.filter(function (mp) { return mp.id === st.mapPin; })[0] || null;
+    var pin = activePin ? D.places.filter(function (p) { return p.id === activePin.id; })[0] || null : null;
 
     var xp = earnedXp();
     var lvl = levelOf(xp);
@@ -2671,7 +3619,14 @@
 
       goHome: function () { jump('home'); },
       goSearch: function () { go('search'); },
-      goMap: function () { go('map'); },
+      // "Get directions" on a place: open the map on that place and ask OSRM
+      // for a real road route from where the traveller actually is.
+      goMap: function () {
+        var target = place;
+        setState({ screen: 'map', mapPin: target.id, stack: st.stack.concat([st.screen]) });
+        lastMapFit = null;                       // let the map re-centre on it
+        routeToPlace(target);
+      },
       goMapTab: function () { jump('map'); },
       goAi: function () { jump('ai'); },
       goAiTab: function () { jump('ai'); },
@@ -2730,8 +3685,32 @@
       pName: place.name, pCat: catOf(place.cat), pRating: place.rating.toFixed(1),
       pReviews: place.reviews + (st.reviews[place.id] || []).length,
       pDist: micro(place.dist), pPrice: micro(place.price), pHours: micro(place.hours), pTravel: micro(place.travel),
-      pDesc: descOf(place), pAddr: place.addr, pDishes: place.dishes.map(function (x) { return term('dishes', x); }), pListTitle: listTitleOf(place.listTitle),
+      pDesc: descOf(place), pAddr: addrOf(place), pDishes: place.dishes.map(function (x) { return term('dishes', x); }), pListTitle: listTitleOf(place.listTitle),
       pSlot: place.slot, pPh: place.ph,
+      pCatCss: catChipCss(place.cat),
+      pCatDot: catDotCss(place.cat, 8),
+      pPhotoIsRep: !!(window.isRepresentativePhoto && window.isRepresentativePhoto(place.slot)),
+
+      /* The branches this chain has beyond the address above. */
+      pHasBranches: placeBranches(place).length > 0,
+      pBranchesLoading: !!(branchEntry(place) && branchEntry(place).loading),
+      pBranchCount: (function () {
+        var n = placeBranches(place).length;
+        var live = branchEntry(place);
+        // 2GIS reports the chain's own total, which can exceed what one
+        // query returns; say so rather than implying the list is all of it.
+        var total = live && live.ok ? live.total : 0;
+        return total > n + 1 ? (n + ' ' + t.ofWord + ' ' + (total - 1)) : (n + ' ' + t.moreWord);
+      })(),
+      pBranches: placeBranches(place).map(function (b) {
+        return {
+          addr: b.addr,
+          isApprox: /approx/.test(b.geo || ''),
+          dist: branchDistance(b),
+          dot: catDotCss(place.cat, 10, true),
+          go: function () { showBranchOnMap(place, b); }
+        };
+      }),
       pHeart: st.favs.indexOf(place.id) >= 0 ? '#A03D4E' : 'none',
       pFav: function () { toggleFav(place.id); },
       pFavLabel: st.favs.indexOf(place.id) >= 0 ? 'Remove ' + place.name + ' from saved' : 'Save ' + place.name,
@@ -2746,13 +3725,40 @@
       }),
 
       mapFilters: ['All', 'Food', 'Stay', 'Parks', 'Culture', 'Markets'].map(function (mname) {
-        return { name: term('filters', mname), go: function () { setState({ mapFilter: mname }); }, css: chipCss(st.mapFilter === mname) };
+        return {
+          name: term('filters', mname),
+          /* Changing category clears the route with it. It used to survive:
+             ask for directions to a park, switch to Food, and the line to
+             the park stayed drawn across a map that no longer showed it,
+             with its distance still in the note above. */
+          go: function () {
+            if (st.mapFilter === mname) return;
+            setState({ mapFilter: mname, mapPin: null, routeNote: '' });
+            if (ENG) ENG.drawRoute(null);
+          },
+          css: chipCss(st.mapFilter === mname)
+        };
       }),
       hasPins: visiblePins.length > 0,
       noPins: visiblePins.length === 0,
+
+      /* Legend for the pin colours, built from what is actually on screen
+         and ordered by how many pins each category has. */
+      mapLegend: (function () {
+        var counts = {};
+        visiblePins.forEach(function (mp) {
+          var pl = D.places.filter(function (x) { return x.id === mp.id; })[0];
+          if (pl) counts[pl.cat] = (counts[pl.cat] || 0) + 1;
+        });
+        return Object.keys(counts)
+          .sort(function (a, b) { return counts[b] - counts[a]; })
+          .map(function (cat) {
+            return { name: catOf(cat), dot: catDotCss(cat, 9) };
+          });
+      })(),
       mapRecenter: mapRecenter,
-      mapZoomIn: function () { mapZoomTo(mapView.z * 1.35); },
-      mapZoomOut: function () { mapZoomTo(mapView.z / 1.35); },
+      mapZoomIn: function () { if (ENG) ENG.zoomBy(1); },
+      mapZoomOut: function () { if (ENG) ENG.zoomBy(-1); },
       pins: visiblePins.map(function (p) {
         var on = activePin && activePin.id === p.id;
         return {
@@ -2765,9 +3771,83 @@
             (on ? 'var(--brand)' : 'var(--ink2)')
         };
       }),
-      mapCardName: pin.name, mapCardRating: pin.rating.toFixed(1), mapCardCat: catOf(pin.cat),
-      mapCardPrice: micro(pin.price), mapCardSlot: pin.slot, mapCardPh: pin.ph,
-      mapCardGo: function () { openPlace(pin.id); },
+      // The card only exists once a pin has been tapped, so every field below
+      // is read behind `hasMapCard` and `pin` is never dereferenced when null.
+      hasMapCard: !!pin,
+      showMapHint: !pin && visiblePins.length > 0,
+      mapHint: t.tapAPin,
+      mapCardName: pin ? pin.name : '',
+      mapCardRating: pin ? pin.rating.toFixed(1) : '',
+      mapCardCat: pin ? catOf(pin.cat) : '',
+      mapCardDot: pin ? catDotCss(pin.cat, 8) : '',
+      // The rings that appear around the map when a chain is selected.
+      mapCardHasBranches: !!(pin && placeBranches(pin).length),
+      mapCardBranches: pin ? (placeBranches(pin).length + ' ' + t.branchesShown) : '',
+      /* The nearest stop to the selected pin, with its city route numbers.
+         Transport lives on the map now, where geography is. */
+      mapCardHasBus: !!(pin && (st.transport[pin.id] || {}).ok &&
+        (st.transport[pin.id].stops || []).length &&
+        st.transport[pin.id].stops[0].routes.city.length),
+      mapCardBusStop: (function () {
+        var e = pin && st.transport[pin.id];
+        if (!e || !e.ok || !e.stops.length) return '';
+        var s = e.stops[0];
+        return s.name + ' · ' + (ENG ? ENG.formatKm(s.metres / 1000) : s.metres + ' m');
+      })(),
+      mapCardBusRoutes: (function () {
+        var e = pin && st.transport[pin.id];
+        if (!e || !e.ok || !e.stops.length) return '';
+        var city = e.stops[0].routes.city;
+        var nums = city.slice(0, 10).map(function (r) { return r.number; });
+        return nums.join(' · ') + (city.length > nums.length ? ' +' + (city.length - nums.length) : '');
+      })(),
+      mapCardBusGo: function (e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        var entry = pin && st.transport[pin.id];
+        if (entry && entry.stops && entry.stops.length && ENG) {
+          ENG.panTo(entry.stops[0].point.lat, entry.stops[0].point.lng, 17);
+        }
+      },
+
+      mapCardBranchList: (pin ? placeBranches(pin) : []).map(function (b) {
+        return {
+          addr: b.addr,
+          dot: catDotCss(pin.cat, 8, true),
+          go: function (e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            setState({ activeBranch: b.addr });
+            if (ENG) ENG.panTo(b.lat, b.lng, 17);
+          },
+          css: 'flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:11px;' +
+            'background:var(--surface2);white-space:nowrap;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer'
+        };
+      }),
+      mapCardPrice: pin ? micro(pin.price) : '',
+      mapCardSlot: pin ? pin.slot : '',
+      mapCardPh: pin ? pin.ph : '',
+      // `dist` is the written-in string until the browser shares a position,
+      // at which point the engine has replaced it with a measurement.
+      hasMapCardDist: !!(pin && pin.dist),
+      mapCardDist: pin ? pin.dist : '',
+      mapCardGo: function () { if (pin) openPlace(pin.id); },
+      mapCardClose: function (e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        setState({ mapPin: null, routeNote: '' });
+        if (ENG) ENG.drawRoute(null);
+      },
+      mapCardRoute: function (e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        if (pin) routeToPlace(pin);
+      },
+      routeNote: st.routeNote,
+      hasRouteNote: !!st.routeNote,
+
+      /* Offered whenever the app has no position — whether it was refused,
+         failed, or was never asked for. */
+      showLocateCta: !!(ENG && !ENG.position()),
+      locateTitle: ENG && !ENG.canAsk() ? t.locationBlocked : t.useMyLocation,
+      locateSub: ENG && !ENG.canAsk() ? ENG.geoMessage() : t.useMyLocationSub,
+      locateMe: function () { requestLocation(); },
 
       hasChat: st.chat.length > 0,
       isEmpty: st.chat.length === 0,
@@ -2778,6 +3858,7 @@
       chatMsgs: st.chat.map(function (m) {
         return {
           text: m.text, isMe: m.who === 'me', isAi: m.who === 'ai', hasItin: !!m.itin,
+          hasNote: !!m.note, note: m.note || '',
           hasChips: !!(m.chips && m.chips.length),
           chips: (m.chips || []).map(function (c) { return { name: c, go: function () { byName(c); } }; }),
           css: m.who === 'me'
@@ -2785,7 +3866,12 @@
             : 'align-self:stretch;font-size:14.5px;line-height:1.62;color:var(--ink);white-space:pre-line'
         };
       }),
-      resetChat: function () { setState({ chat: [], chatInput: '', typing: false }); },
+      resetChat: function () {
+        // Clearing the thread has to clear what the model remembers of it too,
+        // or the "new" conversation still answers as if the old one happened.
+        if (ENG && ENG.resetHistory) ENG.resetHistory();
+        setState({ chat: [], chatInput: '', typing: false });
+      },
       chatInput: st.chatInput,
       setChatInput: function (e) { setState({ chatInput: e.target.value }); },
       chatKeyDown: chatKey,
@@ -2802,6 +3888,18 @@
             (st.itinDay === d ? 'background:var(--brand);color:var(--brandInk);box-shadow:var(--shadow)' : 'background:var(--surface);border:1px solid var(--line);color:var(--ink2)')
         };
       }),
+      /* The itinerary's own route maps, drawn from the stops rather than the
+         one hand-placed line the design used for every day. */
+      itinHasRoute: itineraryPlaces().length > 0,
+      itinRouteMap: raw(routeSvg(itineraryPlaces(), 360, 136, 'itin-all')),
+      itinRouteMapSmall: raw(routeSvg(itineraryPlaces(), 320, 112, 'itin-chat')),
+      itinShowAll: function () { showRouteOnMap(t.threeDays, itineraryPlaces()); },
+      itinDayHasRoute: itineraryPlaces(st.itinDay).length > 1,
+      itinShowDay: function () {
+        showRouteOnMap(t.dayWord + ' ' + st.itinDay + ' · ' + moreOf('themes', day.theme, day.theme),
+          itineraryPlaces(st.itinDay));
+      },
+
       itinTheme: moreOf('themes', day.theme, day.theme), itinCost: micro(day.cost), itinWalk: micro(day.walk),
       itinStops: day.stops.map(function (x, i) {
         return {
@@ -2944,11 +4042,20 @@
       }),
 
       trips: allTrips().map(function (trip) {
+        var routeSvg = tripRouteSvg(trip, 360, 112);
         return {
           name: term('trips', trip.name), when: term('trips', trip.when),
           cost: micro(trip.cost), time: micro(trip.time),
           stops: trip.stops + ' ' + t.stopsWord, isActive: trip.active, tags: trip.tags,
-          go: function () { go('itinerary'); },
+          /* The card reads these as t.activeCaps / t.estCost / t.travelCaps,
+             but inside <sc-for as="t"> the loop variable shadows the strings
+             table, so they resolved to nothing and the ACTIVE pill and both
+             captions rendered blank. Carried on the trip itself instead. */
+          activeCaps: t.activeCaps, estCost: t.estCost, travelCaps: t.travelCaps,
+          hasRoute: !!routeSvg,
+          routeMap: routeSvg ? raw(routeSvg) : '',
+          // Tapping a trip now puts its actual route on the real map.
+          go: function () { showTripRoute(trip); },
           css: 'border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid ' +
             (trip.active ? 'var(--brand)' : 'var(--line)') + ';box-shadow:var(--shadow);cursor:pointer'
         };
@@ -2982,6 +4089,14 @@
       rText: st.reviewText,
       setRText: function (e) { setState({ reviewText: e.target.value }); },
       rPost: function () { postReview(place); },
+      // The two slots beside it already take a dropped file or a double
+      // click; this makes the same picker reachable by a single tap.
+      rAddPhoto: function () {
+        if (!window.imageSlotBrowse) return;
+        if (!window.imageSlotBrowse(['v2-rev-a', 'v2-rev-b'])) {
+          toast('Photo slots are not ready yet — try again in a moment.');
+        }
+      },
 
       celebrating: !!st.celebrate,
       celebArt: st.celebrate ? badgeArt(st.celebrate, 168, false) : null,
@@ -2995,6 +4110,44 @@
       },
       celebRays: raw(celebRaysHtml()),
       celebConfetti: raw(celebConfettiHtml()),
+
+      /* Floating assistant. Only where it adds something: the home screen
+         and the map. It lifts clear of the map card when one is open, and
+         sits left of the zoom column so it never covers a control. */
+      showAiBubble: (s === 'home' || s === 'map') && !st.onboarding && !st.celebrate,
+      aiBubbleHasLabel: s === 'map',
+      aiBubbleLabel: t.askAboutMap,
+      /* The map's bottom offset is a starting value only — the card's height
+         varies with what is on it (a chain adds a row of branch chips), so
+         syncAiBubble() measures the card after every render and lifts the
+         bubble clear of whatever is actually there. */
+      aiBubbleCss: 'position:absolute;z-index:12;right:18px;' +
+        (s === 'map' ? (pin ? 'bottom:238px;' : 'bottom:126px;') : 'bottom:20px;') +
+        'display:flex;align-items:center;gap:9px;height:52px;padding:0 18px;border-radius:99px;' +
+        'background:var(--brand);box-shadow:var(--shadowLg);cursor:pointer;' +
+        'transition:bottom .28s cubic-bezier(.4,0,.2,1);animation:nomCardUp .3s cubic-bezier(.34,1.28,.5,1) both',
+      goAiFromBubble: function () { jump('ai'); },
+
+      hasToast: !!st.toast,
+      toast: st.toast,
+      closeToast: function () {
+        if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+        setState({ toast: '' });
+      },
+
+      /* Our own support desk, above the national numbers. */
+      supportTitle: supportCfg().name || t.supportName,
+      supportSub: supportCfg().hours ? (t.supportSub + ' · ' + supportCfg().hours) : t.supportSub,
+      supportNumbers: supportNumbers(t),
+      supportChannels: supportChannels(t),
+
+      /* Emergency — every one of these was drawn but inert. */
+      call112: function () { callNumber('112', t.allServices); },
+      call103: function () { callNumber('103', t.ambulance); },
+      call102: function () { callNumber('102', t.police); },
+      call101: function () { callNumber('101', t.fire); },
+      callTourist: function () { callNumber('+996 705 00 91 02', t.touristPolice); },
+      shareLocation: shareLocation,
 
       visitedCount: String(D.badgeList.reduce(function (n, b) { return n + verifiedCount(b.kind); }, 0)),
       menu: [
@@ -3059,13 +4212,34 @@
       prevObStep = -1;
     }
 
-    // The map layer is recreated whenever the screen mounts, so re-attach the
-    // gesture handlers and restore the current pan/zoom.
-    var map = mapEl();
-    if (map) { wireMap(map); applyMapView(map, false); }
+    // Mount the real map, or refresh its markers if it is already mounted.
+    syncMap();
+    syncMapCard();
+    syncAiBubble();
+    syncAssistantView();
+
+    // Look up the buses for whatever place is open. Cached per place, so
+    // re-renders and revisits cost nothing.
+    if (state.screen === 'place') {
+      loadBranches(D.places.filter(function (p) { return p.id === state.placeId; })[0]);
+    }
+    /* Transport belongs to the map, so it is fetched for whatever pin is
+       selected there — that is where the card shows it, and where the
+       assistant is asked "which bus gets me here". */
+    if (state.screen === 'map' && state.mapPin != null) {
+      var sel = D.places.filter(function (p) { return p.id === state.mapPin; })[0];
+      loadBranches(sel);
+      loadTransport(sel);
+    }
 
     var scroller = root.querySelector('[data-ref="scrollRef"]');
     if (prevScreen !== state.screen) {
+      // A phrase runs five to nine seconds; leaving the phrasebook used to
+      // let it carry on playing over whatever screen came next.
+      if (prevScreen === 'phrasebook' && state.speaking) {
+        stopAudio();
+        state.speaking = null;
+      }
       prevScreen = state.screen;
       if (scroller) scroller.scrollTop = 0;
       var el = root.querySelector('[data-ref="screenRef"]');
@@ -3142,6 +4316,16 @@
     wireEvents();
     prevScreen = state.screen;
     draw();
+
+    if (ENG) {
+      // The engine rewrites every place's distance once the browser says where
+      // we are; re-draw so the written-in "0.8 km" strings become measurements.
+      ENG.onChange(function () { setState({}); });
+      // Asked for at startup rather than on the map screen, because the home
+      // list shows distances too. A refusal is not an error: the app keeps the
+      // distances the design shipped with.
+      ENG.locate();
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

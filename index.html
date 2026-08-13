@@ -2,25 +2,108 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- viewport-fit=cover lets the installed app paint under the notch; the
+     screen pads itself back out with env(safe-area-inset-*). -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nomad AI — Kyrgyzstan travel companion</title>
 <link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
+
+<!-- Installable app. theme-color tints the system bars around it; iOS still
+     wants its own meta tags, which Safari reads instead of the manifest. -->
+<link rel="manifest" href="manifest.webmanifest?v=70">
+<meta name="theme-color" content="#F7F3EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#241B18" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Nomad AI">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=30">
+<link rel="stylesheet" href="styles.css?v=70">
+<script>
+/* Marks the document when the app is running installed rather than in a
+   browser tab, so styles.css can drop the prototype's phone frame and the
+   strip of screen names around it. Set here, before first paint, so the
+   installed app never flashes the frame on its way in.
+
+   Two checks: display-mode is the standard, navigator.standalone is what
+   iOS reports instead. `?standalone=1` forces it on for testing in a
+   normal tab. */
+(function () {
+  var mq = window.matchMedia && window.matchMedia('(display-mode: standalone)');
+  var on = (mq && mq.matches) || window.navigator.standalone === true ||
+           /[?&]standalone=1/.test(window.location.search);
+  if (on) document.documentElement.classList.add('nomStandalone');
+  // Installing while the tab is open switches display-mode under our feet.
+  if (mq && mq.addEventListener) {
+    mq.addEventListener('change', function (e) {
+      document.documentElement.classList.toggle('nomStandalone', e.matches);
+    });
+  }
+})();
+</script>
+<!-- Real map tiles. Needs the internet, like the web font above; without it
+     the map does not mount and the rest of the app carries on regardless. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 <div id="root"></div>
 
 <!-- ?v= busts the browser cache. Bump it after editing any of these, or a
      reload can quietly keep running the previous version. -->
-<script src="data.js?v=30"></script>
-<script src="phrase-audio.js?v=30"></script>
-<script src="badges.js?v=30"></script>
-<script src="photos.js?v=30"></script>
-<script src="image-slot.js?v=30"></script>
-<script src="app.js?v=30"></script>
+<script src="data.js?v=70"></script>
+<script src="phrase-audio.js?v=70"></script>
+<script src="badges.js?v=70"></script>
+<script src="photos.js?v=70"></script>
+<script src="image-slot.js?v=70"></script>
+<!-- The working parts. nomad-places.js carries the real coordinates and the
+     places the bot's database has; nomad-engine.js merges them into the
+     tables above and adds the map, distances, directions and the assistant.
+     Both must load after data.js and before app.js. -->
+<script src="nomad-config.js?v=70"></script>
+<script src="nomad-places.js?v=70"></script>
+<script src="nomad-branches.js?v=70"></script>
+<script src="nomad-2gis.js?v=70"></script>
+<script src="nomad-engine.js?v=70"></script>
+<script src="app.js?v=70"></script>
+<!-- Offers the home-screen install once, after the app is up. -->
+<script src="install.js?v=70"></script>
+
+<!-- The service worker is what makes this installable and lets it open
+     without a connection. It is deliberately last and never blocks the
+     app: if registration fails — no HTTPS, a private window, an old
+     browser — everything above has already run. -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
+      /* A waiting worker means a new build is cached but the old one is
+         still serving. Taking over immediately is right here: the app
+         holds no unsaved work, so there is nothing to lose to a reload. */
+      function take(w) { if (w) w.postMessage('skipWaiting'); }
+      if (reg.waiting) take(reg.waiting);
+      reg.addEventListener('updatefound', function () {
+        var w = reg.installing;
+        if (!w) return;
+        w.addEventListener('statechange', function () {
+          if (w.state === 'installed' && navigator.serviceWorker.controller) take(w);
+        });
+      });
+    })['catch'](function (err) {
+      console.warn('[sw] not registered:', err && err.message);
+    });
+
+    var reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (reloading) return;      // guard: controllerchange can fire twice
+      reloading = true;
+      window.location.reload();
+    });
+  });
+}
+</script>
 </body>
 </html>

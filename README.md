@@ -58,14 +58,95 @@ is no account to create.
 
 ---
 
+## Turning on the assistant
+
+The AI assistant answers for real, through Google's Gemini. It needs a key:
+
+1. Go to <https://aistudio.google.com/apikey> and create a free key.
+2. Open the app, go to **AI Assistant**, and ask anything.
+3. The first time, it asks you to paste the key. Paste it and press OK.
+
+The key is stored **in your browser on this machine only**. It is deliberately
+not written into any file in this folder, because every file here is readable by
+anyone who opens the app.
+
+Without a key — on a plane, or once the free daily quota runs out — the
+assistant falls back to the written answers this prototype has always had, and
+says so in small print under the reply instead of passing them off as live.
+
+> Google's free tier allows roughly 20 questions a day per model, so the app is
+> configured with three and moves to the next automatically when one runs out.
+
+---
+
+## Your support desk
+
+The Emergency screen leads with your own contact details, above the national
+numbers and visibly separate from them — 112 is for an emergency, this is for
+a traveller who is stuck.
+
+Fill in `support` in `nomad-config.js`: a phone number, a WhatsApp number, a
+Telegram handle, an email, and the hours a human answers. Each channel appears
+only once it has a value, so a desk with just Telegram still looks deliberate.
+With none of them filled in, travellers are offered the assistant, which needs
+nothing configured.
+
+Nothing there is invented — put your real details in. An unanswered number on
+an emergency screen is worse than no number.
+
 ## Good to know
 
-- **It works without internet.** Only the fonts come from the web, so offline the
-  text just looks slightly different. Everything else keeps working.
+- **Most of it works without internet.** Offline you lose the map tiles, the
+  directions and the live assistant (which falls back to written answers).
+  Places, search, phrasebook, itineraries and rewards keep working.
+- **The map is a real map.** OpenStreetMap tiles with 62 places at their true
+  coordinates. Drag and zoom it. Tap one of the red pins and a card for that
+  place comes up from the bottom, with its rating, price and how far away it
+  is; from there you can open the place or ask for directions to it. Tap the
+  map itself, or the card's ✕, to put it away again. Pins are coloured by
+  category — blue for places to stay, green for nature, brown for coffee and
+  so on — with a key under the filter chips.
+- **Real bus routes, on the map.** Bishkek retired its marshrutkas, so the app
+  no longer describes them. Tap a pin and its card names the nearest stop and
+  the route numbers that actually call there, read from 2GIS; tap that line to
+  centre the map on the stop. Without a 2GIS key in `nomad-config.js` it
+  simply does not appear.
+- **Chains show all their branches.** Navat has seventeen locations, Bublik
+  nine, Adriano seven — the app used to show one address each. Every branch is
+  looked up in 2GIS when you open a place: the place screen lists them all
+  with distances, and selecting the place on the map draws the rest as hollow
+  rings in the same colour. Tap any branch to centre the map on it.
+- **Trips and the itinerary draw their own routes.** Each card in My trips,
+  and the header on the Itinerary screen, shows the real shape of that
+  journey, drawn from the coordinates of the places it visits. Tap one — or
+  **Show on map** on any single day — and the route is plotted along real
+  roads, with its driving distance and time.
+- **The assistant can see the map.** Tap the floating ✦ button on Home or the
+  map and ask "what's around here?" — it answers from the places actually
+  inside the visible area, knows which place you have open, and knows what
+  route is drawn. Pan or zoom and the answer follows.
+- **Distances are measured.** Allow location when the browser asks and every
+  distance becomes the real one from where you are standing. Said no, or never
+  got asked? The map carries a **Use my location** panel that asks again, and
+  the centre button asks too. Decline, and they
+  stay measured from the middle of Bishkek as before.
+- **Directions follow real roads.** "Get directions" asks a routing service for
+  an actual driving route and draws it on the map.
+- **Location needs a local server.** Browsers block location on a page opened
+  straight from a file, so double-clicking `index.html` keeps the Bishkek-centre
+  distances. See "For developers" below to serve it over `http://localhost`.
 - **The phrasebook talks.** Tap a phrase to hear a native Kyrgyz speaker say it.
   Turn your volume up.
-- **It's a prototype.** The places, prices, and reviews are demo content for
-  showing how the app works — not a live booking system.
+- **Every place has a photograph, and the app tells you which are real.**
+  The landmarks, parks, museums and lakes show a photograph of that actual
+  place. Most of the restaurants, cafes, hostels and malls are private
+  businesses with no free-licensed photograph in existence, so they show a
+  representative image instead — the dish they are known for, or the kind of
+  room you would book. Those carry a **Representative** badge on the picture
+  and a line of explanation on the place screen. Drop your own photo on any
+  image to replace it; yours is never marked. Credits and licences for every
+  bundled photograph are in `img/CREDITS.md`.
+- **Prices and reviews are still demo content** — this is not a booking system.
 - **To get updates later**, just download the ZIP again and replace your folder.
 
 ---
@@ -96,6 +177,13 @@ no package manager.
 index.html         page shell, loads everything below
 app.js             all screens and interaction logic
 data.js            places, phrases, itineraries, badge definitions
+nomad-config.js    models, tile and routing endpoints — the only file to edit
+nomad-places.js    real coordinates + the places from the bot's database
+                   (generated — re-run "npm run export:app" in the nomad-ai
+                   project rather than editing it)
+nomad-engine.js    the working parts: merges the real place data into data.js,
+                   measures distances, mounts the map, asks OSRM for routes,
+                   and runs the Gemini assistant
 phrase-audio.js    base64 pronunciation clips (MP4/AAC)
 badges.js          rewards and challenge rules
 photos.js          photo credits and mapping
