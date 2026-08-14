@@ -20,14 +20,15 @@
    transport departures and routes are not reusable, and a stale one is
    worse than an honest failure. */
 
-var VERSION = 'v31';
+var VERSION = 'v32';
 
 var SHELL_CACHE  = 'nomad-shell-'  + VERSION;
 var PHOTO_CACHE  = 'nomad-photo-'  + VERSION;
 var TILE_CACHE   = 'nomad-tile-'   + VERSION;
 var VENDOR_CACHE = 'nomad-vendor-' + VERSION;
+var FLAG_CACHE   = 'nomad-flag-'   + VERSION;
 
-var KEEP = [SHELL_CACHE, PHOTO_CACHE, TILE_CACHE, VENDOR_CACHE];
+var KEEP = [SHELL_CACHE, PHOTO_CACHE, TILE_CACHE, VENDOR_CACHE, FLAG_CACHE];
 
 /* Every local file index.html loads, plus the icons an installed app
    needs. Listed without `?v=`; lookups ignore the query string. */
@@ -113,15 +114,20 @@ self.addEventListener('message', function (e) {
 /* ── strategies ─────────────────────────────────────────────────────── */
 
 /** Cached copy wins; otherwise fetch and keep it. Used for immutable things. */
-function cacheFirst(request, cacheName, limit) {
+function cacheFirst(request, cacheName, limit, allowOpaque) {
   return caches.open(cacheName).then(function (cache) {
     return cache.match(request).then(function (hit) {
       if (hit) return hit;
       return fetch(request).then(function (res) {
-        /* Opaque responses (no-cors, e.g. tiles and fonts) have status 0.
-           They cannot be inspected, but they can be stored and replayed,
-           which is exactly what an offline map needs. */
-        if (res && (res.ok || res.type === 'opaque')) {
+        /* An opaque response (no-cors) has status 0 and cannot be read, so
+           a 503 from a CDN looks exactly like the file. Storing one pinned
+           the failure until VERSION changed — Leaflet missing, and the map
+           dead with it. Leaflet and the web font are requested with
+           crossorigin now, so they arrive inspectable and must be `ok`.
+           Tiles stay opaque on purpose: they are cross-origin images with
+           no CORS, and a missing tile is a grey square, not a broken app. */
+        var storable = res && (res.ok || (res.type === 'opaque' && allowOpaque));
+        if (storable) {
           cache.put(request, res.clone());
           if (limit) trim(cache, limit);
         }
@@ -182,7 +188,7 @@ self.addEventListener('fetch', function (e) {
   }
 
   if (url.hostname === TILE_HOST) {
-    e.respondWith(cacheFirst(req, TILE_CACHE, TILE_LIMIT));
+    e.respondWith(cacheFirst(req, TILE_CACHE, TILE_LIMIT, true));
     return;
   }
 
@@ -192,6 +198,16 @@ self.addEventListener('fetch', function (e) {
   }
 
   if (url.origin !== self.location.origin) return;   // anything else remote
+
+  /* The 257 country flags live under img/ too, so they shared the
+     photographs' 120-entry budget — opening the country picker rendered all
+     of them and evicted every place photograph the traveller had cached for
+     offline. They are tiny and effectively part of the shell, so they get
+     their own cache and their own generous cap. */
+  if (url.pathname.indexOf(BASE + 'img/flags/') === 0) {
+    e.respondWith(cacheFirst(req, FLAG_CACHE, 300));
+    return;
+  }
 
   // Place photographs: kept as they are looked at, not up front.
   if (url.pathname.indexOf(BASE + 'img/') === 0 || /\.(jpg|jpeg|webp|avif)$/i.test(url.pathname)) {

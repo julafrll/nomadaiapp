@@ -423,9 +423,9 @@ const strings = {
       planMyTrip: 'Plan My Trip', keepGoing: 'KEEP GOING',
       stopWord: 'Stop', nextStop: 'Next', prevStop: 'Back', endTour: 'End the tour', followTrip: 'Follow the trip on the map',
       creatingTrip: 'Creating your trip…', creatingTripSub: 'Picking stops, times and prices', viewTrip: 'View the trip',
-      dayWord: 'day', daysWord: 'days', stopsWord: 'stops', showOnMap: 'Show the whole trip on the map',
+      dayUnit: 'day', daysWord: 'days',
       mInstall: 'Add to home screen', mInstallMeta: 'Works offline', mInstallIos: 'Share → Add to Home Screen',
-      openNow: 'Open now', openNowNear: 'nearest to you', openNowRated: 'best rated', closesIn: 'closes in',
+      openNowTitle: 'Open now', openNowNear: 'nearest to you', openNowRated: 'best rated', closesIn: 'closes in',
       nearby: 'Nearby places', seeAll: 'See all', popular: 'Popular destinations',
       restaurants: 'Recommended restaurants',
       tabHome: 'Home', tabMap: 'Map', tabAi: 'AI Assistant', tabProfile: 'Profile',
@@ -578,9 +578,9 @@ const strings = {
       planMyTrip: 'Спланировать поездку', keepGoing: 'ПРОДОЛЖАЙТЕ',
       stopWord: 'Точка', nextStop: 'Дальше', prevStop: 'Назад', endTour: 'Завершить', followTrip: 'Пройти маршрут по карте',
       creatingTrip: 'Составляем маршрут…', creatingTripSub: 'Подбираем места, время и цены', viewTrip: 'Открыть маршрут',
-      dayWord: 'день', daysWord: 'дня', stopsWord: 'остановок', showOnMap: 'Показать весь маршрут на карте',
+      dayUnit: 'день', daysWord: 'дня',
       mInstall: 'Добавить на главный экран', mInstallMeta: 'Работает офлайн', mInstallIos: 'Поделиться → На экран «Домой»',
-      openNow: 'Открыто сейчас', openNowNear: 'ближайшие к вам', openNowRated: 'с лучшим рейтингом', closesIn: 'закроется через',
+      openNowTitle: 'Открыто сейчас', openNowNear: 'ближайшие к вам', openNowRated: 'с лучшим рейтингом', closesIn: 'закроется через',
       nearby: 'Места рядом', seeAll: 'Все', popular: 'Популярные направления',
       restaurants: 'Рекомендуемые рестораны',
       tabHome: 'Главная', tabMap: 'Карта', tabAi: 'Помощник', tabProfile: 'Профиль',
@@ -733,9 +733,9 @@ const strings = {
       planMyTrip: 'Саякат түзүү', keepGoing: 'УЛАНТЫҢЫЗ',
       stopWord: 'Токтоо', nextStop: 'Кийинки', prevStop: 'Мурунку', endTour: 'Аяктоо', followTrip: 'Картадан сапарды кароо',
       creatingTrip: 'Сапар түзүлүүдө…', creatingTripSub: 'Жерлер, убакыт жана баа тандалууда', viewTrip: 'Сапарды ачуу',
-      dayWord: 'күн', daysWord: 'күн', stopsWord: 'токтоо', showOnMap: 'Бүт сапарды картадан көрүү',
+      dayUnit: 'күн', daysWord: 'күн',
       mInstall: 'Башкы экранга кошуу', mInstallMeta: 'Оффлайн иштейт', mInstallIos: 'Бөлүшүү → Башкы экранга',
-      openNow: 'Азыр ачык', openNowNear: 'сизге эң жакын', openNowRated: 'эң жогорку рейтинг', closesIn: 'жабылат',
+      openNowTitle: 'Азыр ачык', openNowNear: 'сизге эң жакын', openNowRated: 'эң жогорку рейтинг', closesIn: 'жабылат',
       nearby: 'Жакынкы жерлер', seeAll: 'Баары', popular: 'Популярдуу багыттар',
       restaurants: 'Сунушталган ресторандар',
       tabHome: 'Башкы', tabMap: 'Карта', tabAi: 'Жардамчы', tabProfile: 'Профиль',
@@ -913,8 +913,8 @@ const placeText = {
   // Formulaic fragments in distances, hours, travel times and prices.
   // Applied longest-first, so "min walk" is matched before "min".
 const microTerms = {
-    ru: [["Box office till", "касса до"], ["Small entry fee", "небольшой вход"], ["24 h reception", "ресепшн 24 ч"], ["Check-in", "заезд"], ["Open 24 h", "круглосуточно"], ["Bring cash", "наличными"], ["Best May–Sep", "лучше май–сен"], ["Late May–Oct", "конец мая–окт"], ["Daylight", "светлое время"], ["Varies", "по-разному"], ["day trek", "дня трека"], ["min walk", "мин пешком"], ["min taxi", "мин на такси"], ["min drive", "мин на машине"], ["h drive", "ч на машине"], ["under $", "меньше $"], ["entry", "вход"], ["From ", "от "], ["from ", "от "], ["Free", "бесплатно"], ["till", "до"], ["som", "сом"], ["car", "машина"], [" km", " км"], [" h ", " ч "], ["hotel", "отеля"], ["walking", "пешком"], ["hiking", "пешком"], ["from hotel", "от отеля"], ["h return", "ч туда-обратно"], ["moderate", "средней сложности"], ["drive back", "обратно на машине"], ["travel", "в пути"], ["hotel", "мейманкана"], ["walking", "жөө"], ["hiking", "жөө"], ["from hotel", "мейманканадан"], ["h return", "с барып-келүү"], ["moderate", "орточо"], ["drive back", "унаа менен кайтуу"], ["travel", "жолдо"], ["Jan", "янв"], ["Feb", "фев"], ["Mar", "мар"], ["Apr", "апр"], ["May", "май"], ["Jun", "июн"], ["Jul", "июл"], ["Aug", "авг"], ["Sep", "сен"], ["Oct", "окт"], ["Nov", "ноя"], ["Dec", "дек"]],
-    ky: [["Box office till", "касса чейин"], ["Small entry fee", "кичине киреше акысы"], ["24 h reception", "ресепшн 24 с"], ["Check-in", "кирүү"], ["Open 24 h", "тынымсыз"], ["Bring cash", "нак акча"], ["Best May–Sep", "май–сен жакшы"], ["Late May–Oct", "май аягы–окт"], ["Daylight", "күндүз"], ["Varies", "ар түрдүү"], ["day trek", "күн трек"], ["min walk", "мүнөт жөө"], ["min taxi", "мүнөт такси"], ["min drive", "мүнөт унаа"], ["h drive", "с унаа"], ["under $", "$ аз"], ["entry", "кире бериш"], ["Free", "акысыз"], ["till", "чейин"], ["som", "сом"], ["car", "унаа"], [" km", " км"], [" h ", " с "], ["Jan", "янв"], ["Feb", "фев"], ["Mar", "мар"], ["Apr", "апр"], ["May", "май"], ["Jun", "июн"], ["Jul", "июл"], ["Aug", "авг"], ["Sep", "сен"], ["Oct", "окт"], ["Nov", "ноя"], ["Dec", "дек"]]
+    ru: [["Box office till", "касса до"], ["Small entry fee", "небольшой вход"], ["24 h reception", "ресепшн 24 ч"], ["Best May–Sep", "лучше май–сен"], ["Late May–Oct", "конец мая–окт"], ["Bring cash", "наличными"], ["from hotel", "от отеля"], ["drive back", "обратно на машине"], ["Open 24 h", "круглосуточно"], ["min drive", "мин на машине"], ["Check-in", "заезд"], ["Daylight", "светлое время"], ["day trek", "дня трека"], ["min walk", "мин пешком"], ["min taxi", "мин на такси"], ["h return", "ч туда-обратно"], ["moderate", "средней сложности"], ["h drive", "ч на машине"], ["under $", "меньше $"], ["walking", "пешком"], ["Varies", "по-разному"], ["hiking", "пешком"], ["travel", "в пути"], ["entry", "вход"], ["From ", "от "], ["from ", "от "], ["hotel", "отеля"], ["Free", "бесплатно"], ["till", "до"], ["som", "сом"], ["car", "машина"], [" km", " км"], [" h ", " ч "], ["Jan", "янв"], ["Feb", "фев"], ["Mar", "мар"], ["Apr", "апр"], ["May", "май"], ["Jun", "июн"], ["Jul", "июл"], ["Aug", "авг"], ["Sep", "сен"], ["Oct", "окт"], ["Nov", "ноя"], ["Dec", "дек"]],
+    ky: [["Box office till", "касса чейин"], ["Small entry fee", "кичине киреше акысы"], ["24 h reception", "ресепшн 24 с"], ["Best May–Sep", "май–сен жакшы"], ["Late May–Oct", "май аягы–окт"], ["Bring cash", "нак акча"], ["from hotel", "мейманканадан"], ["drive back", "унаа менен кайтуу"], ["Open 24 h", "тынымсыз"], ["min drive", "мүнөт унаа"], ["Check-in", "кирүү"], ["Daylight", "күндүз"], ["day trek", "күн трек"], ["min walk", "мүнөт жөө"], ["min taxi", "мүнөт такси"], ["h return", "с барып-келүү"], ["moderate", "орточо"], ["h drive", "с унаа"], ["under $", "$ аз"], ["walking", "жөө"], ["Varies", "ар түрдүү"], ["hiking", "жөө"], ["travel", "жолдо"], ["entry", "кире бериш"], ["hotel", "мейманкана"], ["Free", "акысыз"], ["till", "чейин"], ["som", "сом"], ["car", "унаа"], [" km", " км"], [" h ", " с "], ["Jan", "янв"], ["Feb", "фев"], ["Mar", "мар"], ["Apr", "апр"], ["May", "май"], ["Jun", "июн"], ["Jul", "июл"], ["Aug", "авг"], ["Sep", "сен"], ["Oct", "окт"], ["Nov", "ноя"], ["Dec", "дек"]],
   };
 
 

@@ -32,10 +32,25 @@
     window.navigator.standalone === true;
   if (standalone) return;
 
+  /* Whether the CARD may appear. The module must not return here: the
+     Profile row is published from the bottom of this file, and returning
+     early took that away too — so dismissing the card removed the very
+     fallback the card's dismissal was supposed to leave behind. */
+  var resting = false;
   try {
-    var until = Number(localStorage.getItem(KEY) || 0);
-    if (until === 1) return;                      // installed: never again
-    if (until && Date.now() < until) return;      // still resting
+    var raw = localStorage.getItem(KEY);
+    if (raw === 'installed') {
+      resting = true;                             // installed: never again
+    } else if (raw === '1') {
+      /* Written by builds before the rest existed, where '1' meant a plain
+         dismissal, not an install. Read as a timestamp it is 1 ms after the
+         epoch — long past — so it simply expires, which is what those
+         travellers were owed. */
+      resting = false;
+    } else {
+      var until = Number(raw || 0);
+      resting = !!until && Date.now() < until;
+    }
   } catch (e) { /* private mode */ }
 
   var deferred = null, shown = false;
@@ -135,7 +150,8 @@
 
   function offer(e) {
     if (!e || deferred) return;
-    deferred = e;
+    deferred = e;                       // kept even while resting, for the row
+    if (resting) return;
     setTimeout(function () { show('prompt'); }, DELAY);
   }
 
@@ -150,7 +166,7 @@
     offer(e);
   });
 
-  if (isIosSafari) setTimeout(function () { show('ios'); }, DELAY);
+  if (isIosSafari && !resting) setTimeout(function () { show('ios'); }, DELAY);
 
   /* A way in that does not depend on a banner the traveller may have
      dismissed, missed, or never been shown because the browser decided the
@@ -175,7 +191,7 @@
 
   // Installed from the card or from the browser menu — take it away.
   window.addEventListener('appinstalled', function () {
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}   // 1 = installed, for good
+    try { localStorage.setItem(KEY, 'installed'); } catch (e) {}   // for good
     var card = document.querySelector('.nomInstall');
     if (card) dismiss(card);
   });

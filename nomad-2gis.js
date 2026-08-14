@@ -105,7 +105,12 @@ window.Nomad2GIS = (function () {
     if (inflight[ck]) { inflight[ck].push(cb); return; }
     inflight[ck] = [cb];
     work(function (result) {
-      cache[ck] = result;
+      /* Only a real answer is worth keeping. A timeout on a dead cell used
+         to be cached exactly like a success, so that place's stops and
+         branches stayed broken for the rest of the session however good the
+         signal became. A failure is forgotten, and the next look asks
+         again. */
+      if (result && result.ok) cache[ck] = result;
       (inflight[ck] || []).forEach(function (fn) { fn(result); });
       delete inflight[ck];
     });

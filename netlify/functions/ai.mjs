@@ -40,7 +40,10 @@ const MAX_BODY = 200 * 1024;   // the PLACES block is large; a question is not
    real quota. For a hard limit use Netlify's own rate limiting or a store. */
 const seen = new Map();
 const WINDOW_MS = 60_000;
-const MAX_PER_WINDOW = 12;
+/* Six models at twenty requests a day is a hundred and twenty for everyone
+   combined, so a per-minute ceiling of twelve let one client spend the lot in
+   ten minutes. Four a minute still answers faster than anyone reads. */
+const MAX_PER_WINDOW = 4;
 
 function throttled(ip) {
   const now = Date.now();
@@ -59,8 +62,12 @@ const json = (obj, status) =>
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
   });
 
-// Shaped like Google's own error, so the page's existing handling reads it.
-const fail = (message, status) => json({ error: { message, code: status } }, status);
+/* Shaped like Google's own error, so the page's existing handling reads it.
+   `status` matters: the page uses it to tell this proxy's own refusal from
+   Google's. Both are 429, and retiring a model on ours would burn the whole
+   fallback chain over a quota that was never touched. */
+const fail = (message, status, code) =>
+  json({ error: { message, code: status, status: code || 'PROXY_ERROR' } }, status);
 
 export default async (req) => {
   if (req.method !== 'POST') return fail('Use POST.', 405);
@@ -72,7 +79,7 @@ export default async (req) => {
   if (!ALLOWED.has(model)) return fail('Unknown model: ' + model, 400);
 
   const ip = req.headers.get('x-nf-client-connection-ip') || 'unknown';
-  if (throttled(ip)) return fail('Too many questions in a row. Wait a minute.', 429);
+  if (throttled(ip)) return fail('Too many questions in a row. Wait a minute.', 429, 'PROXY_THROTTLED');
 
   const body = await req.text();
   if (body.length > MAX_BODY) return fail('Question too large.', 413);

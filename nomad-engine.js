@@ -424,6 +424,7 @@
       });
       window.L.tileLayer(CFG.tileUrl, { maxZoom: 19, attribution: CFG.tileAttribution }).addTo(map);
       pinLayer = window.L.layerGroup().addTo(map);
+      lastDetailed = null;      // a fresh map has drawn nothing yet
 
       /* Swap dots for rating pills as the map crosses the threshold. Only on
          a crossing, not on every zoom: rebuilding sixty icons mid-gesture
@@ -464,6 +465,11 @@
   // Which pin currently wears the "Best rated" ribbon.
   var bestMarkerId = null;
   // Whether the pins are currently drawn as pills rather than dots.
+  /* Whether the pins are currently drawn as pills rather than dots. Reset
+     whenever the map is rebuilt: the map screen lives inside an sc-if, so
+     leaving it destroys the container. A stale `true` here convinced the
+     zoomend handler the pills were already up, and the ratings never came
+     back until the traveller zoomed right out and in again. */
   var lastDetailed = null;
 
   /** Rebuild every visible icon, keeping selection and the best-rated ribbon. */
@@ -1173,8 +1179,18 @@
              Three statuses, because a missing endpoint answers differently
              depending on what is serving: 404 from a static host, 405 from
              one that routes the path but not the method, and 501 from
-             python -m http.server, which implements no POST at all. */
-          if (viaProxy && (res.status === 404 || res.status === 405 || res.status === 501)) {
+             python -m http.server, which implements no POST at all.
+
+             But Google returns 404 for a model that has been withdrawn, and
+             the proxy forwards that verbatim — which used to be read as "no
+             function here", set proxyGone for the whole session, and send
+             every later call straight to Google with the empty key the
+             published site ships. One retired model killed the assistant
+             until reload. A missing endpoint answers with a host's HTML
+             error page; the function always answers with JSON carrying an
+             `error` object. That is the difference. */
+          if (viaProxy && !(res.body && res.body.error) &&
+              (res.status === 404 || res.status === 405 || res.status === 501)) {
             proxyGone = true;
             /* No function AND no key of our own. Calling Google keyless would
                earn a 400, which used to surface as "Google rejected the
@@ -1185,6 +1201,8 @@
             return;
           }
           var msg = (res.body && res.body.error && res.body.error.message) || ('HTTP ' + res.status);
+          var throttledHere = !!(res.body && res.body.error &&
+            res.body.error.status === 'PROXY_THROTTLED');
           // An older model refusing thinkingConfig: drop it and try once more
           // before writing the model off.
           if (res.status === 400 && sentThinking) {
@@ -1192,7 +1210,7 @@
             callGemini(model, question, ctx, cb);
             return;
           }
-          cb({ error: msg, status: res.status });
+          cb({ error: msg, status: res.status, proxyThrottled: throttledHere });
           return;
         }
         var cand = res.body && res.body.candidates && res.body.candidates[0];
@@ -1396,7 +1414,9 @@
       })
       .then(function (res) {
         clearTimeout(timer);
-        if (viaProxy && (res.status === 404 || res.status === 405 || res.status === 501)) {
+        // See callGemini: JSON with an `error` means the function answered.
+        if (viaProxy && !(res.body && res.body.error) &&
+            (res.status === 404 || res.status === 405 || res.status === 501)) {
           proxyGone = true;
           if (!apiKey()) { cb({ error: 'no key', status: 0 }); return; }
           callGeminiJson(model, rules, prompt, cb);
@@ -1449,8 +1469,13 @@
           // Nothing to send and nothing to send it with — ask for a key.
           if (res.needKey) { cb({ offline: true, reason: 'nokey' }); return; }
 
-          // Out of quota, withdrawn model or a timeout: another model may work.
-          if (res.status === 429 || res.status === 404) spent[model] = 1;
+          /* The proxy throttles per client and answers 429 too, which is the
+             same status Google uses for an exhausted daily quota. Retiring a
+             model on that would burn the whole chain in one busy minute for
+             a quota that is actually intact, so only Google's own refusal
+             counts. A 404 is a model that no longer exists, which is
+             permanent for this session either way. */
+          if (res.status === 404 || (res.status === 429 && !res.proxyThrottled)) spent[model] = 1;
           if (res.status === 429 || res.status === 404 || res.status === 504 || res.status >= 500) {
             attempt();
             return;

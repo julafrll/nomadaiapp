@@ -128,7 +128,7 @@
                     <div style="padding:0 22px;display:flex;flex-direction:column;gap:11px">
                       <div style="display:flex;align-items:center;gap:8px">
                         <span style="width:7px;height:7px;border-radius:99px;background:var(--green);flex:0 0 7px"></span>
-                        <div style="font-size:19px;font-weight:800;letter-spacing:-.028em;color:var(--ink)">{{ t.openNow }}</div>
+                        <div style="font-size:19px;font-weight:800;letter-spacing:-.028em;color:var(--ink)">{{ t.openNowTitle }}</div>
                         <div style="font-size:12px;font-weight:600;color:var(--ink3)">{{ openNowSub }}</div>
                       </div>
                       <div style="display:flex;flex-direction:column;gap:8px">
@@ -2454,12 +2454,23 @@
        feature: if OSRM is unreachable the tour still steps from stop to
        stop, which is the part that matters. */
     if (ENG && ENG.route) {
+      /* The public OSRM server routinely takes several seconds, and the
+         traveller can end the tour or leave the map in that time. Without a
+         guard the late reply drew a route the app had just cleared and
+         yanked the map back to a stop of an abandoned trip — and indexed
+         `stops` with a tourIdx belonging to whatever tour is current now,
+         which can be out of range. Only the tour that asked may be answered. */
       ENG.route(stops, 'driving', function (res) {
         if (res.error || !res.coords) return;
+        if (state.tour !== trip || state.screen !== 'map') return;
         setState({ tourPath: res.coords });
         if (ENG.drawRoute) ENG.drawRoute(res.coords);
         // Then back to the stop being read, which fitBounds just panned away from.
-        setTimeout(function () { if (ENG) ENG.focusPlace(stops[state.tourIdx].id); }, 420);
+        setTimeout(function () {
+          if (!ENG || state.tour !== trip || state.screen !== 'map') return;
+          var here = stops[state.tourIdx];
+          if (here) ENG.focusPlace(here.id);
+        }, 420);
       });
     }
     setTimeout(function () { if (ENG) ENG.focusPlace(stops[0].id); }, 280);
@@ -4459,7 +4470,7 @@
       planTitle: st.plan ? st.plan.title : '',
       planSummary: st.plan ? st.plan.summary : '',
       hasPlanSummary: !!(st.plan && st.plan.summary),
-      planDays: st.plan ? st.plan.days.length + ' ' + (st.plan.days.length === 1 ? t.dayWord : t.daysWord) : '',
+      planDays: st.plan ? st.plan.days.length + ' ' + (st.plan.days.length === 1 ? t.dayUnit : t.daysWord) : '',
       planStops: st.plan ? st.plan.stopCount + ' ' + t.stopsWord : '',
       planCost: st.plan ? fmt(st.plan.som) + ' som' : '',
       planMap: function () { if (st.plan) startTour(st.plan); },
@@ -4502,7 +4513,7 @@
              works offline and costs no quota. */
           hasTrip: !!m.trip,
           tripTitle: m.trip ? m.trip.title : '',
-          tripDays: m.trip ? m.trip.days.length + ' ' + (m.trip.days.length === 1 ? t.dayWord : t.daysWord) : '',
+          tripDays: m.trip ? m.trip.days.length + ' ' + (m.trip.days.length === 1 ? t.dayUnit : t.daysWord) : '',
           tripStops: m.trip ? m.trip.stopCount + ' ' + t.stopsWord : '',
           tripCost: m.trip ? fmt(m.trip.som) + ' som' : '',
           // Three photographs off the top of the trip, as a strip.
