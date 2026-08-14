@@ -809,7 +809,11 @@
                     </div>
                   </sc-if>
   
-                  <div style="position:sticky;bottom:0;padding:12px 20px 18px;background:var(--bg)">
+                  <!-- margin-top:auto pins it to the foot of the screen when the
+                       conversation is short. Sticky alone only holds it down once
+                       there is enough to scroll, so with a couple of messages it
+                       floated up the screen and sat under the "Thinking" line. -->
+                  <div style="margin-top:auto;position:sticky;bottom:0;padding:12px 20px 18px;background:var(--bg)">
                     <div style="display:flex;align-items:center;gap:11px;min-height:58px;padding:9px 9px 9px 19px;border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadowLg)">
                       <input value="{{ chatInput }}" onChange="{{ setChatInput }}" onKeyDown="{{ chatKeyDown }}" placeholder="Ask anything…" aria-label="Ask the assistant" style="flex:1;min-width:0;background:transparent;border:none;outline:none;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:15px;font-weight:500;color:var(--ink);padding:0" />
                       <div onClick="{{ sendChat }}" role="button" tabIndex="0" aria-label="Send message" style="{{ sendCss }}">
@@ -1675,7 +1679,7 @@
                   <div style="margin-top:18px;font-size:15px;line-height:1.6;text-align:center;color:var(--ink2);text-wrap:pretty;animation:nomSoftUp .8s .5s cubic-bezier(.22,1,.36,1) both">{{ t.splashSub }}</div>
                 </div>
                 <div style="padding:0 26px 32px;display:flex;flex-direction:column;gap:13px;animation:nomSoftUp .8s .66s cubic-bezier(.22,1,.36,1) both">
-                  <div onClick="{{ obNext }}" role="button" tabIndex="0" style="height:56px;border-radius:18px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--brandInk);cursor:pointer;box-shadow:var(--shadowLg)">{{ t.getStarted }}</div>
+                  <div onClick="{{ obNext }}" role="button" tabIndex="0" style="height:56px;border-radius:18px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--brandInk);cursor:pointer;box-shadow:var(--shadowLg)">{{ obSplashLabel }}</div>
                   <div style="text-align:center;font-size:12px;line-height:1.5;color:var(--ink3)">{{ t.takesASec }}</div>
                 </div>
               </sc-if>
@@ -2046,6 +2050,8 @@
     obEditing: false,
     // When set, only this one step is shown — Profile edits one field.
     obOnly: null,
+    // Has a profile already: the splash is a welcome back, not a form.
+    obReturning: false,
     obExiting: false,
     obStep: 0,
     obFirst: '',
@@ -2604,6 +2610,12 @@
     if (step === OB_COUNTRY && !state.obCountry) return;
     // Editing an existing profile saves straight away — the welcome screen
     // is only meaningful the first time.
+    /* The splash for someone who already has a profile is a welcome back.
+       Continuing from it means going into the app, not into the form. */
+    if (step === OB_SPLASH && state.obReturning) {
+      setState({ onboarding: false, obReturning: false });
+      return;
+    }
     if (state.obOnly !== null) { obFinish(); return; }
     if (step === OB_COUNTRY && state.obEditing) { obFinish(); return; }
     setState({ obStep: step + 1 });
@@ -3272,7 +3284,7 @@
       branches: sel ? placeBranches(sel) : null,
       activeBranch: state.activeBranch,
       // Tapping a marker reveals its card.
-      onSelect: function (id) { setState({ mapPin: id, routeNote: '', activeBranch: null }); },
+      onSelect: function (id) { rememberPinTapped(); setState({ mapPin: id, routeNote: '', activeBranch: null }); },
       // Tapping the map itself — anywhere that is not a marker — puts it away.
       onBackground: function () {
         if (state.mapPin === null) return;
@@ -3306,6 +3318,16 @@
      the design stay as the starting set. */
 
   var TRIPS_KEY = 'nomad.trips.v1';
+  /* Set the first time a pin is tapped. "Tap a pin to see the place" is
+     an instruction, and an instruction that stays after it has been
+     followed is just something covering the map. */
+  var PIN_TAPPED_KEY = 'nomad.map.pinTapped.v1';
+  function hasTappedPin() {
+    try { return !!localStorage.getItem(PIN_TAPPED_KEY); } catch (e) { return false; }
+  }
+  function rememberPinTapped() {
+    try { localStorage.setItem(PIN_TAPPED_KEY, '1'); } catch (e) { /* private mode */ }
+  }
 
   function loadTrips() {
     try {
@@ -3724,6 +3746,8 @@
       obKey: obKeyDown,
       obFinish: obFinish,
       obStepLabel: t.step + ' ' + st.obStep + ' ' + t.of + ' 3',
+      // Nothing is being started for someone who already has a profile.
+      obSplashLabel: st.obReturning ? t.cont : t.getStarted,
       // Progress through three steps is meaningless when only one is shown.
       obShowSteps: st.obOnly === null,
       obLangs: D.languages.map(function (l) {
@@ -3785,7 +3809,9 @@
       obNoMatch: obList.length === 0,
       obCountry: st.obCountry,
       obCountryFlag: obPickedCountry ? flagOf(obPickedCountry[0]) : '',
-      obNextLabel: st.obOnly !== null
+      obNextLabel: st.obStep === OB_SPLASH && st.obReturning
+        ? t.cont
+        : st.obOnly !== null
         ? (st.obStep === OB_COUNTRY && !st.obCountry ? t.pickCountry : t.saveChanges)
         : st.obStep === OB_COUNTRY
           ? (!st.obCountry ? t.pickCountry : st.obEditing ? t.saveChanges : t.cont)
@@ -4015,7 +4041,7 @@
       // The card only exists once a pin has been tapped, so every field below
       // is read behind `hasMapCard` and `pin` is never dereferenced when null.
       hasMapCard: !!pin,
-      showMapHint: !pin && visiblePins.length > 0,
+      showMapHint: !pin && visiblePins.length > 0 && !hasTappedPin(),
       mapHint: t.tapAPin,
       mapCardName: pin ? pin.name : '',
       mapCardRating: pin ? pin.rating.toFixed(1) : '',
@@ -4619,16 +4645,17 @@
       state.obCountry = saved.country || '';
       state.obLang = saved.lang || 'en';
     }
-    /* Every visit opens on the intro, not on Home.
-       This is a demo before it is anyone's daily app: the intro is what
-       explains what Nomad AI is, and someone opening the link has never
-       seen it. A returning visitor is not made to retype anything — the
-       saved profile is already loaded above, so the steps arrive prefilled
-       and are a few taps to walk back through.
-       For the original behaviour — intro on first run only — restore:
-         if (!saved || replay) state.onboarding = true; */
+    /* Every visit opens on the intro splash, because this is a demo before
+       it is anyone's daily app and the splash is what says what Nomad AI is.
+
+       But only the splash. Walking the whole three-step flow every time
+       meant re-entering a name and a country that were already saved, over
+       and over — the profile was never lost, it was just being asked for
+       again. So a traveller who already has one gets the splash and a single
+       tap into the app; a first-timer gets the full introduction. */
     state.onboarding = true;
-    if (saved && !replay) state.obStep = OB_SPLASH;
+    state.obStep = OB_SPLASH;
+    state.obReturning = !!saved && !replay;
 
     prepareTemplate();
     wireEvents();

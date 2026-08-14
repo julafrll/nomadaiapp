@@ -246,7 +246,12 @@ html.nomFill, html.nomFill body { height:100%; overscroll-behavior:none; backgro
 /* The real status bar and home indicator are the phone's to draw. Their
    space is given back through the safe-area insets instead. */
 .nomFill .nomFakeStatus, .nomFill .nomFakeNav { display:none !important; }
-.nomFill .nomScreen > .nomScroll { padding-top:env(safe-area-inset-top); }
+/* Every screen began hard against the top edge — the first line of a title
+   sat directly under the status bar, which made the whole app read as
+   cramped. A little air above it, and more in the installed app, where the
+   drawn status bar that used to provide the gap is gone. */
+.nomScreen > .nomScroll { padding-top:10px; }
+.nomFill .nomScreen > .nomScroll { padding-top:calc(env(safe-area-inset-top) + 16px); }
 .nomFill [data-ref="tabBar"] { padding-bottom:env(safe-area-inset-bottom); }
 
 /* ── Add to home screen ────────────────────────────────────────────────
