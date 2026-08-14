@@ -421,6 +421,7 @@ const strings = {
       /* app chrome */
       awaits: 'Kyrgyzstan awaits', searchPlaceholder: 'Where do you want to go?',
       planMyTrip: 'Plan My Trip', keepGoing: 'KEEP GOING',
+      stopWord: 'Stop', nextStop: 'Next', prevStop: 'Back', endTour: 'End the tour', followTrip: 'Follow the trip on the map',
       creatingTrip: 'Creating your trip…', creatingTripSub: 'Picking stops, times and prices', viewTrip: 'View the trip',
       dayWord: 'day', daysWord: 'days', stopsWord: 'stops', showOnMap: 'Show the whole trip on the map',
       mInstall: 'Add to home screen', mInstallMeta: 'Works offline', mInstallIos: 'Share → Add to Home Screen',
@@ -575,6 +576,7 @@ const strings = {
       startExploring: 'Поехали', profileSaved: 'Профиль сохранён',
       awaits: 'Кыргызстан ждёт', searchPlaceholder: 'Куда хотите поехать?',
       planMyTrip: 'Спланировать поездку', keepGoing: 'ПРОДОЛЖАЙТЕ',
+      stopWord: 'Точка', nextStop: 'Дальше', prevStop: 'Назад', endTour: 'Завершить', followTrip: 'Пройти маршрут по карте',
       creatingTrip: 'Составляем маршрут…', creatingTripSub: 'Подбираем места, время и цены', viewTrip: 'Открыть маршрут',
       dayWord: 'день', daysWord: 'дня', stopsWord: 'остановок', showOnMap: 'Показать весь маршрут на карте',
       mInstall: 'Добавить на главный экран', mInstallMeta: 'Работает офлайн', mInstallIos: 'Поделиться → На экран «Домой»',
@@ -729,6 +731,7 @@ const strings = {
       startExploring: 'Кеттик', profileSaved: 'Профиль сакталды',
       awaits: 'Кыргызстан күтүүдө', searchPlaceholder: 'Кайда баргыңыз келет?',
       planMyTrip: 'Саякат түзүү', keepGoing: 'УЛАНТЫҢЫЗ',
+      stopWord: 'Токтоо', nextStop: 'Кийинки', prevStop: 'Мурунку', endTour: 'Аяктоо', followTrip: 'Картадан сапарды кароо',
       creatingTrip: 'Сапар түзүлүүдө…', creatingTripSub: 'Жерлер, убакыт жана баа тандалууда', viewTrip: 'Сапарды ачуу',
       dayWord: 'күн', daysWord: 'күн', stopsWord: 'токтоо', showOnMap: 'Бүт сапарды картадан көрүү',
       mInstall: 'Башкы экранга кошуу', mInstallMeta: 'Оффлайн иштейт', mInstallIos: 'Бөлүшүү → Башкы экранга',

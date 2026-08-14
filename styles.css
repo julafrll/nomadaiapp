@@ -251,6 +251,24 @@ html.nomFill, html.nomFill body { height:100%; overscroll-behavior:none; backgro
    cramped. A little air above it, and more in the installed app, where the
    drawn status bar that used to provide the gap is gone. */
 .nomScreen > .nomScroll { padding-top:10px; }
+
+/* A screen with something pinned to its foot — the assistant's input box —
+   has to actually fill the scroller. `min-height:100%` on the screen
+   resolves against the wrapper, whose own height comes from its content, so
+   a short conversation left the screen 507px tall inside a 714px scroller
+   and margin-top:auto had nothing to push against. The wrapper stretches
+   its screen instead. */
+.nomScreen > .nomScroll > div { display:flex; flex-direction:column; }
+.nomScreen > .nomScroll > div > [data-screen-label] { flex:1 0 auto; }
+
+/* The wrapper's own min-height:100% does not know about the padding above
+   it, so a screen built to fill the phone exactly — the map — overflowed by
+   precisely that padding and pushed its bottom bar off the edge. Subtract
+   it. */
+.nomScreen > .nomScroll > div { min-height:calc(100% - 10px) !important; }
+.nomFill .nomScreen > .nomScroll > div {
+  min-height:calc(100% - env(safe-area-inset-top) - 16px) !important;
+}
 .nomFill .nomScreen > .nomScroll { padding-top:calc(env(safe-area-inset-top) + 16px); }
 .nomFill [data-ref="tabBar"] { padding-bottom:env(safe-area-inset-bottom); }
 

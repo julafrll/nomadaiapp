@@ -673,6 +673,37 @@
                     </div>
                   </sc-if>
 
+                  <!-- ── Following a trip ───────────────────────────────────
+                       Which stop of how many, what it is, and a way to the next
+                       one. It sits above the map card, which still opens for
+                       whichever stop is current. -->
+                  <sc-if value="{{ onTour }}">
+                    <div style="margin-top:auto;position:relative;padding:0 12px 10px">
+                      <div style="padding:11px 12px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadowLg)">
+                        <div style="display:flex;align-items:center;gap:10px">
+                          <div style="flex:1;min-width:0">
+                            <div style="font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)">{{ tourCounter }}</div>
+                            <div style="margin-top:3px;font-size:14.5px;font-weight:800;letter-spacing:-.022em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tourName }}</div>
+                            <div style="margin-top:2px;font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tourWhen }}</div>
+                          </div>
+                          <div onClick="{{ tourEnd }}" role="button" tabIndex="0" aria-label="{{ t.endTour }}" style="width:30px;height:30px;flex:0 0 30px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--ink2)"><path d="M6 6l12 12M18 6L6 18" stroke-width="2.6" stroke-linecap="round"/></svg>
+                          </div>
+                        </div>
+                        <div style="margin-top:10px;display:flex;gap:8px">
+                          <div onClick="{{ tourPrev }}" role="button" tabIndex="0" aria-label="{{ t.prevStop }}" style="{{ tourPrevCss }}">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 5l-7 7 7 7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            {{ t.prevStop }}
+                          </div>
+                          <div onClick="{{ tourNext }}" role="button" tabIndex="0" aria-label="{{ t.nextStop }}" style="{{ tourNextCss }}">
+                            {{ t.nextStop }}
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5l7 7-7 7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-if>
+
                   <!-- Nothing selected: say what to do rather than leaving the
                        bottom of the map blank. -->
                   <sc-if value="{{ showMapHint }}">
@@ -1463,7 +1494,7 @@
 
                   <div onClick="{{ planMap }}" role="button" tabIndex="0" style="display:flex;align-items:center;justify-content:center;gap:9px;height:50px;border-radius:16px;background:var(--brand);color:var(--brandInk);font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:var(--shadowLg)">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 20 3 22V6l6-2 6 2 6-2v16l-6 2-6-2Z" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 4v16M15 6v16" stroke-width="1.9"/></svg>
-                    {{ t.showOnMap }}
+                    {{ t.followTrip }}
                   </div>
 
                   <sc-for list="{{ planDaysList }}" as="d" hint-placeholder-count="3">
@@ -2155,6 +2186,10 @@
     // The trip the assistant is building, and the one being read.
     building: false,
     plan: null,
+    // Walking a trip on the map: which trip, and which stop of it.
+    tour: null,
+    tourIdx: 0,
+    tourPath: null,
     onboarding: false,
     obEditing: false,
     // When set, only this one step is shown — Profile edits one field.
@@ -2392,6 +2427,62 @@
     var list = (state.userTrips || []).filter(function (t) { return t.name !== entry.name; }).concat([entry]);
     persistTrips(list);
     setState({ userTrips: list });
+  }
+
+
+  /* ── Walking a trip on the map ────────────────────────────────────────
+     Reading a trip and following one are different jobs. This is the second:
+     the whole route drawn along real roads, and one stop at a time with the
+     map centred on it, so the next place is somewhere you move to rather
+     than something you hunt for in a list. */
+
+  function startTour(trip) {
+    if (!trip || !trip.days.length) return;
+    var stops = tourStops(trip);
+    if (!stops.length) return;
+
+    setState(function (st) {
+      return {
+        tour: trip, tourIdx: 0, tourPath: null,
+        screen: 'map', mapPin: stops[0].id, mapFilter: 'All', routeNote: '',
+        stack: st.stack.concat([st.screen])
+      };
+    });
+    lastMapFit = null;
+
+    /* The road path, drawn once for the whole trip. It is a nicety, not the
+       feature: if OSRM is unreachable the tour still steps from stop to
+       stop, which is the part that matters. */
+    if (ENG && ENG.route) {
+      ENG.route(stops, 'driving', function (res) {
+        if (res.error || !res.coords) return;
+        setState({ tourPath: res.coords });
+        if (ENG.drawRoute) ENG.drawRoute(res.coords);
+        // Then back to the stop being read, which fitBounds just panned away from.
+        setTimeout(function () { if (ENG) ENG.focusPlace(stops[state.tourIdx].id); }, 420);
+      });
+    }
+    setTimeout(function () { if (ENG) ENG.focusPlace(stops[0].id); }, 280);
+  }
+
+  /** Every stop of a trip that can actually be put on a map, in order. */
+  function tourStops(trip) {
+    return (trip ? trip.days : []).reduce(function (all, d) { return all.concat(d.stops); }, [])
+      .filter(function (x) { return typeof x.lat === 'number'; });
+  }
+
+  function tourStep(delta) {
+    var stops = tourStops(state.tour);
+    if (!stops.length) return;
+    var i = Math.max(0, Math.min(stops.length - 1, state.tourIdx + delta));
+    if (i === state.tourIdx) return;
+    setState({ tourIdx: i, mapPin: stops[i].id, routeNote: '' });
+    if (ENG) ENG.focusPlace(stops[i].id);
+  }
+
+  function endTour() {
+    setState({ tour: null, tourIdx: 0, tourPath: null });
+    if (ENG && ENG.drawRoute) ENG.drawRoute(null);
   }
 
   /** Open a generated trip on its own screen. */
@@ -3472,7 +3563,11 @@
     var screenEl = el.parentElement;
     var scroller = root && root.querySelector('[data-ref="scrollRef"]');
     if (screenEl && scroller && scroller.clientHeight) {
-      var h = scroller.clientHeight + 'px';
+      /* clientHeight includes the scroller's own top padding — the air added
+         above every screen — so using it whole made the map exactly that far
+         too tall, and the tour bar at its foot fell off the bottom edge. */
+      var pad = parseFloat(getComputedStyle(scroller).paddingTop) || 0;
+      var h = (scroller.clientHeight - pad) + 'px';
       if (screenEl.style.height !== h) {
         screenEl.style.height = h;
         ENG.invalidateSize();
@@ -4246,8 +4341,11 @@
       }),
       // The card only exists once a pin has been tapped, so every field below
       // is read behind `hasMapCard` and `pin` is never dereferenced when null.
-      hasMapCard: !!pin,
-      showMapHint: !pin && visiblePins.length > 0 && !hasTappedPin(),
+      /* Not while a tour is running: the tour bar already names the stop,
+         and two cards competing for the foot of the map is how the stop
+         ended up half off the screen. */
+      hasMapCard: !st.tour && !!pin,
+      showMapHint: !pin && visiblePins.length > 0 && !hasTappedPin() && !st.tour,
       mapHint: t.tapAPin,
       mapCardName: pin ? pin.name : '',
       mapCardRating: pin ? pin.rating.toFixed(1) : '',
@@ -4327,6 +4425,28 @@
       typing: st.typing,
       building: st.building,
 
+      onTour: !!st.tour,
+      tourCounter: st.tour
+        ? t.stopWord + ' ' + (st.tourIdx + 1) + ' ' + t.of + ' ' + tourStops(st.tour).length
+        : '',
+      tourName: st.tour ? (tourStops(st.tour)[st.tourIdx] || {}).name || '' : '',
+      tourWhen: st.tour
+        ? [(tourStops(st.tour)[st.tourIdx] || {}).time, (tourStops(st.tour)[st.tourIdx] || {}).note]
+            .filter(Boolean).join(' · ')
+        : '',
+      tourPrev: function () { tourStep(-1); },
+      tourNext: function () { tourStep(1); },
+      tourEnd: endTour,
+      // A dead end of the trip is shown as unavailable rather than hidden, so
+      // the pair of controls does not shuffle about as you move through.
+      tourPrevCss: 'flex:1;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:700;border:1px solid var(--line);background:var(--surface);' +
+        (st.tour && st.tourIdx > 0 ? 'color:var(--ink);cursor:pointer' : 'color:var(--ink3);opacity:.45'),
+      tourNextCss: 'flex:1;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:700;' +
+        (st.tour && st.tourIdx < tourStops(st.tour).length - 1
+          ? 'background:var(--brand);color:var(--brandInk);cursor:pointer;box-shadow:var(--shadow)'
+          : 'background:var(--surface2);color:var(--ink3);opacity:.6'),
+
+
       /* The generated trip being read. Laid out here rather than in the
          template so the template stays a description of the shape. */
       planTitle: st.plan ? st.plan.title : '',
@@ -4335,7 +4455,7 @@
       planDays: st.plan ? st.plan.days.length + ' ' + (st.plan.days.length === 1 ? t.dayWord : t.daysWord) : '',
       planStops: st.plan ? st.plan.stopCount + ' ' + t.stopsWord : '',
       planCost: st.plan ? fmt(st.plan.som) + ' som' : '',
-      planMap: function () { if (st.plan) planOnMap(st.plan); },
+      planMap: function () { if (st.plan) startTour(st.plan); },
       planDaysList: (st.plan ? st.plan.days : []).map(function (d, di) {
         var daySom = d.stops.reduce(function (n, x) {
           var v = parseInt(String(x.cost).replace(/[^0-9]/g, ''), 10);
