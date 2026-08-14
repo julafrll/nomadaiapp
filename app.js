@@ -679,7 +679,7 @@
                        whichever stop is current. -->
                   <sc-if value="{{ onTour }}">
                     <div style="margin-top:auto;position:relative;padding:0 12px 10px">
-                      <div style="padding:11px 12px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadowLg)">
+                      <div data-ref="tourBar" style="padding:11px 12px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadowLg)">
                         <div style="display:flex;align-items:center;gap:10px">
                           <div style="flex:1;min-width:0">
                             <div style="font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)">{{ tourCounter }}</div>
@@ -3520,7 +3520,14 @@
     var bar = root.querySelector('[data-ref="tabBar"]');
     var floor = bar ? bar.offsetHeight : 0;
 
-    var card = state.screen === 'map' ? root.querySelector('[data-ref="mapCardBox"]') : null;
+    /* Whatever is occupying the foot of the map: the place card, or the tour
+       bar while a trip is being followed. The bar was invisible to this, so
+       the bubble sat straight on top of its Next button. */
+    var card = null;
+    if (state.screen === 'map') {
+      card = root.querySelector('[data-ref="tourBar"]') ||
+             root.querySelector('[data-ref="mapCardBox"]');
+    }
     if (!card) { bubble.style.bottom = (floor + 14) + 'px'; return; }
 
     /* Offsets, not getBoundingClientRect. This runs immediately after the

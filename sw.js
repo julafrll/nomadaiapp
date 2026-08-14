@@ -20,7 +20,7 @@
    transport departures and routes are not reusable, and a stale one is
    worse than an honest failure. */
 
-var VERSION = 'v30';
+var VERSION = 'v31';
 
 var SHELL_CACHE  = 'nomad-shell-'  + VERSION;
 var PHOTO_CACHE  = 'nomad-photo-'  + VERSION;
