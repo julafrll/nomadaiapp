@@ -168,6 +168,124 @@
     );
   }
 
+  /**
+   * Read the position at startup only if permission was already given.
+   *
+   * A browser will not reliably show the dialog for a getCurrentPosition()
+   * that no tap led to. Chrome dismisses it, and enough dismissals become a
+   * remembered block for the whole origin — which is why the prompt never
+   * appeared in a browser while Telegram, which asks through its own native
+   * dialog first, worked fine. Asking on load was spending the permission
+   * before the traveller had been told what it was for.
+   *
+   * So on load the answer is looked up rather than asked for: an existing
+   * grant reads the position with no dialog at all, and anything else leaves
+   * the state idle, where the app already offers "Use my location". Pressing
+   * that is a gesture, and the dialog appears.
+   */
+  function locateIfAllowed() {
+    if (!navigator.geolocation) { geoState = 'unavailable'; notify(); return; }
+    if (!navigator.permissions || !navigator.permissions.query) return;
+    try {
+      navigator.permissions.query({ name: 'geolocation' }).then(function (status) {
+        if (status.state === 'granted') locate();
+      })['catch'](function () { /* stay idle — the button still works */ });
+    } catch (e) { /* stay idle */ }
+  }
+
+  /* ── Open now ────────────────────────────────────────────────────────
+     The question a traveller actually has at seven in the evening is not
+     "what is good in Bishkek" but "what is open, near me, now". Every part
+     of that answer is already on the device — `hours` on 36 places, the
+     coordinates, the ratings, the position — so it is arithmetic, not a
+     question for the model. It costs no quota and works with no signal.
+
+     `hours` is prose written for a human: "till 22:00", "Open 24 h",
+     "08:00–20:00", "Daylight", "Best May–Sep". Only the shapes that state a
+     time of day are read. Anything seasonal or unparsed returns null and the
+     place is left out rather than guessed at — announcing a place is open
+     and sending someone across town to a locked door is worse than saying
+     nothing. */
+
+  var OPEN_ALL_DAY = /24\s*h|round the clock|24\/7/i;
+  var RANGE = /(\d{1,2}):(\d{2})\s*[–—-]\s*(\d{1,2}):(\d{2})/;
+  var TILL = /till\s*(\d{1,2}):(\d{2})/i;
+  var FROM = /(?:check-in|from)\s*(\d{1,2}):(\d{2})/i;
+
+  // Sunrise-to-sunset places — parks and gorges. A deliberately cautious
+  // window, so it never claims open at the edges of the day.
+  var DAYLIGHT_OPEN = 8 * 60, DAYLIGHT_SHUT = 18 * 60;
+  // What "till 22:00" leaves unsaid. Nothing in this data opens earlier.
+  var ASSUMED_OPEN = 9 * 60;
+
+  /** minutes-since-midnight, or null when the string does not say. */
+  function openWindow(hours) {
+    var h = String(hours || '');
+    if (!h) return null;
+    if (OPEN_ALL_DAY.test(h)) return { from: 0, to: 24 * 60 };
+
+    var m = h.match(RANGE);
+    if (m) return { from: +m[1] * 60 + +m[2], to: +m[3] * 60 + +m[4] };
+
+    m = h.match(TILL);
+    if (m) return { from: ASSUMED_OPEN, to: +m[1] * 60 + +m[2], assumedOpen: true };
+
+    m = h.match(FROM);
+    if (m) return { from: +m[1] * 60 + +m[2], to: 24 * 60, assumedShut: true };
+
+    if (/daylight/i.test(h)) return { from: DAYLIGHT_OPEN, to: DAYLIGHT_SHUT, rough: true };
+
+    return null;                      // seasonal, or wording we do not read
+  }
+
+  /** Is `place` open at `mins` past midnight? null when unknown. */
+  function isOpenAt(place, mins) {
+    var w = openWindow(place && place.hours);
+    if (!w) return null;
+    // Past midnight, e.g. "till 00:00" parsed as 0.
+    var to = w.to <= w.from ? w.to + 24 * 60 : w.to;
+    var t = mins < w.from ? mins + 24 * 60 : mins;
+    return t >= w.from && t < to;
+  }
+
+  /**
+   * Places open right now, nearest first.
+   *
+   * Distance only ranks when the traveller has shared a position; otherwise
+   * rating does, so the list is still worth reading from the middle of
+   * Bishkek. `limit` keeps it to something glanceable.
+   */
+  function openNow(opts) {
+    opts = opts || {};
+    var now = opts.now || new Date();
+    var mins = now.getHours() * 60 + now.getMinutes();
+    var limit = opts.limit || 3;
+
+    var rows = D.places.filter(function (p) {
+      if (isOpenAt(p, mins) !== true) return false;
+      if (opts.cat && p.cat !== opts.cat) return false;
+      return typeof p.lat === 'number';
+    });
+
+    if (position) {
+      rows.forEach(function (p) { p.km = distanceKm(position, { lat: p.lat, lng: p.lng }); });
+      rows = rows.filter(function (p) { return p.km <= (opts.withinKm || 6); });
+      rows.sort(function (a, b) { return a.km - b.km; });
+    } else {
+      rows.sort(function (a, b) { return (b.rating || 0) - (a.rating || 0); });
+    }
+    return rows.slice(0, limit);
+  }
+
+  /** When the soonest of them shuts, for a "closes at" line. */
+  function closingSoon(place, now) {
+    var w = openWindow(place && place.hours);
+    if (!w || w.to >= 24 * 60) return null;
+    var mins = (now || new Date()).getHours() * 60 + (now || new Date()).getMinutes();
+    var left = w.to - mins;
+    return left > 0 && left <= 90 ? left : null;
+  }
+
   function geoMessage() {
     if (geoState === 'denied') {
       if (location.protocol === 'file:') {
@@ -876,6 +994,23 @@
       if (view.route) out.push('A route is drawn on the map: ' + view.route + '.');
     }
 
+    /* What the traveller has already done. Without it the assistant opened
+       every reload knowing nothing and kept recommending the teahouse they
+       had eaten at on Tuesday and verified for a badge. */
+    if (view.trip) {
+      var t = view.trip;
+      out.push('\nTHIS TRAVELLER SO FAR:');
+      if (t.done && t.done.length) {
+        out.push('Already done and verified: ' + t.done.join('; ') +
+          '. Do not suggest these again as if they were new — refer back to them.');
+      }
+      if (t.saved && t.saved.length) out.push('Saved for later: ' + t.saved.join(', ') + '.');
+      if (t.reviewed && t.reviewed.length) out.push('Has written a review of: ' + t.reviewed.join(', ') + '.');
+      if (t.trips && t.trips.length) out.push('Trips they have kept: ' + t.trips.join('; ') + '.');
+      out.push('Use this to avoid repeating yourself, and to build on what they liked. ' +
+        'Do not recite it back at them.');
+    }
+
     if (view.selected) {
       out.push('The place currently open is ' + view.selected + '. "It", "this place" and "here" ' +
         'most likely mean that one.');
@@ -1138,6 +1273,10 @@
     placesWithCoords: placesWithCoords,
     // location
     locate: locate,
+    locateIfAllowed: locateIfAllowed,
+    openNow: openNow,
+    isOpenAt: isOpenAt,
+    closingSoon: closingSoon,
     position: function () { return position; },
     geoState: function () { return geoState; },
     geoMessage: geoMessage,

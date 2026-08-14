@@ -119,6 +119,38 @@
                     </sc-if>
                   </div>
   
+                  <!-- ── Open right now ──────────────────────────────────────────
+                       The question at seven in the evening is not "what is good
+                       in Bishkek" but "what is open, near me, now". Worked out
+                       on the device from the hours, the ratings and the
+                       position — no model call, and it answers with no signal. -->
+                  <sc-if value="{{ hasOpenNow }}">
+                    <div style="padding:0 22px;display:flex;flex-direction:column;gap:11px">
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <span style="width:7px;height:7px;border-radius:99px;background:var(--green);flex:0 0 7px"></span>
+                        <div style="font-size:19px;font-weight:800;letter-spacing:-.028em;color:var(--ink)">{{ t.openNow }}</div>
+                        <div style="font-size:12px;font-weight:600;color:var(--ink3)">{{ openNowSub }}</div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <sc-for list="{{ openNow }}" as="o" hint-placeholder-count="3">
+                          <div onClick="{{ o.go }}" role="button" tabIndex="0" style="display:flex;align-items:center;gap:11px;padding:8px;border-radius:15px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
+                            <div style="width:46px;height:46px;flex:0 0 46px;border-radius:11px;overflow:hidden;background:var(--imgbg)">
+                              <image-slot id="{{ o.slot }}" shape="rect" placeholder="{{ o.ph }}"></image-slot>
+                            </div>
+                            <div style="flex:1;min-width:0">
+                              <div style="font-size:14px;font-weight:700;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ o.name }}</div>
+                              <div style="margin-top:2px;display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink2);white-space:nowrap">
+                                <span style="{{ o.dot }}"></span><span>{{ o.cat }}</span>
+                                <sc-if value="{{ o.hasDist }}"><span>·</span><span style="font-weight:700;color:var(--brand)">{{ o.dist }}</span></sc-if>
+                              </div>
+                            </div>
+                            <div style="{{ o.shutCss }}">{{ o.shut }}</div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+
                   <div style="display:flex;flex-direction:column;gap:15px">
                     <div style="padding:0 22px;display:flex;align-items:center;justify-content:space-between">
                       <div style="font-size:19px;font-weight:800;letter-spacing:-.028em;color:var(--ink)">{{ t.nearby }}</div>
@@ -3068,7 +3100,54 @@
     }
     if (st.screen === 'itinerary') v.day = st.itinDay;
 
+    v.trip = tripMemory(st);
+
     ENG.setView(v);
+  }
+
+  /**
+   * What this traveller has already done, for the assistant to read.
+   *
+   * The assistant used to start every reload knowing nothing, so it kept
+   * recommending Navat to someone who had eaten there on Tuesday and
+   * verified it for a badge. All of this is already on the device — saved
+   * places, challenge proofs, reviews written, trips kept — it was simply
+   * never handed over.
+   *
+   * Deliberately small. It rides along with every question, so it is a few
+   * lines of the most recent and most telling things rather than a log.
+   */
+  function tripMemory(st) {
+    var trip = {};
+    var nameOf = function (id) {
+      var p = D.places.filter(function (x) { return x.id === id; })[0];
+      return p ? p.name : null;
+    };
+
+    var saved = (st.favs || []).map(nameOf).filter(Boolean);
+    if (saved.length) trip.saved = saved.slice(-8);
+
+    // Challenge tasks marked verified: the strongest evidence of "been there".
+    var done = [];
+    Object.keys(st.proofs || {}).forEach(function (kind) {
+      var chal = chalOf(kind);
+      var tasks = (chal && chal.tasks) || [];
+      Object.keys(st.proofs[kind] || {}).forEach(function (idx) {
+        if (st.proofs[kind][idx] !== 'ok') return;
+        var task = tasks[Number(idx)];
+        if (task && task.what) done.push(task.what);
+      });
+    });
+    if (done.length) trip.done = done.slice(-10);
+
+    var reviewed = Object.keys(st.reviews || {}).map(function (id) { return nameOf(Number(id)); }).filter(Boolean);
+    if (reviewed.length) trip.reviewed = reviewed.slice(-6);
+
+    if ((st.userTrips || []).length) {
+      trip.trips = st.userTrips.slice(-3).map(function (t) { return t.title || t.name; }).filter(Boolean);
+    }
+
+    return Object.keys(trip).length ? trip : null;
   }
 
   /**
@@ -3566,6 +3645,9 @@
     // follows the saved profile.
     var t = tr(st.onboarding ? st.obLang : (prof.lang || 'en'));
     var isLocal = st.obCountry === 'Kyrgyzstan';
+    /* Computed once per render rather than inside the feed, because the
+       template asks whether the section exists before asking what is in it. */
+    var openNowRows = (ENG && ENG.openNow) ? ENG.openNow({ limit: 3 }) : [];
     // Whether the current onboarding step is satisfied — language always is.
     var obStepReady = st.obStep === OB_NAME ? !!st.obFirst.trim()
       : st.obStep === OB_COUNTRY ? !!st.obCountry
@@ -3733,6 +3815,25 @@
       tabAi: tabCss(s === 'ai' || s === 'itinerary'),
       tabProfile: tabCss(['profile', 'rewards', 'challenge', 'verify'].indexOf(s) >= 0),
 
+      hasOpenNow: openNowRows.length > 0,
+      /* Says which of the two orderings the reader is looking at, because
+         "nearest" and "best rated" are very different lists and it would
+         otherwise be a mystery which one arrived. */
+      openNowSub: ENG && ENG.position() ? t.openNowNear : t.openNowRated,
+      openNow: openNowRows.map(function (p) {
+        var left = ENG && ENG.closingSoon ? ENG.closingSoon(p) : null;
+        return {
+          name: p.name, slot: p.slot, ph: p.ph,
+          cat: catOf(p.cat), dot: catDotCss(p.cat, 6),
+          hasDist: !!p.dist, dist: p.dist || '',
+          // Only shown when it is nearly too late to be worth going.
+          shut: left ? (t.closesIn || 'closes in') + ' ' + left + ' min' : '',
+          shutCss: left
+            ? 'flex:0 0 auto;font-size:10.5px;font-weight:800;color:var(--brand);text-align:right;line-height:1.3;max-width:76px'
+            : 'display:none',
+          go: function () { openPlace(p.id); }
+        };
+      }),
       nearby: [D.places[4], D.places[5], D.places[10], D.places[6]].map(function (p) {
         return {
           name: p.name, rating: p.rating.toFixed(1), dist: micro(p.dist), slot: p.slot, ph: p.ph,
@@ -4450,10 +4551,15 @@
       // The engine rewrites every place's distance once the browser says where
       // we are; re-draw so the written-in "0.8 km" strings become measurements.
       ENG.onChange(function () { setState({}); });
-      // Asked for at startup rather than on the map screen, because the home
-      // list shows distances too. A refusal is not an error: the app keeps the
-      // distances the design shipped with.
-      ENG.locate();
+      /* Read the position only if permission was already granted — never ask
+         here. A prompt no tap led to is dismissed by the browser, and enough
+         dismissals turn into a remembered block for the whole site, at which
+         point "Use my location" cannot bring the dialog back either. Telegram
+         asks through its own dialog first, which is why it worked there and
+         not here. The app already offers the button; pressing it is the
+         gesture the browser wants. Until then the written-in distances from
+         the middle of Bishkek stand, which is what they are for. */
+      ENG.locateIfAllowed();
     }
   }
 

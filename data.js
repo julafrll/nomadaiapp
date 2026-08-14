@@ -421,6 +421,7 @@ const strings = {
       /* app chrome */
       awaits: 'Kyrgyzstan awaits', searchPlaceholder: 'Where do you want to go?',
       planMyTrip: 'Plan My Trip', keepGoing: 'KEEP GOING',
+      openNow: 'Open now', openNowNear: 'nearest to you', openNowRated: 'best rated', closesIn: 'closes in',
       nearby: 'Nearby places', seeAll: 'See all', popular: 'Popular destinations',
       restaurants: 'Recommended restaurants',
       tabHome: 'Home', tabMap: 'Map', tabAi: 'AI Assistant', tabProfile: 'Profile',
@@ -571,6 +572,7 @@ const strings = {
       startExploring: 'Поехали', profileSaved: 'Профиль сохранён',
       awaits: 'Кыргызстан ждёт', searchPlaceholder: 'Куда хотите поехать?',
       planMyTrip: 'Спланировать поездку', keepGoing: 'ПРОДОЛЖАЙТЕ',
+      openNow: 'Открыто сейчас', openNowNear: 'ближайшие к вам', openNowRated: 'с лучшим рейтингом', closesIn: 'закроется через',
       nearby: 'Места рядом', seeAll: 'Все', popular: 'Популярные направления',
       restaurants: 'Рекомендуемые рестораны',
       tabHome: 'Главная', tabMap: 'Карта', tabAi: 'Помощник', tabProfile: 'Профиль',
@@ -721,6 +723,7 @@ const strings = {
       startExploring: 'Кеттик', profileSaved: 'Профиль сакталды',
       awaits: 'Кыргызстан күтүүдө', searchPlaceholder: 'Кайда баргыңыз келет?',
       planMyTrip: 'Саякат түзүү', keepGoing: 'УЛАНТЫҢЫЗ',
+      openNow: 'Азыр ачык', openNowNear: 'сизге эң жакын', openNowRated: 'эң жогорку рейтинг', closesIn: 'жабылат',
       nearby: 'Жакынкы жерлер', seeAll: 'Баары', popular: 'Популярдуу багыттар',
       restaurants: 'Сунушталган ресторандар',
       tabHome: 'Башкы', tabMap: 'Карта', tabAi: 'Жардамчы', tabProfile: 'Профиль',
