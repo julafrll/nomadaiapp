@@ -1524,7 +1524,17 @@
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><path d="M4 20h4L20 8l-4-4L4 16v4Z" stroke-width="1.9" stroke-linejoin="round"/><path d="M14.5 5.5 18.5 9.5" stroke-width="1.9"/></svg>
                         </div>
                       </div>
-                      <div style="margin-top:4px;font-size:13.5px;color:var(--ink2)">{{ t.from }} {{ countryFlag }} {{ countryLabel }} · {{ levelLabel }}</div>
+                      <!-- Country, status and level as three chips rather than one
+                           line strung together with dots. They are three separate
+                           facts; the dots made them read as one sentence. -->
+                      <div style="margin-top:7px;display:flex;flex-wrap:wrap;gap:6px">
+                        <div style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--ink);min-width:0">
+                          <span style="flex:0 0 auto;line-height:0">{{ countryFlag }}</span>
+                          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ countryLabel }}</span>
+                        </div>
+                        <div style="padding:5px 10px;border-radius:99px;background:var(--brandSoft);font-size:12px;font-weight:700;color:var(--brand);white-space:nowrap">{{ statusLabel }}</div>
+                        <div style="padding:5px 10px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--ink2);white-space:nowrap">{{ levelOnly }}</div>
+                      </div>
                     </div>
                   </div>
 
@@ -4183,6 +4193,9 @@
       badgeCount: String(earnedBadges.length),
       badgeCountOf: earnedBadges.length + ' ' + t.of + ' ' + D.badgeList.length,
       levelLabel: moreOf('levels', lvl.name, lvl.name) + ' · ' + t.level + ' ' + lvl.n,
+      // The same two facts, apart, for the chips on Profile.
+      statusLabel: moreOf('levels', lvl.name, lvl.name),
+      levelOnly: t.level + ' ' + lvl.n,
       ringCss: 'position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--brand) 0turn, var(--gold) ' +
         lvl.pct.toFixed(3) + 'turn, var(--line) ' + lvl.pct.toFixed(3) + 'turn)',
       levelBarCss: 'width:' + Math.round(lvl.pct * 100) + '%;height:100%;border-radius:99px;background:var(--brand);transition:width .5s',
