@@ -15,6 +15,19 @@
 # visitor for their own key, and the transport section does not appear.
 
 [build]
+  # The folder IS the site, so everything in it is published.
+  #
+  # ⚠ `netlify deploy` uploads the WORKING DIRECTORY, not the repo, and it
+  #   does not read .gitignore. A gitignored file sitting here — .env,
+  #   a keys note, a nomad-config.js with real keys pasted back in for a
+  #   local run — is published with everything else. That has happened.
+  #   Netlify skips dotfiles, so .env survived it; a plainly-named file
+  #   will not.
+  #
+  #   Deploy by pushing to GitHub, which builds from the committed tree and
+  #   cannot carry an untracked file. Keep local-only secrets outside this
+  #   folder, and use `netlify dev` for a local run — it reads .env and
+  #   serves the functions, so nomad-config.js can stay empty.
   publish = "."
   # No command: nothing to compile.
 

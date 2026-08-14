@@ -9,3 +9,6 @@ nomad-keys.local.txt
 .env
 .env.*
 !.env.example
+
+# Local Netlify folder
+.netlify
