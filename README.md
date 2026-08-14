@@ -222,12 +222,23 @@ The route comes from each file's path, which is why `nomad-config.js` needs no
 change: it already calls `/api/ai` and `/api/transit`.
 
 In the Pages project — Build command: *(leave empty)*, Build output directory:
-`/`. Then add both keys as encrypted **Secrets**, not plain variables:
+`/`. Then put both keys on the project from the `.env` you already keep, in
+one command, instead of clicking through the dashboard twice:
 
 ```bash
-wrangler pages secret put GEMINI_API_KEY
-wrangler pages secret put TWOGIS_API_KEY
+npx wrangler login    # once, ever — Cloudflare has to know it is you
+node push-secrets.mjs
 ```
+
+They are stored as encrypted Secrets, read by the functions as `env.*`, and
+never written to the repo.
+
+**The keys are deliberately not committed.** This repository is public, GitHub
+scans public pushes for credentials and reports Google API keys to Google, and
+Google revokes them automatically. A committed `GEMINI_API_KEY` would not save
+a step — it would kill the assistant a few hours after the first push, with
+nothing in the app to explain why. The 2GIS key would survive and be spendable
+by anyone who read the repo.
 
 **Deploy by pushing to GitHub, not with `wrangler pages deploy`.** The direct
 upload sends the working directory and ignores `.gitignore`, exactly as
