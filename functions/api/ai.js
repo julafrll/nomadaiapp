@@ -82,8 +82,13 @@ const fail = (message, status, code) =>
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return fail('Use POST.', 405);
 
+  /* 403, not 500. The page retries the next model on any 5xx, so a missing
+     key used to fail all six in turn, empty the chain, and surface as "out of
+     free quota for today" — the one message guaranteed to send you looking at
+     Google instead of at this deployment. 403 is what the page reads as a
+     credentials problem, and it stops the chain on the first model. */
   const key = env.GEMINI_API_KEY;
-  if (!key) return fail('GEMINI_API_KEY is not set on this site.', 500);
+  if (!key) return fail('GEMINI_API_KEY is not set on this site.', 403, 'PROXY_NO_KEY');
 
   const model = new URL(request.url).searchParams.get('model') || '';
   if (!ALLOWED.has(model)) return fail('Unknown model: ' + model, 400);

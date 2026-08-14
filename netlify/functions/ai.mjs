@@ -73,7 +73,10 @@ export default async (req) => {
   if (req.method !== 'POST') return fail('Use POST.', 405);
 
   const key = process.env.GEMINI_API_KEY;
-  if (!key) return fail('GEMINI_API_KEY is not set on this site.', 500);
+  /* 403, not 500: the page retries the next model on any 5xx, so a missing key
+     failed all six in turn and surfaced as "out of free quota for today" — pointing
+     at Google rather than at this site's configuration. */
+  if (!key) return fail('GEMINI_API_KEY is not set on this site.', 403, 'PROXY_NO_KEY');
 
   const model = new URL(req.url).searchParams.get('model') || '';
   if (!ALLOWED.has(model)) return fail('Unknown model: ' + model, 400);
