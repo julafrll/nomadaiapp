@@ -215,23 +215,31 @@ functions that run on Cloudflare, never in the browser:
 functions/api/ai.js        →  /api/ai        Gemini, holds GEMINI_API_KEY
 functions/api/transit.js   →  /api/transit   2GIS, holds TWOGIS_API_KEY
 _headers                   →  the cache rules netlify.toml used to carry
-wrangler.toml              →  project name and publish directory
 ```
 
 The route comes from each file's path, which is why `nomad-config.js` needs no
-change: it already calls `/api/ai` and `/api/transit`.
+change: it already calls `/api/ai` and `/api/transit`. Pages finds `functions/`
+on its own — there is nothing to switch on.
 
 In the Pages project — Build command: *(leave empty)*, Build output directory:
-`/`. Then put both keys on the project from the `.env` you already keep, in
-one command, instead of clicking through the dashboard twice:
+`/`. Then either add both keys under Settings → Variables and Secrets (choose
+**Encrypt**, and set them on Production *and* Preview — they are separate
+sets), or push them from the `.env` you already keep:
 
 ```bash
 npx wrangler login    # once, ever — Cloudflare has to know it is you
-node push-secrets.mjs
+node push-secrets.mjs <your-pages-project-name>
 ```
 
-They are stored as encrypted Secrets, read by the functions as `env.*`, and
-never written to the repo.
+Either way they are stored as encrypted Secrets, read by the functions as
+`env.*`, and never written to the repo. Secrets attach at deploy time, so
+redeploy after adding them or the running build will not see them.
+
+**There is deliberately no `wrangler.toml`.** Adding one to a Pages project
+makes it the source of truth and locks the matching fields out of the
+dashboard — so a `[vars]` block it does not contain becomes a variable you
+cannot add by hand — and a `name` in it that does not match the project fails
+the build outright. Neither is worth it for a site with no build step.
 
 **The keys are deliberately not committed.** This repository is public, GitHub
 scans public pushes for credentials and reports Google API keys to Google, and

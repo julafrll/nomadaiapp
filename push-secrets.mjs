@@ -66,10 +66,15 @@ if (missing.length) {
   process.exit(2);
 }
 
-const toml = read('./wrangler.toml') ?? '';
-const project = (toml.match(/^\s*name\s*=\s*"([^"]+)"/m) || [])[1];
+/* The project name is passed in rather than read from a wrangler.toml. There
+   deliberately is not one: a Pages wrangler.toml becomes the source of truth
+   for the project and locks the matching fields out of the dashboard, so a
+   `vars` block it does not contain is a variable you cannot add by hand. A
+   name in it that does not match the project also fails the build outright. */
+const project = process.argv[2];
 if (!project) {
-  console.error('Could not read the project name from wrangler.toml.');
+  console.error('Usage: node push-secrets.mjs <pages-project-name>\n\n' +
+    'The name is the one in the Cloudflare dashboard under Workers & Pages.');
   process.exit(2);
 }
 
