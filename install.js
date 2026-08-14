@@ -117,9 +117,9 @@
       '<div class="nomInstall__text">' +
         '<div class="nomInstall__title">Add Nomad AI to your home screen</div>' +
         '<div class="nomInstall__sub">' +
-          (mode === 'ios'
-            ? 'Tap Share, then “Add to Home Screen”.'
-            : 'Opens full screen, and works without a connection.') +
+          (mode === 'prompt'
+            ? 'Opens full screen, and works without a connection.'
+            : manualHow()) +
         '</div>' +
       '</div>' +
       (mode === 'prompt' ? '<button class="nomInstall__go" type="button">Install</button>' : '') +
@@ -151,6 +151,9 @@
   function offer(e) {
     if (!e || deferred) return;
     deferred = e;                       // kept even while resting, for the row
+    // A Profile screen already open is showing the "manual" wording; this
+    // lets it redraw itself now that the real dialog is available.
+    try { window.dispatchEvent(new CustomEvent('nomad:install-state')); } catch (err) {}
     if (resting) return;
     setTimeout(function () { show('prompt'); }, DELAY);
   }
@@ -168,24 +171,53 @@
 
   if (isIosSafari && !resting) setTimeout(function () { show('ios'); }, DELAY);
 
-  /* A way in that does not depend on a banner the traveller may have
-     dismissed, missed, or never been shown because the browser decided the
-     moment was wrong. Profile offers it as a row, always, and this is what
-     that row calls. */
+  /* Where the browser keeps its own install command, for the case where we
+     cannot open the dialog ourselves. Chrome only hands over
+     beforeinstallprompt when it decides the app is installable, and never on
+     desktop Firefox or Safari — so "no event yet" must not mean "no way in".
+     Saying where the menu item is beats a control that does nothing. */
+  function manualHow() {
+    var ua = navigator.userAgent;
+    if (isIos) return 'Tap Share, then “Add to Home Screen”.';
+    if (/Android/.test(ua)) return 'Open the browser menu (⋮) and choose “Add to Home screen”.';
+    if (/Firefox/.test(ua)) return 'Firefox cannot install this. Open it in Chrome or Edge to add it.';
+    if (/Safari/.test(ua) && !/Chrome|Chromium|Edg/.test(ua)) return 'Choose File, then “Add to Dock”.';
+    return 'Open the browser menu (⋮) and choose “Install”, or “Add to Home screen”.';
+  }
+
+  /* The state of the offer, for the Profile row to render itself from.
+       installed  already on the home screen — offer nothing
+       prompt     we hold the event and can open the real dialog
+       ios        Safari on iPhone: instructions, because no event exists
+       manual     everything else: say where the browser's own command is */
+  function offerState() {
+    if (standalone) return 'installed';
+    if (deferred) return 'prompt';
+    if (isIosSafari) return 'ios';
+    return 'manual';
+  }
+
+  /* Offered as a row in Profile as well as a card, because a traveller may
+     have dismissed the card, missed it, or never been shown it — Chrome
+     decides that moment, not us. The row is always there while the app is
+     not installed, and adapts to whichever of the four states applies. */
   window.nomadInstall = {
-    // Whether an install can actually be offered from here.
-    can: function () { return !standalone && (!!deferred || isIosSafari); },
+    state: offerState,
+    how: manualHow,
     isIos: function () { return isIosSafari; },
     installed: function () { return standalone; },
-    /** Chrome: opens the real dialog. iOS: shows the Share instructions. */
+    // Kept for callers that only want to know whether the dialog is ready.
+    can: function () { return offerState() === 'prompt'; },
+    /** Opens the real dialog where there is one; explains where it is otherwise. */
     open: function () {
       if (deferred) {
         deferred.prompt();
         deferred.userChoice.then(function () { deferred = null; });
         return 'prompt';
       }
-      if (isIosSafari) { shown = false; show('ios'); return 'ios'; }
-      return 'unavailable';
+      shown = false;
+      show(isIosSafari ? 'ios' : 'manual');
+      return isIosSafari ? 'ios' : 'manual';
     }
   };
 

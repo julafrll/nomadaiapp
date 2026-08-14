@@ -4894,14 +4894,20 @@
           go: function () { openProfileEdit(OB_LANG); }, icon: 'globe'
         }
       ].concat(
-        /* Offered as a row, not only as the banner that appears once. A
-           traveller who dismissed it, or whose browser never showed it,
-           still has somewhere to go. Hidden once the app is installed,
-           and on browsers that cannot install at all. */
-        (window.nomadInstall && window.nomadInstall.can())
+        /* Always offered while the app is not installed. It used to appear
+           only once Chrome had handed over the install event — which it does
+           on its own schedule, and never at all on desktop Firefox or Safari
+           — so the one dependable way in was invisible exactly when it was
+           needed. The row adapts instead: it opens the real dialog where
+           there is one, and says where the browser keeps its own command
+           where there is not. */
+        (window.nomadInstall && !window.nomadInstall.installed())
           ? [{
               name: t.mInstall,
-              meta: window.nomadInstall.isIos() ? t.mInstallIos : t.mInstallMeta,
+              /* Short, like every other row's meta — a full sentence here
+                 squeezed the label onto two lines. The instructions belong
+                 in the card that opens when the row is tapped. */
+              meta: window.nomadInstall.state() === 'ios' ? t.mInstallIos : t.mInstallMeta,
               go: function () { window.nomadInstall.open(); },
               icon: 'install'
             }]
@@ -5071,6 +5077,11 @@
     wireEvents();
     prevScreen = state.screen;
     draw();
+
+    /* The install offer can become available after the first render, when
+       Chrome decides the app is installable. Redraw so the Profile row stops
+       showing the manual instructions and offers the dialog instead. */
+    window.addEventListener('nomad:install-state', function () { setState({}); });
 
     if (ENG) {
       // The engine rewrites every place's distance once the browser says where
