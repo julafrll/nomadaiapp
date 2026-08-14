@@ -92,7 +92,7 @@
                         <div style="font-size:13px;font-weight:600;color:var(--ink3)">{{ t.hello }}, {{ first }}</div>
                         <div style="margin-top:3px;font-size:25px;font-weight:800;letter-spacing:-.035em;color:var(--ink);line-height:1.15">{{ t.awaits }}</div>
                       </div>
-                      <div onClick="{{ goProfile }}" role="button" tabIndex="0" aria-label="Profile" style="width:46px;height:46px;flex:0 0 46px;border-radius:50%;background:var(--brandSoft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--brand);cursor:pointer">{{ initials }}</div>
+                      <div onClick="{{ goProfileFromAvatar }}" role="button" tabIndex="0" aria-label="Profile" style="width:46px;height:46px;flex:0 0 46px;border-radius:50%;background:var(--brandSoft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--brand);cursor:pointer">{{ initials }}</div>
                     </div>
   
                     <div onClick="{{ goSearch }}" style="display:flex;align-items:center;gap:13px;height:58px;padding:0 20px;border-radius:19px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
@@ -2269,7 +2269,23 @@
 
   /* ── Behaviour ───────────────────────────────────────────────────────── */
 
-  function go(s) { setState(function (st) { return { screen: s, stack: st.stack.concat([st.screen]) }; }); }
+  /* Push a screen, so Back returns to where the traveller pressed from.
+     Pressing the control for the screen you are already on pushes nothing —
+     otherwise Back would appear to do nothing the first time. */
+  function go(s) {
+    setState(function (st) {
+      if (st.screen === s) return {};
+      return { screen: s, stack: st.stack.concat([st.screen]) };
+    });
+  }
+  /* Switch to a tab root: home, map, ai, profile. Emptying the stack is the
+     point — those four screens carry no back chevron, so an entry pushed
+     behind them is one the traveller has no control to pop.
+
+     Everything else — rewards, saved, trips, phrasebook, currency,
+     emergency, a place, a challenge, a trip — is reached BY pressing
+     something and does have a back chevron, so it must use go(). Getting
+     this the wrong way round is why Back out of Rewards went Home. */
   function jump(s) { setState({ screen: s, stack: [] }); }
   function back() {
     setState(function (st) {
@@ -4198,8 +4214,12 @@
       goAi: function () { jump('ai'); },
       goAiTab: function () { jump('ai'); },
       goProfile: function () { jump('profile'); },
+      /* The avatar on Home goes to the same place as the Profile tab, and
+         Profile has no back chevron — pushing would leave a stack entry with
+         no control to pop it. */
+      goProfileFromAvatar: function () { jump('profile'); },
       goItin: function () { go('itinerary'); },
-      goRewards: function () { jump('rewards'); },
+      goRewards: function () { go('rewards'); },
 
       tabHome: tabCss(s === 'home'),
       tabMap: tabCss(s === 'map'),
@@ -4864,7 +4884,7 @@
       menu: [
         { name: t.mSaved, meta: String(saved.length), go: function () { go('saved'); }, icon: 'heart' },
         { name: t.mTrips, meta: allTrips().length + ' ' + t.savedWord, go: function () { go('trips'); }, icon: 'route' },
-        { name: t.mRewards, meta: earnedBadges.length + ' ' + t.of + ' ' + D.badgeList.length, go: function () { jump('rewards'); }, icon: 'medal' },
+        { name: t.mRewards, meta: earnedBadges.length + ' ' + t.of + ' ' + D.badgeList.length, go: function () { go('rewards'); }, icon: 'medal' },
         { name: t.mPhrases, meta: t.offlineWord, go: function () { go('phrasebook'); }, icon: 'book' },
         { name: t.mCurrency, meta: '1 USD = 87.42 som', go: function () { go('currency'); }, icon: 'swap' },
         { name: t.mEmergency, meta: '112', go: function () { go('emergency'); }, icon: 'alert' },

@@ -11,7 +11,7 @@
 
 <!-- Installable app. theme-color tints the system bars around it; iOS still
      wants its own meta tags, which Safari reads instead of the manifest. -->
-<link rel="manifest" href="manifest.webmanifest?v=98">
+<link rel="manifest" href="manifest.webmanifest?v=100">
 <meta name="theme-color" content="#F7F3EE" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#241B18" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,7 +24,7 @@
      opaque response it cannot tell success from failure. All three of
      these send Access-Control-Allow-Origin: *. -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" crossorigin="anonymous">
-<link rel="stylesheet" href="styles.css?v=98">
+<link rel="stylesheet" href="styles.css?v=100">
 <script>
 /* Catch the install offer before anything can miss it.
 
@@ -88,23 +88,23 @@
 
 <!-- ?v= busts the browser cache. Bump it after editing any of these, or a
      reload can quietly keep running the previous version. -->
-<script src="data.js?v=98"></script>
-<script src="phrase-audio.js?v=98"></script>
-<script src="badges.js?v=98"></script>
-<script src="photos.js?v=98"></script>
-<script src="image-slot.js?v=98"></script>
+<script src="data.js?v=100"></script>
+<script src="phrase-audio.js?v=100"></script>
+<script src="badges.js?v=100"></script>
+<script src="photos.js?v=100"></script>
+<script src="image-slot.js?v=100"></script>
 <!-- The working parts. nomad-places.js carries the real coordinates and the
      places the bot's database has; nomad-engine.js merges them into the
      tables above and adds the map, distances, directions and the assistant.
      Both must load after data.js and before app.js. -->
-<script src="nomad-config.js?v=98"></script>
-<script src="nomad-places.js?v=98"></script>
-<script src="nomad-branches.js?v=98"></script>
-<script src="nomad-2gis.js?v=98"></script>
-<script src="nomad-engine.js?v=98"></script>
-<script src="app.js?v=98"></script>
+<script src="nomad-config.js?v=100"></script>
+<script src="nomad-places.js?v=100"></script>
+<script src="nomad-branches.js?v=100"></script>
+<script src="nomad-2gis.js?v=100"></script>
+<script src="nomad-engine.js?v=100"></script>
+<script src="app.js?v=100"></script>
 <!-- Offers the home-screen install once, after the app is up. -->
-<script src="install.js?v=98"></script>
+<script src="install.js?v=100"></script>
 
 <!-- The service worker is what makes this installable and lets it open
      without a connection. It is deliberately last and never blocks the
