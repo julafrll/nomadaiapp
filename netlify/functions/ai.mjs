@@ -14,11 +14,23 @@
 const UPSTREAM = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 /* Only the models the app actually lists. Without this the path is an open
-   proxy to anything Google hosts, spent against your key. */
+   proxy to anything Google hosts, spent against your key.
+
+   ⚠ Must match geminiModels in nomad-config.js — check-models.mjs verifies
+   it. A model listed there and missing here is rejected with a 400, which
+   the app reads as "could not reach Gemini" and moves past: quiet, and it
+   costs you that model's whole daily quota.
+
+   The `-latest` aliases are deliberately absent: each is a second name for
+   a version already in this list and shares its quota, so allowing both
+   only makes it harder to tell what is being spent. */
 const ALLOWED = new Set([
-  'gemini-flash-latest',
-  'gemini-flash-lite-latest',
-  'gemini-3.1-flash-lite'
+  'gemini-3.7-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
+  'gemini-3-flash-preview'
 ]);
 
 const MAX_BODY = 200 * 1024;   // the PLACES block is large; a question is not

@@ -26,13 +26,31 @@ window.NOMAD_CONFIG = {
   // Empty by default — see above. The assistant asks for a key when needed.
   geminiKey: '',
 
-  /* Models are tried in order. Google's free tier counts requests per day
-     PER MODEL — the current Flash release allows only 20 — so listing
-     several means one exhausted model does not end the demo. */
+  /* Models are tried in order, and the free tier counts requests per day
+     PER MODEL — 20 each — so the length of this list is the whole daily
+     budget: six models is roughly 120 questions a day shared between
+     everyone using the app, three was sixty.
+
+     Concrete versions, not the `-latest` aliases the list used to carry.
+     An alias is not a model of its own: gemini-flash-latest IS
+     gemini-3.7-flash and spends the same twenty, and gemini-flash-lite-
+     latest is gemini-3.5-flash-lite. Listing an alias beside the version it
+     points at looks like two models and buys nothing. Aliases also move —
+     the one here answered as 3.6-flash one day and 3.7-flash the next —
+     so a named version is the only way to know which quota is being spent.
+
+     Full flash first, then the lites, then preview: the order is quality,
+     since a later entry is only reached once the ones above it are spent.
+
+     ⚠ netlify/functions/ai.mjs allowlists these names. Add one here and it
+     must be added there too, or the proxy rejects it. */
   geminiModels: [
-    'gemini-flash-latest',
-    'gemini-flash-lite-latest',
-    'gemini-3.1-flash-lite'
+    'gemini-3.7-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-3.1-flash-lite',
+    'gemini-3-flash-preview'
   ],
 
   // Seconds to wait for an answer before falling back to the offline reply.
