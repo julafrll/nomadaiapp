@@ -1235,6 +1235,192 @@
    *                                        the caller should use the app's own
    *                                        written answers instead
    */
+  /* ── Planning a trip ────────────────────────────────────
+     A trip asked for in the chat came back as a paragraph of prose: correct,
+     and unreadable at a glance. The model is asked for a structure instead —
+     Gemini holds to a responseSchema — so the app can lay the days out
+     itself, attach each stop's photograph and rating from the database, and
+     put the whole thing on the map.
+
+     Stops are chosen by id from the rows we sent. An id we did not send is
+     dropped rather than shown: a stop the app cannot open, price, or place
+     on a map is worse than one stop fewer. */
+
+  var TRIP_SCHEMA = {
+    type: 'OBJECT',
+    properties: {
+      title: { type: 'STRING' },
+      summary: { type: 'STRING' },
+      days: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            theme: { type: 'STRING' },
+            stops: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: {
+                  time: { type: 'STRING' },
+                  placeId: { type: 'INTEGER' },
+                  note: { type: 'STRING' },
+                  cost: { type: 'STRING' }
+                },
+                required: ['time', 'placeId', 'note', 'cost']
+              }
+            }
+          },
+          required: ['theme', 'stops']
+        }
+      }
+    },
+    required: ['title', 'summary', 'days']
+  };
+
+  var TRIP_RULES =
+    'You plan trips in Kyrgyzstan for a traveller using this app.\n' +
+    'Use ONLY places from the PLACES list and refer to each by its exact id. ' +
+    'Never invent a place, and never use an id that is not in the list.\n' +
+    'Order each day so the stops make geographic sense. Give real prices from ' +
+    'the rows, in som. `note` is one short sentence on why this stop, at this ' +
+    'hour — not a description of the place, which the app already shows.\n' +
+    'Three or four stops a day. Meals at meal times.';
+
+  /** Ask for a trip. cb({trip}) on success, cb({error, reason}) otherwise. */
+  function planTrip(question, cb) {
+    if (!hasKey()) { cb({ error: 'no key', reason: 'nokey' }); return; }
+
+    var found = retrieve(question);
+    // A trip needs somewhere to go, so the pool is wider than a question's.
+    var pool = found.places.length >= 12 ? found.places : topPlaces(28);
+    var ctx = 'PLACES (choose stops from these ids only):\n' + contextBlock(pool) +
+      (position ? '\n\nThe traveller is at ' + position.lat.toFixed(4) + ', ' +
+        position.lng.toFixed(4) + '; the distances above are from there.' : '');
+
+    var models = (CFG.geminiModels || []).filter(function (m) { return !spent[m]; });
+    if (!models.length) models = (CFG.geminiModels || ['gemini-3.6-flash']).slice();
+
+    function attempt() {
+      if (!models.length) { cb({ error: 'no quota left today', reason: 'quota' }); return; }
+      var model = models.shift();
+      callGeminiJson(model, TRIP_RULES, ctx + '\n\n' + question, function (res) {
+        if (res.error) {
+          if (res.status === 429 || res.status === 404) spent[model] = 1;
+          attempt();
+          return;
+        }
+        var trip = shapeTrip(res.data);
+        if (!trip) { attempt(); return; }
+        cb({ trip: trip, model: model });
+      });
+    }
+    attempt();
+  }
+
+  /** Best-rated rows, as the pool when the question named nothing specific. */
+  function topPlaces(n) {
+    return D.places.filter(function (p) { return typeof p.lat === 'number'; })
+      .slice()
+      .sort(function (a, b) { return (b.rating || 0) - (a.rating || 0); })
+      .slice(0, n);
+  }
+
+  /** Resolve ids to rows and drop anything we cannot vouch for. */
+  function shapeTrip(data) {
+    if (!data || !data.days || !data.days.length) return null;
+    var days = [], total = 0;
+
+    data.days.forEach(function (day) {
+      var stops = [];
+      (day.stops || []).forEach(function (s) {
+        var p = byId[s.placeId];
+        if (!p) return;                        // an id we never sent
+        var som = parseInt(String(s.cost).replace(/[^0-9]/g, ''), 10);
+        if (!isNaN(som)) total += som;
+        stops.push({
+          time: String(s.time || ''), note: String(s.note || ''), cost: String(s.cost || ''),
+          id: p.id, name: p.name, cat: p.cat, slot: p.slot, ph: p.ph,
+          rating: p.rating, lat: p.lat, lng: p.lng, dist: p.dist
+        });
+      });
+      if (stops.length) days.push({ theme: String(day.theme || ''), stops: stops });
+    });
+
+    if (!days.length) return null;
+    return {
+      title: String(data.title || 'Your trip'),
+      summary: String(data.summary || ''),
+      days: days,
+      stopCount: days.reduce(function (n, d) { return n + d.stops.length; }, 0),
+      som: total
+    };
+  }
+
+  /** callGemini's shape, but asking for JSON and returning the parsed object. */
+  function callGeminiJson(model, rules, prompt, cb) {
+    var key = apiKey();
+    var viaProxy = !proxyGone && !!PROXY;
+    var url = viaProxy
+      ? PROXY + '/ai?model=' + encodeURIComponent(model)
+      : 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
+    var headers = { 'content-type': 'application/json' };
+    if (!viaProxy) headers['x-goog-api-key'] = key;
+
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    // A whole trip takes longer to write than an answer.
+    var timer = setTimeout(function () { if (controller) controller.abort(); },
+      Math.max((CFG.aiTimeoutSeconds || 25) * 1000, 45000));
+
+    fetch(url, {
+      method: 'POST',
+      headers: headers,
+      signal: controller ? controller.signal : undefined,
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: rules }] },
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.3,
+          maxOutputTokens: 8192,
+          responseMimeType: 'application/json',
+          responseSchema: TRIP_SCHEMA
+        }
+      })
+    })
+      .then(function (r) {
+        return r.text().then(function (raw) {
+          var body = null;
+          try { body = JSON.parse(raw); } catch (e) { /* not JSON */ }
+          return { ok: r.ok, status: r.status, body: body };
+        });
+      })
+      .then(function (res) {
+        clearTimeout(timer);
+        if (viaProxy && (res.status === 404 || res.status === 405 || res.status === 501)) {
+          proxyGone = true;
+          if (!apiKey()) { cb({ error: 'no key', status: 0 }); return; }
+          callGeminiJson(model, rules, prompt, cb);
+          return;
+        }
+        if (!res.ok) {
+          cb({ error: (res.body && res.body.error && res.body.error.message) || ('HTTP ' + res.status),
+               status: res.status });
+          return;
+        }
+        var cand = res.body && res.body.candidates && res.body.candidates[0];
+        var parts = (cand && cand.content && cand.content.parts) || [];
+        var text = parts.filter(function (p) { return !p.thought && typeof p.text === 'string'; })
+          .map(function (p) { return p.text; }).join('');
+        var data = null;
+        try { data = JSON.parse(text); } catch (e) { /* the schema slipped */ }
+        if (!data) { cb({ error: 'unreadable plan', status: 502 }); return; }
+        cb({ data: data });
+      })['catch'](function (e) {
+        clearTimeout(timer);
+        cb({ error: e.name === 'AbortError' ? 'timed out' : e.message, status: 504 });
+      });
+  }
+
   function ask(question, cb) {
     if (!hasKey()) { cb({ offline: true, reason: 'nokey' }); return; }
 
@@ -1347,6 +1533,7 @@
     leafletReady: leafletReady,
     // assistant
     ask: ask,
+    planTrip: planTrip,
     hasKey: hasKey,
     setApiKey: setApiKey,
     resetHistory: resetHistory

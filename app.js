@@ -743,6 +743,32 @@
                                The photograph, rating and distance the place already
                                carries, plus a way onto the map. An answer about a
                                gorge now shows the gorge. -->
+                          <!-- A trip the assistant built. The summary is above;
+                               this is the way into the laid-out version. -->
+                          <sc-if value="{{ m.hasTrip }}">
+                            <div onClick="{{ m.openTrip }}" role="button" tabIndex="0" style="border-radius:19px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
+                              <div style="display:flex;gap:2px">
+                                <sc-for list="{{ m.tripShots }}" as="ts" hint-placeholder-count="3">
+                                  <div style="flex:1;height:82px;background:var(--imgbg);overflow:hidden">
+                                    <image-slot id="{{ ts.slot }}" shape="rect" placeholder="{{ ts.ph }}"></image-slot>
+                                  </div>
+                                </sc-for>
+                              </div>
+                              <div style="padding:13px 15px 15px">
+                                <div style="font-size:15.5px;font-weight:800;letter-spacing:-.026em;color:var(--ink)">{{ m.tripTitle }}</div>
+                                <div style="margin-top:7px;display:flex;flex-wrap:wrap;gap:6px">
+                                  <span style="padding:4px 9px;border-radius:99px;background:var(--surface2);font-size:11.5px;font-weight:700;color:var(--ink2)">{{ m.tripDays }}</span>
+                                  <span style="padding:4px 9px;border-radius:99px;background:var(--surface2);font-size:11.5px;font-weight:700;color:var(--ink2)">{{ m.tripStops }}</span>
+                                  <span style="padding:4px 9px;border-radius:99px;background:var(--brandSoft);font-size:11.5px;font-weight:700;color:var(--brand)">{{ m.tripCost }}</span>
+                                </div>
+                                <div style="margin-top:11px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--brand)">
+                                  {{ t.viewTrip }}
+                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5l7 7-7 7" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </div>
+                              </div>
+                            </div>
+                          </sc-if>
+
                           <sc-if value="{{ m.hasCards }}">
                             <div style="display:flex;flex-direction:column;gap:9px">
                               <sc-for list="{{ m.cards }}" as="c" hint-placeholder-count="2">
@@ -799,6 +825,18 @@
                         </div>
                       </sc-for>
   
+                      <sc-if value="{{ building }}">
+                        <div style="align-self:stretch;display:flex;align-items:center;gap:11px;padding:14px 16px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)">
+                        <div style="width:30px;height:30px;flex:0 0 30px;border-radius:10px;background:var(--brandSoft);display:flex;align-items:center;justify-content:center">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:var(--brand);animation:nomRaySpin 1.5s linear infinite"><path d="M12 3.2l1.6 4.4 4.4 1.6-4.4 1.6L12 15.2l-1.6-4.4L6 9.2l4.4-1.6L12 3.2Z" fill="currentColor"/></svg>
+                        </div>
+                        <div style="flex:1;min-width:0">
+                          <div style="font-size:13.5px;font-weight:700;color:var(--ink)">{{ t.creatingTrip }}</div>
+                          <div style="margin-top:2px;font-size:11.5px;color:var(--ink3)">{{ t.creatingTripSub }}</div>
+                        </div>
+                      </div>
+                      </sc-if>
+
                       <sc-if value="{{ typing }}">
                         <div role="status" aria-live="polite" aria-label="Assistant is typing" style="display:flex;gap:6px;align-items:center">
                           <div style="width:7px;height:7px;border-radius:50%;background:var(--ink3);animation:nomBlink 1.1s infinite"></div>
@@ -1399,6 +1437,74 @@
                 </div>
               </sc-if>
   
+              <!-- ── A trip the assistant built ────────────────────────────
+                   The same information the chat used to deliver as a paragraph,
+                   laid out: a day at a time, each stop with its hour, its
+                   photograph, what it costs and why it is there. -->
+              <sc-if value="{{ isPlan }}">
+                <div data-screen-label="Trip" style="padding:8px 22px 32px;display:flex;flex-direction:column;gap:20px">
+                  <div style="display:flex;align-items:flex-start;gap:12px">
+                    <div onClick="{{ back }}" role="button" tabIndex="0" aria-label="Go back" style="width:42px;height:42px;flex:0 0 42px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer">
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--ink)"><path d="M15 5l-7 7 7 7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:22px;font-weight:800;letter-spacing:-.035em;line-height:1.16;color:var(--ink);text-wrap:pretty">{{ planTitle }}</div>
+                      <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">
+                        <span style="padding:4px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-size:11.5px;font-weight:700;color:var(--ink2)">{{ planDays }}</span>
+                        <span style="padding:4px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-size:11.5px;font-weight:700;color:var(--ink2)">{{ planStops }}</span>
+                        <span style="padding:4px 10px;border-radius:99px;background:var(--brandSoft);font-size:11.5px;font-weight:700;color:var(--brand)">{{ planCost }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <sc-if value="{{ hasPlanSummary }}">
+                    <div style="font-size:14px;line-height:1.6;color:var(--ink2);text-wrap:pretty">{{ planSummary }}</div>
+                  </sc-if>
+
+                  <div onClick="{{ planMap }}" role="button" tabIndex="0" style="display:flex;align-items:center;justify-content:center;gap:9px;height:50px;border-radius:16px;background:var(--brand);color:var(--brandInk);font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:var(--shadowLg)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 20 3 22V6l6-2 6 2 6-2v16l-6 2-6-2Z" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 4v16M15 6v16" stroke-width="1.9"/></svg>
+                    {{ t.showOnMap }}
+                  </div>
+
+                  <sc-for list="{{ planDaysList }}" as="d" hint-placeholder-count="3">
+                    <div style="display:flex;flex-direction:column;gap:11px">
+                      <div style="display:flex;align-items:center;gap:9px">
+                        <div style="width:26px;height:26px;flex:0 0 26px;border-radius:9px;background:var(--brand);color:var(--brandInk);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800">{{ d.n }}</div>
+                        <div style="flex:1;min-width:0;font-size:16px;font-weight:800;letter-spacing:-.024em;color:var(--ink)">{{ d.theme }}</div>
+                        <div style="flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--ink3)">{{ d.cost }}</div>
+                      </div>
+
+                      <sc-for list="{{ d.stops }}" as="st" hint-placeholder-count="4">
+                        <div onClick="{{ st.go }}" role="button" tabIndex="0" style="display:flex;gap:11px;cursor:pointer">
+                          <div style="flex:0 0 46px;padding-top:3px;text-align:right">
+                            <div style="font-size:12.5px;font-weight:800;color:var(--brand)">{{ st.time }}</div>
+                          </div>
+                          <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;padding-top:5px">
+                            <div style="width:9px;height:9px;border-radius:99px;background:var(--brand)"></div>
+                            <div style="{{ st.lineCss }}"></div>
+                          </div>
+                          <div style="flex:1;min-width:0;padding-bottom:14px">
+                            <div style="display:flex;gap:11px;padding:9px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)">
+                              <div style="width:58px;height:58px;flex:0 0 58px;border-radius:12px;overflow:hidden;background:var(--imgbg)">
+                                <image-slot id="{{ st.slot }}" shape="rect" placeholder="{{ st.ph }}"></image-slot>
+                              </div>
+                              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;justify-content:center">
+                                <div style="font-size:14px;font-weight:800;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ st.name }}</div>
+                                <div style="font-size:11.5px;line-height:1.4;color:var(--ink2)">{{ st.note }}</div>
+                                <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink3)">
+                                  <span style="{{ st.dot }}"></span><span>{{ st.cat }}</span>
+                                  <sc-if value="{{ st.hasCost }}"><span>·</span><span style="font-weight:800;color:var(--ink)">{{ st.cost }}</span></sc-if>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
               <sc-if value="{{ isSos }}">
                 <div data-screen-label="Emergency" style="padding:8px 22px 32px;display:flex;flex-direction:column;gap:22px">
                   <div style="display:flex;align-items:center;gap:12px">
@@ -2046,6 +2152,9 @@
     first: 'Alex',
     profile: null,
     userTrips: [],
+    // The trip the assistant is building, and the one being read.
+    building: false,
+    plan: null,
     onboarding: false,
     obEditing: false,
     // When set, only this one step is shown — Profile edits one field.
@@ -2210,9 +2319,106 @@
     }, 300);
   }
 
+  /* Asking for a trip is not asking a question. "Plan me 3 days" wants an
+     itinerary — days, times, stops, what each costs — and prose is the wrong
+     shape for that: it reads as a wall of text you have to hold in your head.
+     These go to planTrip, which asks the model for a structure the app can
+     lay out itself. */
+  var TRIP_INTENT = new RegExp(
+    'plan (me|my|a|our)?\\s*(trip|day|days|itinerary|route)' +
+    '|make (me )?(a|an)? ?(trip|itinerary|plan)' +
+    '|build (me )?(a|an)? ?(trip|itinerary)' +
+    '|\\b\\d+\\s*(day|days)\\b.*\\b(trip|kyrgyz|bishkek|itinerary|plan)' +
+    '|itinerary', 'i');
+
+  function wantsTrip(q) { return TRIP_INTENT.test(q); }
+
+
+  /**
+   * Build a trip from the chat, and put a card in the conversation.
+   *
+   * The trip is saved as it arrives so it is in My trips whether or not the
+   * traveller opens it now — a plan that vanishes when the chat scrolls is
+   * not a plan.
+   */
+  function planTripFromChat(query) {
+    setState(function (st) {
+      return { chat: st.chat.concat([{ who: 'me', text: query }]), building: true, chatInput: '' };
+    });
+
+    ENG.planTrip(query, function (res) {
+      if (res.error) {
+        var canned = cannedAnswer(query);
+        setState(function (st) {
+          return {
+            building: false,
+            chat: st.chat.concat([{
+              who: 'ai', text: canned.body, chips: canned.chips, itin: canned.itin,
+              note: offlineNote(res.reason, res.error)
+            }])
+          };
+        });
+        if (res.reason === 'nokey' || res.reason === 'badkey') promptForKey(query);
+        return;
+      }
+
+      var trip = res.trip;
+      rememberTrip(trip);
+      setState(function (st) {
+        return {
+          building: false,
+          chat: st.chat.concat([{ who: 'ai', text: trip.summary, trip: trip }])
+        };
+      });
+    });
+  }
+
+  /** Keep a generated trip alongside the ones saved from the built-in plan. */
+  function rememberTrip(trip) {
+    var entry = {
+      name: trip.title,
+      when: tripDates(),
+      stops: trip.stopCount,
+      cost: fmt(trip.som) + ' som',
+      time: trip.days.length + (trip.days.length === 1 ? ' day' : ' days'),
+      active: false,
+      generated: true,
+      tags: trip.days.map(function (d) { return d.theme; }).slice(0, 3),
+      route: trip.days.reduce(function (all, d) {
+        return all.concat(d.stops.map(function (x) { return x.name; }));
+      }, []),
+      plan: trip
+    };
+    var list = (state.userTrips || []).filter(function (t) { return t.name !== entry.name; }).concat([entry]);
+    persistTrips(list);
+    setState({ userTrips: list });
+  }
+
+  /** Open a generated trip on its own screen. */
+  function openPlan(trip) {
+    setState(function (st) {
+      return { plan: trip, screen: 'plan', stack: st.stack.concat([st.screen]) };
+    });
+  }
+
+  /** Every stop of a generated trip, drawn on the map in order. */
+  function planOnMap(trip) {
+    var pts = trip.days.reduce(function (all, d) { return all.concat(d.stops); }, [])
+      .filter(function (x) { return typeof x.lat === 'number'; });
+    if (!pts.length) return;
+    setState(function (st) {
+      return { screen: 'map', mapPin: pts[0].id, mapFilter: 'All', routeNote: '',
+        stack: st.stack.concat([st.screen]) };
+    });
+    lastMapFit = null;
+    setTimeout(function () { if (ENG) ENG.focusPlace(pts[0].id); }, 260);
+  }
+
   function ask(q) {
     var query = (q || '').trim();
     if (!query) return;
+
+    if (wantsTrip(query) && ENG && ENG.planTrip) { planTripFromChat(query); return; }
 
     var canned = cannedAnswer(query);
     var shown = canned.key ? aiOf(canned.key, 'q', query) : query;
@@ -4119,6 +4325,40 @@
       hasChat: st.chat.length > 0,
       isEmpty: st.chat.length === 0,
       typing: st.typing,
+      building: st.building,
+
+      /* The generated trip being read. Laid out here rather than in the
+         template so the template stays a description of the shape. */
+      planTitle: st.plan ? st.plan.title : '',
+      planSummary: st.plan ? st.plan.summary : '',
+      hasPlanSummary: !!(st.plan && st.plan.summary),
+      planDays: st.plan ? st.plan.days.length + ' ' + (st.plan.days.length === 1 ? t.dayWord : t.daysWord) : '',
+      planStops: st.plan ? st.plan.stopCount + ' ' + t.stopsWord : '',
+      planCost: st.plan ? fmt(st.plan.som) + ' som' : '',
+      planMap: function () { if (st.plan) planOnMap(st.plan); },
+      planDaysList: (st.plan ? st.plan.days : []).map(function (d, di) {
+        var daySom = d.stops.reduce(function (n, x) {
+          var v = parseInt(String(x.cost).replace(/[^0-9]/g, ''), 10);
+          return n + (isNaN(v) ? 0 : v);
+        }, 0);
+        return {
+          n: String(di + 1), theme: d.theme, cost: daySom ? fmt(daySom) + ' som' : '',
+          stops: d.stops.map(function (x, si) {
+            return {
+              time: x.time, name: x.name, note: x.note,
+              slot: x.slot, ph: x.ph,
+              cat: catOf(x.cat), dot: catDotCss(x.cat, 6),
+              hasCost: !!x.cost, cost: x.cost,
+              // The thread down the timeline stops at the last stop of a day.
+              lineCss: si === d.stops.length - 1
+                ? 'display:none'
+                : 'flex:1;width:2px;margin:3px 0;background:var(--line)',
+              go: function () { openPlace(x.id); }
+            };
+          })
+        };
+      }),
+
       promptCards: D.prompts.map(function (p) {
         return { q: aiOf(p.q, 'q', p.q), s: aiOf(p.q, 's', p.s), go: function () { ask(p.q); } };
       }),
@@ -4133,6 +4373,18 @@
              it on the map. Nothing here is fetched or generated — every
              field is a column the row already carries, which is why this
              works offline and costs no quota. */
+          hasTrip: !!m.trip,
+          tripTitle: m.trip ? m.trip.title : '',
+          tripDays: m.trip ? m.trip.days.length + ' ' + (m.trip.days.length === 1 ? t.dayWord : t.daysWord) : '',
+          tripStops: m.trip ? m.trip.stopCount + ' ' + t.stopsWord : '',
+          tripCost: m.trip ? fmt(m.trip.som) + ' som' : '',
+          // Three photographs off the top of the trip, as a strip.
+          tripShots: m.trip
+            ? m.trip.days.reduce(function (all, d) { return all.concat(d.stops); }, [])
+                .filter(function (x) { return x.slot; }).slice(0, 3)
+                .map(function (x) { return { slot: x.slot, ph: x.ph }; })
+            : [],
+          openTrip: function () { if (m.trip) openPlan(m.trip); },
           hasCards: !!(m.cards && m.cards.length),
           cards: (m.cards || []).map(function (p) {
             return {
@@ -4279,7 +4531,7 @@
       xpNextName: moreOf('levels', lvl.next || lvl.name, lvl.next || lvl.name),
 
       goReview: function () { go('review'); },
-      isPhrase: s === 'phrasebook', isCurrency: s === 'currency', isTrips: s === 'trips', isSos: s === 'emergency',
+      isPlan: s === 'plan', isPhrase: s === 'phrasebook', isCurrency: s === 'currency', isTrips: s === 'trips', isSos: s === 'emergency',
 
       phraseTabs: D.phrases.map(function (p) {
         return { name: p.name, go: function () { setState({ phraseCat: p.key }); }, css: chipCss(st.phraseCat === p.key) };
