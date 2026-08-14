@@ -2078,7 +2078,7 @@
   function offlineNote(reason, detail) {
     if (reason === 'nokey') return 'Offline answer — add a Gemini key to get live ones.';
     if (reason === 'quota') return 'Offline answer — the Gemini key is out of free quota for today.';
-    if (reason === 'badkey') return 'Offline answer — Google rejected the Gemini key.';
+    if (reason === 'badkey') return 'Offline answer — Google rejected that Gemini key.';
     return 'Offline answer — could not reach Gemini' + (detail ? ' (' + detail + ')' : '') + '.';
   }
 
@@ -2138,7 +2138,9 @@
             itin: canned.itin,
             note: offlineNote(res.reason, res.detail)
           };
-          if (res.reason === 'nokey') promptForKey(query);
+          /* A rejected key needs replacing, same as a missing one, so both
+             open the prompt rather than only explaining the problem. */
+          if (res.reason === 'nokey' || res.reason === 'badkey') promptForKey(query);
         } else {
           msg = {
             who: 'ai',
@@ -3346,14 +3348,53 @@
     setState({ userTrips: list });
   }
 
+  /* Lowercase, and drop combining marks where the runtime can, so "cote"
+     finds "Côte d'Ivoire" and "turkiye" finds "Türkiye". Cyrillic folds the
+     same way on both sides of the comparison, so it stays consistent. */
+  /* The combining-marks block, built from an ASCII string: the characters
+     themselves are invisible in a source file and do not survive being
+     copied through tools that normalise Unicode. */
+  var COMBINING_MARKS = new RegExp('[\u0300-\u036f]', 'g');
+
+  function foldCase(s) {
+    s = String(s == null ? '' : s).toLowerCase();
+    try { return s.normalize('NFD').replace(COMBINING_MARKS, ''); }
+    catch (e) { return s; }   // no Unicode normalisation available
+  }
+
+  /* The localised name of every country, built once per language.
+     countryName() is cheap on its own, but the filter below asks for all
+     ~250 of them on every keystroke. */
+  var localisedNames = {};
+  function localisedCountryName(code, english) {
+    var table = localisedNames[uiLang()] || (localisedNames[uiLang()] = {});
+    if (table[code] === undefined) table[code] = countryName(code, english);
+    return table[code];
+  }
+
+  /* Countries are searched by the name the traveller can actually see.
+     The list shows localised names — Польша in Russian, Кыргызстан in
+     Kyrgyz — but this used to match only the English c[1], so someone who
+     had just switched the app to Russian typed "Пол", got "no country
+     matches that", and had to guess the English spelling to get through
+     the last step of the intro. Both names are matched now. */
   function filteredCountries() {
-    var q = state.obQuery.trim().toLowerCase();
+    var q = foldCase(state.obQuery.trim());
     if (!q) return D.countries;
     var starts = [], contains = [];
     D.countries.forEach(function (c) {
-      var n = c[1].toLowerCase();
-      if (n.indexOf(q) === 0) starts.push(c);
-      else if (n.indexOf(q) > 0) contains.push(c);
+      // An exact two-letter code is a deliberate shortcut: "kg", "de", "us".
+      if (q.length === 2 && foldCase(c[0]) === q) { starts.push(c); return; }
+
+      var names = [foldCase(c[1]), foldCase(localisedCountryName(c[0], c[1]))];
+      var best = -1;
+      for (var i = 0; i < names.length; i++) {
+        var at = names[i].indexOf(q);
+        if (at === 0) { best = 0; break; }           // a prefix match wins outright
+        if (at > 0 && best < 0) best = at;
+      }
+      if (best === 0) starts.push(c);
+      else if (best > 0) contains.push(c);
     });
     return starts.concat(contains);
   }

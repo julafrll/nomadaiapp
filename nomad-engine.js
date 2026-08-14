@@ -995,6 +995,11 @@
              python -m http.server, which implements no POST at all. */
           if (viaProxy && (res.status === 404 || res.status === 405 || res.status === 501)) {
             proxyGone = true;
+            /* No function AND no key of our own. Calling Google keyless would
+               earn a 400, which used to surface as "Google rejected the
+               Gemini key" — blaming a key that was never sent. Ask for one
+               instead, which is the actual remedy. */
+            if (!apiKey()) { cb({ error: 'no key', status: 0, needKey: true }); return; }
             callGemini(model, question, ctx, cb);
             return;
           }
@@ -1074,14 +1079,26 @@
       var model = models.shift();
       callGemini(model, question, ctx, function (res) {
         if (res.error) {
+          // Nothing to send and nothing to send it with — ask for a key.
+          if (res.needKey) { cb({ offline: true, reason: 'nokey' }); return; }
+
           // Out of quota, withdrawn model or a timeout: another model may work.
           if (res.status === 429 || res.status === 404) spent[model] = 1;
           if (res.status === 429 || res.status === 404 || res.status === 504 || res.status >= 500) {
             attempt();
             return;
           }
-          var rejected = res.status === 400 || res.status === 401 || res.status === 403;
-          cb({ offline: true, reason: rejected ? 'badkey' : 'error', detail: res.error });
+
+          /* 401 and 403 are always about credentials. A 400 usually is not —
+             it is Gemini's answer to a malformed request, and it is also what
+             the proxy returns for a model it does not allow. Reporting every
+             400 as "Google rejected the Gemini key" sent people off to
+             regenerate a key that was working fine, so a 400 now has to say
+             so itself before it is blamed on the key. */
+          var msg = String(res.error || '');
+          var keyProblem = res.status === 401 || res.status === 403 ||
+            (res.status === 400 && /api[\s_-]?key|API_KEY_INVALID|credential|unauthenticated/i.test(msg));
+          cb({ offline: true, reason: keyProblem ? 'badkey' : 'error', detail: res.error });
           return;
         }
 
