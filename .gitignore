@@ -12,3 +12,7 @@ nomad-keys.local.txt
 
 # Local Netlify folder
 .netlify
+
+# Rendered brochure art. Made by make-brochure.py on demand, and it sits
+# inside the publish directory — no reason to deploy 4 MB of it.
+brochure/
