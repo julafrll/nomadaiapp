@@ -13,6 +13,14 @@
 
   "compatibility_date": "2026-08-14",
 
+  // Wrangler treats this file as the source of truth for plain `vars` and
+  // wipes any it does not declare on every deploy — and Workers Builds runs a
+  // deploy on every push. A key typed into the dashboard as a *variable*
+  // therefore disappears on the next commit. Secrets are never touched, so the
+  // right fix is to add both keys with **Encrypt**; this flag is the belt to
+  // that braces, so a plain var does not silently evaporate either.
+  "keep_vars": true,
+
   // No compatibility flags: worker.js and both handlers use only Web APIs —
   // fetch, Request, Response, URL, Map — so nodejs_compat would buy nothing.
 
