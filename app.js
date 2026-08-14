@@ -706,6 +706,39 @@
                               </sc-for>
                             </div>
                           </sc-if>
+
+                          <!-- ── Places the answer cited ──────────────────────────────
+                               The photograph, rating and distance the place already
+                               carries, plus a way onto the map. An answer about a
+                               gorge now shows the gorge. -->
+                          <sc-if value="{{ m.hasCards }}">
+                            <div style="display:flex;flex-direction:column;gap:9px">
+                              <sc-for list="{{ m.cards }}" as="c" hint-placeholder-count="2">
+                                <div onClick="{{ c.go }}" role="button" tabIndex="0" style="display:flex;gap:11px;padding:9px;border-radius:17px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
+                                  <div style="width:74px;height:74px;flex:0 0 74px;border-radius:12px;overflow:hidden;background:var(--imgbg)">
+                                    <image-slot id="{{ c.slot }}" shape="rect" placeholder="{{ c.ph }}"></image-slot>
+                                  </div>
+                                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:5px">
+                                    <div style="font-size:14.5px;font-weight:800;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</div>
+                                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden">
+                                      <sc-if value="{{ c.hasRating }}">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold);flex:0 0 12px"><path d="M3 6.8h18l-1.5 6.9A8.4 8.4 0 0 1 12 20.5a8.4 8.4 0 0 1-7.5-6.8L3 6.8Z"/><rect x="7.4" y="21.3" width="9.2" height="2" rx="1"/></svg>
+                                        <span style="font-weight:700;color:var(--ink)">{{ c.rating }}</span>
+                                        <span>·</span>
+                                      </sc-if>
+                                      <span style="{{ c.dot }}"></span><span style="overflow:hidden;text-overflow:ellipsis">{{ c.cat }}</span>
+                                      <sc-if value="{{ c.hasDist }}">
+                                        <span>·</span><span style="font-weight:700;color:var(--brand)">{{ c.dist }}</span>
+                                      </sc-if>
+                                    </div>
+                                  </div>
+                                  <div onClick="{{ c.goMap }}" role="button" tabIndex="0" aria-label="Show on map" style="width:38px;flex:0 0 38px;align-self:center;height:38px;border-radius:12px;background:var(--brandSoft);display:flex;align-items:center;justify-content:center;cursor:pointer">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><path d="M9 20 3 22V6l6-2 6 2 6-2v16l-6 2-6-2Z" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 4v16M15 6v16" stroke-width="1.9"/></svg>
+                                  </div>
+                                </div>
+                              </sc-for>
+                            </div>
+                          </sc-if>
                           <sc-if value="{{ m.hasItin }}">
                             <div onClick="{{ goItin }}" style="border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadowLg);cursor:pointer">
                               <div style="position:relative;height:112px;background:var(--surface2)">
@@ -2145,9 +2178,16 @@
           msg = {
             who: 'ai',
             text: res.text,
-            // Places the answer actually named become the tappable chips the
-            // design already renders under a reply.
-            chips: (res.places || []).map(function (p) { return p.name; }),
+            /* The engine hands back the whole row for every place the answer
+               cited — photograph, rating, category, distance, coordinates.
+               Only the name was kept, so an answer about Ala-Archa left the
+               reader a word to tap and nothing to look at. The rows are
+               carried through now and drawn as cards.
+
+               `chips` stays for the offline answers, which have names and
+               no rows behind them. */
+            cards: res.places || [],
+            chips: [],
             itin: false
           };
         }
@@ -2696,6 +2736,19 @@
     }
     if (typeof b.metres === 'number' && ENG) return ENG.formatKm(b.metres / 1000);
     return '';
+  }
+
+  /** Open the map on one place, pin selected and card open. */
+  function showOnMap(place) {
+    if (!place || typeof place.lat !== 'number') return;
+    setState(function (st) {
+      return { screen: 'map', mapPin: place.id, mapFilter: 'All', routeNote: '',
+        activeBranch: null, stack: st.stack.concat([st.screen]) };
+    });
+    if (ENG) ENG.drawRoute(null);
+    lastMapFit = null;
+    // Once the map has mounted; centring before that lands on nothing.
+    setTimeout(function () { if (ENG) ENG.focusPlace(place.id); }, 260);
   }
 
   /** Open the map on the chain, centred on the branch that was tapped. */
@@ -3902,6 +3955,32 @@
           hasNote: !!m.note, note: m.note || '',
           hasChips: !!(m.chips && m.chips.length),
           chips: (m.chips || []).map(function (c) { return { name: c, go: function () { byName(c); } }; }),
+          /* One card per place the answer cited: the photograph the place
+             already has, its rating, how far it is, and a way straight to
+             it on the map. Nothing here is fetched or generated — every
+             field is a column the row already carries, which is why this
+             works offline and costs no quota. */
+          hasCards: !!(m.cards && m.cards.length),
+          cards: (m.cards || []).map(function (p) {
+            return {
+              name: p.name,
+              slot: p.slot,
+              ph: p.ph,
+              hasRating: typeof p.rating === 'number',
+              rating: typeof p.rating === 'number' ? p.rating.toFixed(1) : '',
+              cat: catOf(p.cat),
+              dot: catDotCss(p.cat, 7),
+              // Written-in until the browser shares a position, a real
+              // measurement after — same field the map card reads.
+              hasDist: !!p.dist,
+              dist: p.dist || '',
+              go: function () { openPlace(p.id); },
+              goMap: function (e) {
+                if (e && e.stopPropagation) e.stopPropagation();
+                showOnMap(p);
+              }
+            };
+          }),
           css: m.who === 'me'
             ? 'max-width:82%;align-self:flex-end;padding:14px 17px;border-radius:20px 20px 6px 20px;background:var(--brand);color:var(--brandInk);font-size:14.5px;font-weight:500;line-height:1.5;white-space:pre-line'
             : 'align-self:stretch;font-size:14.5px;line-height:1.62;color:var(--ink);white-space:pre-line'
