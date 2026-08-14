@@ -49,7 +49,7 @@
   
     <div class="nomStage" style="max-width:1080px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px">
 
-      <div class="nomScroll nomDemoChrome" style="display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:4px">
+      <div class="nomScroll nomChips" style="display:flex;gap:7px;overflow-x:auto;max-width:100%;padding:4px">
         <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
           <div onClick="{{ c.go }}" style="{{ c.css }}">{{ c.name }}</div>
         </sc-for>
@@ -4310,7 +4310,16 @@
       state.obCountry = saved.country || '';
       state.obLang = saved.lang || 'en';
     }
-    if (!saved || replay) state.onboarding = true;
+    /* Every visit opens on the intro, not on Home.
+       This is a demo before it is anyone's daily app: the intro is what
+       explains what Nomad AI is, and someone opening the link has never
+       seen it. A returning visitor is not made to retype anything — the
+       saved profile is already loaded above, so the steps arrive prefilled
+       and are a few taps to walk back through.
+       For the original behaviour — intro on first run only — restore:
+         if (!saved || replay) state.onboarding = true; */
+    state.onboarding = true;
+    if (saved && !replay) state.obStep = OB_SPLASH;
 
     prepareTemplate();
     wireEvents();

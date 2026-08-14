@@ -97,6 +97,15 @@ a:hover { color:#7E2C3B; }
 [data-h] { -webkit-tap-highlight-color:transparent; }
 [data-h]:active { transform:scale(.978); transition:transform .07s ease-out; }
 
+/* A tap that lands slightly long selects the label instead of pressing the
+   button, which on a phone means "Get started" turns blue and nothing
+   happens. Text in the app's own content stays selectable — this is only
+   the controls. */
+[data-h], [role="button"] {
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none;
+}
+
 .nomScroll::-webkit-scrollbar { width:0; height:0; }
 .nomScroll { scrollbar-width:none; }
 
@@ -180,34 +189,42 @@ input, textarea, button { font-family:inherit; }
    indicator, and navigation is the app's own tab bar. So the frame drops
    away and the screen becomes the window.
 
-   `.nomStandalone` is set from index.html. The media query alone is not
-   enough: iOS reports an installed app through navigator.standalone and
-   not through display-mode. */
-html.nomStandalone, html.nomStandalone body { height:100%; overscroll-behavior:none; background:var(--bg); }
+   `.nomFill` is set from index.html, for an installed app AND for any
+   narrow screen — a phone drawn inside a phone is not a demo anyone wants
+   to hold. A media query alone could not do it: iOS reports an installed
+   app through navigator.standalone, not through display-mode. */
 
-.nomStandalone .nomPage {
+/* The strip of screen names — Intro, New profile, Home, Search and the
+   rest. It was scaffolding for walking through the design; the app has its
+   own tab bar and back buttons, so to a visitor it read as a second,
+   competing navigation. Hidden everywhere rather than deleted, so it is one
+   line away if the walkthrough is ever wanted again. */
+.nomChips { display:none !important; }
+html.nomFill, html.nomFill body { height:100%; overscroll-behavior:none; background:var(--bg); }
+
+.nomFill .nomPage {
   padding:0 !important;
   min-height:100dvh !important;
   background:var(--bg) !important;
 }
 /* the screen-name chips, the logo row and the two switches */
-.nomStandalone .nomDemoChrome { display:none !important; }
-.nomStandalone .nomStage { gap:0 !important; max-width:none !important; align-items:stretch !important; }
+.nomFill .nomDemoChrome { display:none !important; }
+.nomFill .nomStage { gap:0 !important; max-width:none !important; align-items:stretch !important; }
 
-.nomStandalone .nomBezel {
+.nomFill .nomBezel {
   width:100% !important; height:100dvh !important;
   padding:0 !important; border-radius:0 !important;
   background:var(--bg) !important; box-shadow:none !important;
 }
-.nomStandalone .nomScreen {
+.nomFill .nomScreen {
   width:100% !important; height:100dvh !important;
   border-radius:0 !important;
 }
 /* The real status bar and home indicator are the phone's to draw. Their
    space is given back through the safe-area insets instead. */
-.nomStandalone .nomFakeStatus, .nomStandalone .nomFakeNav { display:none !important; }
-.nomStandalone .nomScreen > .nomScroll { padding-top:env(safe-area-inset-top); }
-.nomStandalone [data-ref="tabBar"] { padding-bottom:env(safe-area-inset-bottom); }
+.nomFill .nomFakeStatus, .nomFill .nomFakeNav { display:none !important; }
+.nomFill .nomScreen > .nomScroll { padding-top:env(safe-area-inset-top); }
+.nomFill [data-ref="tabBar"] { padding-bottom:env(safe-area-inset-bottom); }
 
 /* ── Add to home screen ────────────────────────────────────────────────
    Offered by the page, not by the prototype phone sitting on it, so it is
