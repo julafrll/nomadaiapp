@@ -424,6 +424,17 @@
       });
       window.L.tileLayer(CFG.tileUrl, { maxZoom: 19, attribution: CFG.tileAttribution }).addTo(map);
       pinLayer = window.L.layerGroup().addTo(map);
+
+      /* Swap dots for rating pills as the map crosses the threshold. Only on
+         a crossing, not on every zoom: rebuilding sixty icons mid-gesture
+         cancels any open tooltip and throws the marker away under the
+         finger. */
+      map.on('zoomend', function () {
+        var now = detailed();
+        if (now === lastDetailed) return;
+        lastDetailed = now;
+        redrawIcons();
+      });
       // Leaflet fires this only for taps that missed every marker, which is
       // exactly the gesture that means "put the card away".
       map.on('click', function () { if (bgHandler) bgHandler(); });
@@ -452,6 +463,18 @@
   var selectHandler = null, bgHandler = null, activeMarkerId = null;
   // Which pin currently wears the "Best rated" ribbon.
   var bestMarkerId = null;
+  // Whether the pins are currently drawn as pills rather than dots.
+  var lastDetailed = null;
+
+  /** Rebuild every visible icon, keeping selection and the best-rated ribbon. */
+  function redrawIcons() {
+    Object.keys(markers).forEach(function (id) {
+      var p = byId[id];
+      if (!p) return;
+      var on = String(p.id) === String(activeMarkerId);
+      markers[id].setIcon(pinIcon(p, on, p.id === bestMarkerId));
+    });
+  }
   // Supplied by app.js each render: the selected chain's branches, and
   // which of them was just tapped.
   var branchList = null, activeBranchAddr = null;
@@ -500,8 +523,31 @@
     return 'plain';
   }
 
+  /* Below this zoom the pills are wider apart than the streets between the
+     places they mark, so sixty of them overlap into an unreadable heap.
+     Zoomed out, a pin only has to say "something is here, and what kind";
+     the rating arrives once there is room to print it. */
+  var PILL_FROM_ZOOM = 14;
+
+  function detailed() {
+    return !map || map.getZoom() >= PILL_FROM_ZOOM;
+  }
+
   function pinIcon(p, active, best) {
     var c = catColour(p.cat);
+    var style = '--pinFill:' + c.fill + ';--pinRing:' + c.ring;
+
+    // Zoomed out: a category dot, the size the design always used.
+    if (!detailed()) {
+      return window.L.divIcon({
+        className: 'nm-pin-wrap',
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+        html: '<div class="nm-dot nm-dot--' + ratingTier(p.rating) +
+          (active ? ' is-active' : '') + '" style="' + style + '"></div>'
+      });
+    }
+
     var value = typeof p.rating === 'number' ? p.rating.toFixed(1) : '–';
     return window.L.divIcon({
       className: 'nm-pin-wrap',
@@ -509,7 +555,7 @@
       iconAnchor: [0, 0],
       html:
         '<div class="nm-pin nm-pin--' + ratingTier(p.rating) + (active ? ' is-active' : '') +
-        '" style="--pinFill:' + c.fill + ';--pinRing:' + c.ring + '">' +
+        '" style="' + style + '">' +
         KYMYZ_CUP + '<span>' + value + '</span></div>' +
         (best ? '<span class="nm-pin__best">Best rated</span>' : '')
     });

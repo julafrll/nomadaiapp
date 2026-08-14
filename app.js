@@ -1335,9 +1335,30 @@
                       <div style="font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--ink3)">{{ t.youHave }}</div>
                       <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
                         <input value="{{ amount }}" onChange="{{ setAmount }}" inputMode="decimal" placeholder="0" style="flex:1;min-width:0;background:transparent;border:none;outline:none;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:38px;font-weight:800;letter-spacing:-.042em;color:var(--ink);padding:0" />
-                        <div style="flex:0 0 auto;padding:10px 15px;border-radius:13px;background:var(--brandSoft);font-size:15px;font-weight:800;color:var(--brand)">{{ curCode }}</div>
+                        <!-- The currency is chosen where it is shown. It used
+                             to mean scrolling past the rest of the screen to a
+                             list at the bottom, which only gets worse as more
+                             currencies are added. -->
+                        <div onClick="{{ toggleCurPick }}" role="button" tabIndex="0" aria-label="{{ t.convertFrom }}" style="flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:10px 13px 10px 15px;border-radius:13px;background:var(--brandSoft);font-size:15px;font-weight:800;color:var(--brand);cursor:pointer">
+                          {{ curCode }}
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="{{ curCaretCss }}"><path d="M6 9.5l6 6 6-6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
                       </div>
                       <div style="margin-top:6px;font-size:12.5px;color:var(--ink3)">{{ curName }}</div>
+
+                      <sc-if value="{{ curPicking }}">
+                        <div class="nomScroll" style="margin-top:12px;max-height:232px;overflow-y:auto;border:1px solid var(--line);border-radius:15px;background:var(--bg)">
+                          <sc-for list="{{ curPick }}" as="cp" hint-placeholder-count="6">
+                            <div onClick="{{ cp.go }}" role="button" tabIndex="0" style="{{ cp.css }}">
+                              <div style="width:44px;flex:0 0 44px;font-size:13px;font-weight:800;color:var(--ink)">{{ cp.code }}</div>
+                              <div style="flex:1;min-width:0;font-size:13.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ cp.name }}</div>
+                              <sc-if value="{{ cp.isOn }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand);flex:0 0 16px"><path d="M5 12.5l4.5 4.5L19 7" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                              </sc-if>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-if>
                     </div>
   
                     <div style="height:1px;background:var(--line)"></div>
@@ -1371,20 +1392,6 @@
                     </sc-for>
                   </div>
   
-                  <div style="display:flex;flex-direction:column;gap:12px">
-                    <div style="font-size:16px;font-weight:800;letter-spacing:-.024em;color:var(--ink)">{{ t.convertFrom }}</div>
-                    <div style="display:flex;flex-direction:column;gap:9px">
-                      <sc-for list="{{ curList }}" as="cu" hint-placeholder-count="6">
-                        <div onClick="{{ cu.go }}" style="{{ cu.css }}">
-                          <div style="width:44px;flex:0 0 44px;font-size:13px;font-weight:800;color:var(--ink)">{{ cu.code }}</div>
-                          <div style="flex:1;min-width:0;font-size:14px;color:var(--ink2)">{{ cu.name }}</div>
-                          <sc-if value="{{ cu.isOn }}">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand);flex:0 0 17px"><path d="M5 12.5l4.5 4.5L19 7" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                          </sc-if>
-                        </div>
-                      </sc-for>
-                    </div>
-                  </div>
                 </div>
               </sc-if>
   
@@ -1509,21 +1516,31 @@
                   <div style="display:flex;align-items:center;gap:16px">
                     <div style="width:66px;height:66px;flex:0 0 66px;border-radius:50%;background:var(--brandSoft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800;color:var(--brand)">{{ initials }}</div>
                     <div style="flex:1;min-width:0">
-                      <div style="font-size:23px;font-weight:800;letter-spacing:-.035em;color:var(--ink)">{{ fullName }}</div>
+                      <div style="display:flex;align-items:center;gap:9px">
+                        <div style="flex:1;min-width:0;font-size:23px;font-weight:800;letter-spacing:-.035em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ fullName }}</div>
+                        <!-- Editing your own name belongs beside your name, not
+                             at the foot of a list of unrelated settings. -->
+                        <div onClick="{{ goEditProfile }}" role="button" tabIndex="0" aria-label="{{ t.mEdit }}" style="width:34px;height:34px;flex:0 0 34px;border-radius:11px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow)">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><path d="M4 20h4L20 8l-4-4L4 16v4Z" stroke-width="1.9" stroke-linejoin="round"/><path d="M14.5 5.5 18.5 9.5" stroke-width="1.9"/></svg>
+                        </div>
+                      </div>
                       <div style="margin-top:4px;font-size:13.5px;color:var(--ink2)">{{ t.from }} {{ countryFlag }} {{ countryLabel }} · {{ levelLabel }}</div>
                     </div>
                   </div>
-  
+
+                  <!-- Each figure leads to what it counts: the tasks, the
+                       badges, the XP. They read as buttons, so they were
+                       tapped, and nothing happened. -->
                   <div style="display:flex;gap:11px">
-                    <div style="flex:1;padding:16px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)">
+                    <div onClick="{{ goVerified }}" role="button" tabIndex="0" style="flex:1;padding:16px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
                       <div style="font-size:21px;font-weight:800;letter-spacing:-.032em;color:var(--ink)">{{ visitedCount }}</div>
                       <div style="margin-top:4px;font-size:12px;font-weight:600;color:var(--ink3)">{{ t.statVerified }}</div>
                     </div>
-                    <div style="flex:1;padding:16px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)">
+                    <div onClick="{{ goBadges }}" role="button" tabIndex="0" style="flex:1;padding:16px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
                       <div style="font-size:21px;font-weight:800;letter-spacing:-.032em;color:var(--ink)">{{ badgeCount }}</div>
                       <div style="margin-top:4px;font-size:12px;font-weight:600;color:var(--ink3)">{{ t.statBadges }}</div>
                     </div>
-                    <div style="flex:1;padding:16px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)">
+                    <div onClick="{{ goBadges }}" role="button" tabIndex="0" style="flex:1;padding:16px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer">
                       <div style="font-size:21px;font-weight:800;letter-spacing:-.032em;color:var(--ink)">{{ xpShort }}</div>
                       <div style="margin-top:4px;font-size:12px;font-weight:600;color:var(--ink3)">XP · {{ xpWorth }}</div>
                     </div>
@@ -1657,12 +1674,16 @@
                   <div onClick="{{ obBack }}" role="button" tabIndex="0" aria-label="Go back" style="width:42px;height:42px;flex:0 0 42px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer">
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--ink)"><path d="M15 5l-7 7 7 7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </div>
-                  <div style="flex:1;display:flex;align-items:center;gap:6px">
-                    <sc-for list="{{ obDots }}" as="dot" hint-placeholder-count="2">
-                      <div style="{{ dot.css }}"></div>
-                    </sc-for>
-                  </div>
-                  <div style="flex:0 0 auto;font-size:12px;font-weight:700;color:var(--ink3)">{{ obStepLabel }}</div>
+                  <!-- Three-step progress means nothing when Profile has
+                       opened a single field to change. -->
+                  <sc-if value="{{ obShowSteps }}">
+                    <div style="flex:1;display:flex;align-items:center;gap:6px">
+                      <sc-for list="{{ obDots }}" as="dot" hint-placeholder-count="2">
+                        <div style="{{ dot.css }}"></div>
+                      </sc-for>
+                    </div>
+                    <div style="flex:0 0 auto;font-size:12px;font-weight:700;color:var(--ink3)">{{ obStepLabel }}</div>
+                  </sc-if>
                 </div>
               </sc-if>
 
@@ -2012,6 +2033,8 @@
     userTrips: [],
     onboarding: false,
     obEditing: false,
+    // When set, only this one step is shown — Profile edits one field.
+    obOnly: null,
     obExiting: false,
     obStep: 0,
     obFirst: '',
@@ -2053,6 +2076,7 @@
     phraseCat: 'hello',
     amount: '100',
     curCode: 'USD',
+    curPicking: false,
     proofs: {
       gourmet: { 0: 'ok', 1: 'ok', 2: 'ok', 3: 'ok', 4: 'ok' },
       coffee: { 0: 'ok', 1: 'ok', 2: 'ok', 3: 'ok', 4: 'ok' },
@@ -2569,14 +2593,15 @@
     if (step === OB_COUNTRY && !state.obCountry) return;
     // Editing an existing profile saves straight away — the welcome screen
     // is only meaningful the first time.
+    if (state.obOnly !== null) { obFinish(); return; }
     if (step === OB_COUNTRY && state.obEditing) { obFinish(); return; }
     setState({ obStep: step + 1 });
   }
   function obBack() {
     // Back out of the first step means "cancel" when editing, rather than
     // dropping the user onto an intro splash they have already seen.
-    if (state.obStep === OB_LANG && state.obEditing) {
-      setState({ onboarding: false, obEditing: false });
+    if (state.obOnly !== null || (state.obStep === OB_LANG && state.obEditing)) {
+      setState({ onboarding: false, obEditing: false, obOnly: null });
       return;
     }
     setState(function (st) { return { obStep: Math.max(OB_SPLASH, st.obStep - 1) }; });
@@ -2604,14 +2629,20 @@
     saveProfile(p);
     setState({ profile: p, first: p.first, obEditing: false, obExiting: true });
     setTimeout(function () {
-      setState({ onboarding: false, obExiting: false, obStep: OB_SPLASH });
+      setState({ onboarding: false, obExiting: false, obOnly: null, obStep: OB_SPLASH });
     }, 460);
   }
   // Re-entered from Profile → the row the design left inert.
+  /* Editing one field from Profile shows that field and nothing else.
+     It used to reopen the whole three-step intro at the step asked for, so
+     choosing Language landed on "Step 1 of 3" with Continue leading to name
+     and country — a five-tap detour to change one setting. `obOnly` marks
+     the single-field case: no step counter, no progress dots, and the
+     button saves instead of continuing. */
   function openProfileEdit(step) {
     var p = activeProfile();
     setState({
-      onboarding: true, obEditing: true, obStep: step || OB_LANG,
+      onboarding: true, obEditing: true, obOnly: step || OB_LANG, obStep: step || OB_LANG,
       obFirst: p.first, obLast: p.last, obCountry: p.country,
       obLang: p.lang || 'en', obQuery: ''
     });
@@ -2624,7 +2655,7 @@
     // the prototype's demo identity would put "Alex K." in their name field.
     var p = state.profile && state.profile.first ? state.profile : null;
     setState({
-      onboarding: true, obEditing: false, obExiting: false, obStep: OB_SPLASH,
+      onboarding: true, obEditing: false, obOnly: null, obExiting: false, obStep: OB_SPLASH,
       obFirst: p ? p.first : '', obLast: p ? p.last : '',
       obCountry: p ? p.country : '', obLang: p ? (p.lang || 'en') : 'en', obQuery: ''
     });
@@ -2632,7 +2663,7 @@
   function newProfile() {
     try { localStorage.removeItem(PROFILE_KEY); } catch (e) { /* nothing stored */ }
     setState({
-      profile: null, onboarding: true, obEditing: false, obExiting: false, obStep: OB_SPLASH,
+      profile: null, onboarding: true, obEditing: false, obOnly: null, obExiting: false, obStep: OB_SPLASH,
       obFirst: '', obLast: '', obCountry: '', obLang: 'en', obQuery: ''
     });
   }
@@ -3682,6 +3713,8 @@
       obKey: obKeyDown,
       obFinish: obFinish,
       obStepLabel: t.step + ' ' + st.obStep + ' ' + t.of + ' 3',
+      // Progress through three steps is meaningless when only one is shown.
+      obShowSteps: st.obOnly === null,
       obLangs: D.languages.map(function (l) {
         var on = st.obLang === l.code;
         return {
@@ -3741,9 +3774,11 @@
       obNoMatch: obList.length === 0,
       obCountry: st.obCountry,
       obCountryFlag: obPickedCountry ? flagOf(obPickedCountry[0]) : '',
-      obNextLabel: st.obStep === OB_COUNTRY
-        ? (!st.obCountry ? t.pickCountry : st.obEditing ? t.saveChanges : t.cont)
-        : t.cont,
+      obNextLabel: st.obOnly !== null
+        ? (st.obStep === OB_COUNTRY && !st.obCountry ? t.pickCountry : t.saveChanges)
+        : st.obStep === OB_COUNTRY
+          ? (!st.obCountry ? t.pickCountry : st.obEditing ? t.saveChanges : t.cont)
+          : t.cont,
       obNextCss: 'height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:all .2s;' +
         (obStepReady
           ? 'background:var(--brand);color:var(--brandInk);cursor:pointer;box-shadow:var(--shadowLg)'
@@ -4233,6 +4268,20 @@
 
       amount: st.amount,
       curCode: st.curCode,
+      curPicking: st.curPicking,
+      toggleCurPick: function () { setState(function (x) { return { curPicking: !x.curPicking }; }); },
+      curCaretCss: 'flex:0 0 13px;transition:transform .18s ease;transform:rotate(' + (st.curPicking ? '180' : '0') + 'deg)',
+      curPick: D.currencies.map(function (c) {
+        var on = c[0] === st.curCode;
+        return {
+          code: c[0], name: c[1], isOn: on,
+          css: 'display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;' +
+            (on ? 'background:var(--brandSoft)' : ''),
+          // Choosing closes the panel: the answer is above it, and leaving it
+          // open would hide the number the traveller opened this screen for.
+          go: function () { setState({ curCode: c[0], curPicking: false }); }
+        };
+      }),
       curName: cur[1],
       curOut: Math.round((parseFloat(st.amount) || 0) * cur[3]).toLocaleString('en-US').replace(/,/g, ' ') + ' ' + t.somWord,
       curRate: '1 ' + st.curCode + ' = ' + cur[3].toFixed(2) + ' ' + t.somWord + ' · ' + t.todayRate,
@@ -4243,14 +4292,6 @@
           go: function () { setState({ amount: String(n) }); },
           css: 'flex:1;padding:12px 4px;border-radius:13px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;transition:all .16s;border:1px solid ' +
             (st.amount === String(n) ? 'transparent;background:var(--ink);color:var(--bg)' : 'var(--line);background:var(--surface);color:var(--ink2)')
-        };
-      }),
-      curList: D.currencies.map(function (c) {
-        return {
-          code: c[0], name: c[1], isOn: st.curCode === c[0],
-          go: function () { setState({ curCode: c[0] }); },
-          css: 'display:flex;align-items:center;gap:12px;padding:14px 15px;border-radius:15px;cursor:pointer;transition:all .14s;border:1px solid ' +
-            (st.curCode === c[0] ? 'var(--brand);background:var(--brandSoft)' : 'var(--line);background:var(--surface)')
         };
       }),
       curAnchors: [['Samsa at the bazaar', 40], ['City bus, by card', 17], ['Beshbarmak at Navat', 900],
@@ -4371,6 +4412,21 @@
       shareLocation: shareLocation,
 
       visitedCount: String(D.badgeList.reduce(function (n, b) { return n + verifiedCount(b.kind); }, 0)),
+
+      goEditProfile: function () { openProfileEdit(OB_NAME); },
+      goBadges: function () { jump('rewards'); },
+      /* Straight to the challenge the verified tasks belong to — the one
+         furthest along — rather than to the rewards screen, where they would
+         have to find it again. With nothing verified yet there is no such
+         challenge, so the badge list is the honest destination. */
+      goVerified: function () {
+        var best = null, most = 0;
+        D.badgeList.forEach(function (b) {
+          var n = verifiedCount(b.kind);
+          if (n > most) { most = n; best = b; }
+        });
+        if (best) openChallenge(best.kind); else jump('rewards');
+      },
       menu: [
         { name: t.mSaved, meta: String(saved.length), go: function () { go('saved'); }, icon: 'heart' },
         { name: t.mTrips, meta: allTrips().length + ' ' + t.savedWord, go: function () { go('trips'); }, icon: 'route' },
@@ -4382,8 +4438,9 @@
           name: t.mLanguage,
           meta: langOf(prof.lang || 'en').native,
           go: function () { openProfileEdit(OB_LANG); }, icon: 'globe'
-        },
-        { name: t.mEdit, meta: prof.first, go: function () { openProfileEdit(OB_NAME); }, icon: 'cog' }
+        }
+        // "Edit profile" used to sit here, last in a list of unrelated
+        // settings. It is the pencil beside the name now.
       ].map(function (m) {
         return Object.assign({}, m, {
           isHeart: m.icon === 'heart', isRoute: m.icon === 'route', isMedal: m.icon === 'medal',
