@@ -205,3 +205,45 @@ Then open <http://localhost:8765>.
 The `?v=` query strings on the script tags in `index.html` bust the browser
 cache — bump the number after editing any of those files, or a reload can
 quietly keep running the previous version.
+
+### Deploying to Cloudflare Pages
+
+The site is the folder, so there is no build command. The two API keys live in
+functions that run on Cloudflare, never in the browser:
+
+```
+functions/api/ai.js        →  /api/ai        Gemini, holds GEMINI_API_KEY
+functions/api/transit.js   →  /api/transit   2GIS, holds TWOGIS_API_KEY
+_headers                   →  the cache rules netlify.toml used to carry
+wrangler.toml              →  project name and publish directory
+```
+
+The route comes from each file's path, which is why `nomad-config.js` needs no
+change: it already calls `/api/ai` and `/api/transit`.
+
+In the Pages project — Build command: *(leave empty)*, Build output directory:
+`/`. Then add both keys as encrypted **Secrets**, not plain variables:
+
+```bash
+wrangler pages secret put GEMINI_API_KEY
+wrangler pages secret put TWOGIS_API_KEY
+```
+
+**Deploy by pushing to GitHub, not with `wrangler pages deploy`.** The direct
+upload sends the working directory and ignores `.gitignore`, exactly as
+`netlify deploy` did. It skips dotfiles, so `.env` and `.dev.vars` survive it,
+but a plainly-named secrets file in this folder would be published.
+
+To run it locally the way Cloudflare will:
+
+```bash
+wrangler pages dev
+```
+
+That reads `.dev.vars` (copy `.dev.vars.example`) and serves both functions.
+Note it does *not* skip dotfiles the way a deploy does — `/.env` is readable
+from `localhost` during a local run. Harmless, but don't screen-share it.
+
+The Netlify setup is untouched in `netlify/` and `netlify.toml`, so the old
+site still deploys if you need to fall back. The two function directories hold
+the same logic and must be changed together while both are live.

@@ -1,0 +1,40 @@
+# Nomad AI — Cloudflare Pages settings.
+#
+# The app is static: no build step, the folder is the site. The only moving
+# parts are the two functions in functions/api/, which hold the API keys so
+# the browser does not have to.
+#
+# Secrets are NOT set here — this file is committed. Set them on the Pages
+# project (Settings → Variables and Secrets → add as **Secret**), or:
+#
+#   wrangler pages secret put GEMINI_API_KEY
+#   wrangler pages secret put TWOGIS_API_KEY
+#
+# Locally they come from .dev.vars, which is gitignored. Wrangler does not
+# read .env — that file stays for the Netlify CLI and the node scripts.
+#
+# Without the keys the app still runs: the assistant falls back to asking
+# each visitor for their own key, and the transport section does not appear.
+
+name = "nomad-ai-app"
+compatibility_date = "2024-09-23"
+
+# The folder IS the site. Cloudflare serves everything here as static assets
+# except functions/, which it compiles into the Pages Functions that answer
+# /api/ai and /api/transit — the routes come from those files' paths.
+#
+# ⚠ `wrangler pages deploy` uploads the WORKING DIRECTORY and does not read
+#   .gitignore — the same trap netlify.toml documents. It skips every file
+#   whose name starts with a dot (only .well-known is exempt), so .env and
+#   .dev.vars survive it, but a plainly-named secrets file sitting here does
+#   not. Deploy by pushing to GitHub, which builds from the committed tree
+#   and cannot carry an untracked file at all.
+#
+#   Note that `wrangler pages dev` does NOT apply that filter: it serves the
+#   folder as-is, so http://localhost:8788/.env returns your real keys during
+#   a local run. That is localhost only and never reaches the deploy, but do
+#   not screen-share a browser pointed at it.
+pages_build_output_dir = "."
+
+# No compatibility flags: both functions use only Web APIs — fetch, Request,
+# Response, URL, Map — so nodejs_compat would buy nothing.

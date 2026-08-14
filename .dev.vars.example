@@ -1,0 +1,23 @@
+# Nomad AI — secrets for a local Cloudflare run.
+#
+# Wrangler reads .dev.vars, not .env, and makes these `env.*` inside the
+# functions in functions/api/:
+#
+#   wrangler pages dev           serves the folder and both functions
+#
+# Copy to .dev.vars and fill in. .dev.vars is gitignored; this file is not.
+# .env still exists for the Netlify CLI and the node scripts — the two are
+# separate files with the same values, so change both or neither.
+#
+# On the deployed site these are set on the Pages project as encrypted
+# Secrets, never as plain variables:
+#
+#   wrangler pages secret put GEMINI_API_KEY
+#   wrangler pages secret put TWOGIS_API_KEY
+#
+# ⚠ GEMINI_API_KEY is the same key the Next.js project in
+#   Downloads/nomad-ai uses. Anything that exposes it here exposes it there
+#   too — mint a separate restricted key before publishing.
+
+GEMINI_API_KEY=
+TWOGIS_API_KEY=

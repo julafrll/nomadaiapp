@@ -13,6 +13,12 @@ nomad-keys.local.txt
 # Local Netlify folder
 .netlify
 
+# Local Cloudflare. .dev.vars holds the real keys for `wrangler pages dev`
+# and does NOT match the .env.* rule above, so it needs its own line.
+.dev.vars
+!.dev.vars.example
+.wrangler
+
 # Rendered brochure art. Made by make-brochure.py on demand, and it sits
 # inside the publish directory — no reason to deploy 4 MB of it.
 brochure/

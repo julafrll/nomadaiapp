@@ -1,0 +1,24 @@
+# Cloudflare Pages reads this file; it replaces the [[headers]] blocks in
+# netlify.toml, which Cloudflare does not read. Keep the two in step while
+# both hosts are live.
+
+# The service worker must never be served from cache, or an installed app
+# can be pinned to an old build forever.
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# The shell is the one file with no ?v= of its own — every other URL is
+# versioned by it. A cached index.html therefore keeps requesting the
+# previous build's assets, and the app silently runs the old code. This was
+# hit during development: edits showed up only on a URL with a query string,
+# because that was the only thing missing from the cache.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Long-lived assets. Every URL the app requests carries ?v=, so a new build
+# is a new URL and this cannot serve a stale one.
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
