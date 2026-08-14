@@ -421,6 +421,7 @@ const strings = {
       /* app chrome */
       awaits: 'Kyrgyzstan awaits', searchPlaceholder: 'Where do you want to go?',
       planMyTrip: 'Plan My Trip', keepGoing: 'KEEP GOING',
+      mInstall: 'Add to home screen', mInstallMeta: 'Works offline', mInstallIos: 'Share → Add to Home Screen',
       openNow: 'Open now', openNowNear: 'nearest to you', openNowRated: 'best rated', closesIn: 'closes in',
       nearby: 'Nearby places', seeAll: 'See all', popular: 'Popular destinations',
       restaurants: 'Recommended restaurants',
@@ -572,6 +573,7 @@ const strings = {
       startExploring: 'Поехали', profileSaved: 'Профиль сохранён',
       awaits: 'Кыргызстан ждёт', searchPlaceholder: 'Куда хотите поехать?',
       planMyTrip: 'Спланировать поездку', keepGoing: 'ПРОДОЛЖАЙТЕ',
+      mInstall: 'Добавить на главный экран', mInstallMeta: 'Работает офлайн', mInstallIos: 'Поделиться → На экран «Домой»',
       openNow: 'Открыто сейчас', openNowNear: 'ближайшие к вам', openNowRated: 'с лучшим рейтингом', closesIn: 'закроется через',
       nearby: 'Места рядом', seeAll: 'Все', popular: 'Популярные направления',
       restaurants: 'Рекомендуемые рестораны',
@@ -723,6 +725,7 @@ const strings = {
       startExploring: 'Кеттик', profileSaved: 'Профиль сакталды',
       awaits: 'Кыргызстан күтүүдө', searchPlaceholder: 'Кайда баргыңыз келет?',
       planMyTrip: 'Саякат түзүү', keepGoing: 'УЛАНТЫҢЫЗ',
+      mInstall: 'Башкы экранга кошуу', mInstallMeta: 'Оффлайн иштейт', mInstallIos: 'Бөлүшүү → Башкы экранга',
       openNow: 'Азыр ачык', openNowNear: 'сизге эң жакын', openNowRated: 'эң жогорку рейтинг', closesIn: 'жабылат',
       nearby: 'Жакынкы жерлер', seeAll: 'Баары', popular: 'Популярдуу багыттар',
       restaurants: 'Сунушталган ресторандар',

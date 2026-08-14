@@ -1557,7 +1557,8 @@
                           <sc-if value="{{ m.isSwap }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><path d="M4 8h13m0 0-3.2-3.2M17 8l-3.2 3.2M20 16H7m0 0 3.2-3.2M7 16l3.2 3.2" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if>
                           <sc-if value="{{ m.isAlert }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><path d="M12 3.5 21 19H3l9-15.5Z" stroke-width="1.9" stroke-linejoin="round"/><path d="M12 9.5v4M12 16.2v.3" stroke-width="2" stroke-linecap="round"/></svg></sc-if>
                           <sc-if value="{{ m.isGlobe }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><path d="M3.4 9.5h17.2M3.4 14.5h17.2" stroke-width="1.6"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z" stroke-width="1.6"/></svg></sc-if>
-                        <sc-if value="{{ m.isCog }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><circle cx="12" cy="12" r="3.2" stroke-width="1.9"/><path d="M12 3v2.2M12 18.8V21M4.6 7.8l1.9 1.1M17.5 15.1l1.9 1.1M4.6 16.2l1.9-1.1M17.5 8.9l1.9-1.1" stroke-width="1.9" stroke-linecap="round"/></svg></sc-if>
+                        <sc-if value="{{ m.isInstall }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><path d="M12 3.5v11.2M7.6 10.4 12 14.8l4.4-4.4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 15.5v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3" stroke-width="1.9" stroke-linecap="round"/></svg></sc-if>
+                          <sc-if value="{{ m.isCog }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--brand)"><circle cx="12" cy="12" r="3.2" stroke-width="1.9"/><path d="M12 3v2.2M12 18.8V21M4.6 7.8l1.9 1.1M17.5 15.1l1.9 1.1M4.6 16.2l1.9-1.1M17.5 8.9l1.9-1.1" stroke-width="1.9" stroke-linecap="round"/></svg></sc-if>
                         </div>
                         <div style="flex:1;font-size:15px;font-weight:600;color:var(--ink)">{{ m.name }}</div>
                         <div style="font-size:12.5px;color:var(--ink3)">{{ m.meta }}</div>
@@ -4414,7 +4415,11 @@
       visitedCount: String(D.badgeList.reduce(function (n, b) { return n + verifiedCount(b.kind); }, 0)),
 
       goEditProfile: function () { openProfileEdit(OB_NAME); },
-      goBadges: function () { jump('rewards'); },
+      /* go(), not jump(). jump() empties the navigation stack because it is
+         for moving between tabs, so Back from Rewards had nothing to return
+         to and fell through to Home — when the traveller had come from
+         Profile and expected to land back there. */
+      goBadges: function () { go('rewards'); },
       /* Straight to the challenge the verified tasks belong to — the one
          furthest along — rather than to the rewards screen, where they would
          have to find it again. With nothing verified yet there is no such
@@ -4425,7 +4430,7 @@
           var n = verifiedCount(b.kind);
           if (n > most) { most = n; best = b; }
         });
-        if (best) openChallenge(best.kind); else jump('rewards');
+        if (best) openChallenge(best.kind); else go('rewards');
       },
       menu: [
         { name: t.mSaved, meta: String(saved.length), go: function () { go('saved'); }, icon: 'heart' },
@@ -4439,13 +4444,26 @@
           meta: langOf(prof.lang || 'en').native,
           go: function () { openProfileEdit(OB_LANG); }, icon: 'globe'
         }
+      ].concat(
+        /* Offered as a row, not only as the banner that appears once. A
+           traveller who dismissed it, or whose browser never showed it,
+           still has somewhere to go. Hidden once the app is installed,
+           and on browsers that cannot install at all. */
+        (window.nomadInstall && window.nomadInstall.can())
+          ? [{
+              name: t.mInstall,
+              meta: window.nomadInstall.isIos() ? t.mInstallIos : t.mInstallMeta,
+              go: function () { window.nomadInstall.open(); },
+              icon: 'install'
+            }]
+          : []
         // "Edit profile" used to sit here, last in a list of unrelated
         // settings. It is the pencil beside the name now.
-      ].map(function (m) {
+      ).map(function (m) {
         return Object.assign({}, m, {
           isHeart: m.icon === 'heart', isRoute: m.icon === 'route', isMedal: m.icon === 'medal',
           isBook: m.icon === 'book', isSwap: m.icon === 'swap', isAlert: m.icon === 'alert',
-          isCog: m.icon === 'cog', isGlobe: m.icon === 'globe'
+          isCog: m.icon === 'cog', isGlobe: m.icon === 'globe', isInstall: m.icon === 'install'
         });
       })
     };

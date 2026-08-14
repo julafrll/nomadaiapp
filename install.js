@@ -20,13 +20,23 @@
 
   var KEY = 'nomad.install.dismissed';
   var DELAY = 2600;          // let the intro finish before asking
+  /* "Not now" used to mean "never again" — one stray tap and the offer was
+     gone for good on that device. It rests for a fortnight instead, which is
+     long enough not to nag and short enough that a returning traveller is
+     asked once more. Installing suppresses it permanently; that is a real
+     answer, not a deferral. */
+  var REST_DAYS = 14;
 
   // Already installed: nothing to offer.
   var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
     window.navigator.standalone === true;
   if (standalone) return;
 
-  try { if (localStorage.getItem(KEY)) return; } catch (e) { /* private mode */ }
+  try {
+    var until = Number(localStorage.getItem(KEY) || 0);
+    if (until === 1) return;                      // installed: never again
+    if (until && Date.now() < until) return;      // still resting
+  } catch (e) { /* private mode */ }
 
   var deferred = null, shown = false;
 
@@ -72,7 +82,7 @@
   }
 
   function dismiss(card) {
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    try { localStorage.setItem(KEY, String(Date.now() + REST_DAYS * 864e5)); } catch (e) {}
     if (themeWatch) { themeWatch.disconnect(); themeWatch = null; }
     card.classList.remove('is-in');
     setTimeout(function () { if (card.parentNode) card.parentNode.removeChild(card); }, 260);
@@ -123,17 +133,49 @@
 
   /* ── triggers ──────────────────────────────────────────────────────── */
 
-  window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault();            // keep it, rather than let Chrome show its own
+  function offer(e) {
+    if (!e || deferred) return;
     deferred = e;
     setTimeout(function () { show('prompt'); }, DELAY);
+  }
+
+  /* Three ways in, because the event fires once and does not replay:
+     the copy the head stashed before this file existed, the signal it sends
+     if it arrives later, and the event itself for any browser that gets here
+     first. */
+  offer(window.__nomadInstallEvent);
+  window.addEventListener('nomad:installable', function () { offer(window.__nomadInstallEvent); });
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();            // keep it, rather than let Chrome show its own
+    offer(e);
   });
 
   if (isIosSafari) setTimeout(function () { show('ios'); }, DELAY);
 
+  /* A way in that does not depend on a banner the traveller may have
+     dismissed, missed, or never been shown because the browser decided the
+     moment was wrong. Profile offers it as a row, always, and this is what
+     that row calls. */
+  window.nomadInstall = {
+    // Whether an install can actually be offered from here.
+    can: function () { return !standalone && (!!deferred || isIosSafari); },
+    isIos: function () { return isIosSafari; },
+    installed: function () { return standalone; },
+    /** Chrome: opens the real dialog. iOS: shows the Share instructions. */
+    open: function () {
+      if (deferred) {
+        deferred.prompt();
+        deferred.userChoice.then(function () { deferred = null; });
+        return 'prompt';
+      }
+      if (isIosSafari) { shown = false; show('ios'); return 'ios'; }
+      return 'unavailable';
+    }
+  };
+
   // Installed from the card or from the browser menu — take it away.
   window.addEventListener('appinstalled', function () {
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}   // 1 = installed, for good
     var card = document.querySelector('.nomInstall');
     if (card) dismiss(card);
   });
