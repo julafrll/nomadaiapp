@@ -206,40 +206,55 @@ The `?v=` query strings on the script tags in `index.html` bust the browser
 cache — bump the number after editing any of those files, or a reload can
 quietly keep running the previous version.
 
-### Deploying to Cloudflare Pages
+### Deploying to Cloudflare
 
-The site is the folder, so there is no build command. The two API keys live in
-functions that run on Cloudflare, never in the browser:
+Deployed as a **Worker with static assets**, not as a Pages project — that is
+what the Cloudflare dashboard creates now, and Pages is no longer the default
+path for new work. The two API keys live in code that runs on Cloudflare and
+never reaches the browser:
 
 ```
+worker.js                  →  entry point: routes /api/*, serves the rest
 functions/api/ai.js        →  /api/ai        Gemini, holds GEMINI_API_KEY
 functions/api/transit.js   →  /api/transit   2GIS, holds TWOGIS_API_KEY
 _headers                   →  the cache rules netlify.toml used to carry
+wrangler.jsonc             →  entry point, assets directory, project name
 ```
 
-The route comes from each file's path, which is why `nomad-config.js` needs no
-change: it already calls `/api/ai` and `/api/transit`. Pages finds `functions/`
-on its own — there is nothing to switch on.
+The handlers are still written against `(request, env)`, so they run unchanged
+under Pages or Netlify too. The one thing a Worker does not do is discover
+`functions/` by itself — Pages routes each file by its path, a Worker has a
+single entry point — so `worker.js` is the router Pages was providing for
+free. `nomad-config.js` needs no change either way: it already calls `/api/ai`
+and `/api/transit`.
 
-In the Pages project — Build command: *(leave empty)*, Build output directory:
-`/`. Then either add both keys under Settings → Variables and Secrets (choose
-**Encrypt**, and set them on Production *and* Preview — they are separate
-sets), or push them from the `.env` you already keep:
+**`name` in `wrangler.jsonc` must match the Worker in the dashboard exactly.**
+A mismatch either fails the build or quietly deploys to a second, empty Worker
+under that name. Cloudflare may open a pull request correcting it; merging
+that is fine.
+
+Build command: *(leave empty)*. Deploy command: `npx wrangler deploy` — the
+default, and it works once `wrangler.jsonc` exists. Then either add both keys
+under Settings → Variables and Secrets (choose **Encrypt**), or push them from
+the `.env` you already keep:
 
 ```bash
 npx wrangler login    # once, ever — Cloudflare has to know it is you
-node push-secrets.mjs <your-pages-project-name>
+node push-secrets.mjs <your-worker-name>
 ```
 
-Either way they are stored as encrypted Secrets, read by the functions as
-`env.*`, and never written to the repo. Secrets attach at deploy time, so
-redeploy after adding them or the running build will not see them.
+Either way they are stored as encrypted Secrets, read as `env.*`, and never
+written to the repo. Secrets attach at deploy time, so redeploy after adding
+them or the running build will not see them.
 
-**There is deliberately no `wrangler.toml`.** Adding one to a Pages project
-makes it the source of truth and locks the matching fields out of the
-dashboard — so a `[vars]` block it does not contain becomes a variable you
-cannot add by hand — and a `name` in it that does not match the project fails
-the build outright. Neither is worth it for a site with no build step.
+To run it locally exactly as Cloudflare will:
+
+```bash
+npx wrangler dev
+```
+
+That reads `.dev.vars` (copy `.dev.vars.example`), serves the folder through
+the assets binding, and routes `/api/*` through `worker.js`.
 
 **The keys are deliberately not committed.** This repository is public, GitHub
 scans public pushes for credentials and reports Google API keys to Google, and
@@ -248,20 +263,10 @@ a step — it would kill the assistant a few hours after the first push, with
 nothing in the app to explain why. The 2GIS key would survive and be spendable
 by anyone who read the repo.
 
-**Deploy by pushing to GitHub, not with `wrangler pages deploy`.** The direct
-upload sends the working directory and ignores `.gitignore`, exactly as
+**Deploy by pushing to GitHub, not with a local `wrangler deploy`.** The
+direct upload sends the working directory and ignores `.gitignore`, exactly as
 `netlify deploy` did. It skips dotfiles, so `.env` and `.dev.vars` survive it,
 but a plainly-named secrets file in this folder would be published.
-
-To run it locally the way Cloudflare will:
-
-```bash
-wrangler pages dev
-```
-
-That reads `.dev.vars` (copy `.dev.vars.example`) and serves both functions.
-Note it does *not* skip dotfiles the way a deploy does — `/.env` is readable
-from `localhost` during a local run. Harmless, but don't screen-share it.
 
 The Netlify setup is untouched in `netlify/` and `netlify.toml`, so the old
 site still deploys if you need to fall back. The two function directories hold

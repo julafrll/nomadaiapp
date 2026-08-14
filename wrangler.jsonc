@@ -1,0 +1,37 @@
+{
+  // ⚠ `name` MUST match the Worker in the Cloudflare dashboard exactly.
+  //   A mismatch either fails the build or deploys to a second, empty Worker
+  //   under this name. Check it at Workers & Pages → your project, and edit
+  //   this line if it differs. (Cloudflare may also open a pull request that
+  //   corrects it for you — merging that is fine.)
+  "name": "nomad-ai-app",
+
+  // The router in worker.js. A Worker has one entry point; it dispatches
+  // /api/ai and /api/transit to the handlers in functions/api/ and lets
+  // everything else fall through to the assets below.
+  "main": "worker.js",
+
+  "compatibility_date": "2026-08-14",
+
+  // No compatibility flags: worker.js and both handlers use only Web APIs —
+  // fetch, Request, Response, URL, Map — so nodejs_compat would buy nothing.
+
+  "assets": {
+    // The folder IS the site, exactly as it was on Netlify. Files whose names
+    // start with a dot are not uploaded, so .env and .dev.vars cannot be
+    // published this way; source files that are not dotfiles (worker.js,
+    // README.md, the .py scripts) are served, which was already true under
+    // Netlify's `publish = "."` and carries no secrets.
+    "directory": ".",
+
+    // env.ASSETS in worker.js. Static files are matched first; the Worker
+    // only runs when no file matches, which is why /api/* reaches it.
+    "binding": "ASSETS"
+  }
+
+  // Secrets are deliberately absent. GEMINI_API_KEY and TWOGIS_API_KEY are
+  // set on the Worker itself — Settings → Variables and Secrets → Encrypt,
+  // or `node push-secrets.mjs <worker-name>`. Putting them in a `vars` block
+  // here would commit them to a public repository, where GitHub reports
+  // Google keys to Google and Google revokes them.
+}
